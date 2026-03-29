@@ -1,5 +1,4 @@
 import { defineConfig } from 'astro/config';
-import cloudflare from '@astrojs/cloudflare';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 
@@ -20,7 +19,7 @@ function patchViteErrorOverlay() {
 
 export default defineConfig({
   base: '',
-  output: 'server',
+  output: 'static',
   devToolbar: {
     enabled: false,
   },
@@ -29,11 +28,6 @@ export default defineConfig({
     host: true,
     strictPort: true,
   },
-  adapter: cloudflare({
-    platformProxy: {
-      enabled: false,
-    },
-  }),
   integrations: [
     react(),
   ],
