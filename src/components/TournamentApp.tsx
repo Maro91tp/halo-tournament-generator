@@ -47,6 +47,8 @@ const DEV_TEAMS: Team[] = [
   },
 ];
 
+const DEV_PREVIEW_ENABLED = false;
+
 export default function TournamentApp() {
   const [step, setStep] = useState<Step>('welcome');
   const [players, setPlayers] = useState<Player[]>([]);
@@ -258,7 +260,7 @@ export default function TournamentApp() {
       </div>
 
       <AutoSaveIndicator lastSaved={lastSaved} />
-      {import.meta.env.DEV && (
+      {import.meta.env.DEV && DEV_PREVIEW_ENABLED && (
         <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2 rounded-2xl border border-cyan-200/30 bg-black/35 p-3 backdrop-blur-md">
           <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">Dev Preview</div>
           <button

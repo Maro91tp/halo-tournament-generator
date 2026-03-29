@@ -274,22 +274,14 @@ export default function WelcomeScreen({
           </div>
         </div>
 
-            {/* Footer Credit */}
-            <div
-              style={{
-                position: 'absolute',
-                right: 24,
-                bottom: 16,
-                opacity: 0.70,
-                letterSpacing: '0.08em',
-              }}
-            >
+            <div className="mt-6 text-center">
               <span
                 style={{
-                  fontSize: 11,
+                  fontSize: 13,
                   fontFamily: "'Oxanium', sans-serif",
-                  fontWeight: 500,
-                  color: 'rgba(200, 220, 255, 0.70)',
+                  fontWeight: 600,
+                  letterSpacing: '0.1em',
+                  color: 'rgba(200, 220, 255, 0.78)',
                 }}
               >
                 Made by MrMarozzo

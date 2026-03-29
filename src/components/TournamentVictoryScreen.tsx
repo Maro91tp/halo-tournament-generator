@@ -191,6 +191,9 @@ export default function TournamentVictoryScreen({
       <div className="text-center text-xs text-white/55">
         Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.
       </div>
+      <div className="text-center text-sm font-semibold tracking-[0.1em] text-cyan-100/80">
+        Made by MrMarozzo
+      </div>
     </div>
   );
 }
