@@ -1,0 +1,384 @@
+import { useState, useEffect } from 'react';
+import { ArrowLeft, ArrowRight, Dice3, Eye, Pencil, RefreshCcw, Shield, Users2, X } from 'lucide-react';
+import type { Player, Team, TournamentConfig } from '../types/tournament';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Card } from './ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { generateBalancedTeams, generateRandomTeams, getRankDisplay } from '../lib/tournament-utils';
+import { RankIcon } from './TournamentIcons';
+
+interface TeamSetupProps {
+  players: Player[];
+  config: TournamentConfig;
+  onComplete: (teams: Team[]) => void;
+  onBack: () => void;
+  initialTeams: Team[];
+}
+
+export default function TeamSetup({ players, config, onComplete, onBack, initialTeams }: TeamSetupProps) {
+  const teamSize = parseInt(config.teamMode.charAt(0));
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
+  const [availablePlayers, setAvailablePlayers] = useState<Player[]>([]);
+  const [editMode, setEditMode] = useState<boolean>(config.teamCreationMode === 'manual');
+  const [playerTeamAssignments, setPlayerTeamAssignments] = useState<Map<string, number>>(new Map());
+
+  useEffect(() => {
+    if (initialTeams.length > 0) {
+      setTeams(initialTeams);
+      updateAvailablePlayers(initialTeams);
+    } else if (config.teamCreationMode === 'automatic') {
+      const balancedTeams = generateBalancedTeams(players, teamSize);
+      setTeams(balancedTeams);
+      setAvailablePlayers([]);
+    } else if (config.teamCreationMode === 'random') {
+      const randomTeams = generateRandomTeams(players, teamSize);
+      setTeams(randomTeams);
+      setAvailablePlayers([]);
+    } else {
+      const numTeams = Math.floor(players.length / teamSize);
+      const emptyTeams: Team[] = [];
+      const teamNames = ['Team A', 'Team B', 'Team C', 'Team D', 'Team E', 'Team F', 'Team G', 'Team H'];
+
+      for (let i = 0; i < numTeams; i++) {
+        emptyTeams.push({
+          id: `team-${i + 1}`,
+          name: teamNames[i] || `Team ${String.fromCharCode(65 + i)}`,
+          players: [],
+          totalStrength: 0,
+        });
+      }
+
+      setTeams(emptyTeams);
+      setAvailablePlayers([...players]);
+    }
+  }, []);
+
+  const updateAvailablePlayers = (currentTeams: Team[]) => {
+    const assignedPlayerIds = new Set(
+      currentTeams.flatMap((team) => team.players.map((p) => p.id))
+    );
+    setAvailablePlayers(players.filter((p) => !assignedPlayerIds.has(p.id)));
+  };
+
+  const updateTeamName = (teamIndex: number, name: string) => {
+    const newTeams = [...teams];
+    newTeams[teamIndex].name = name;
+    setTeams(newTeams);
+  };
+
+  const addPlayerToTeam = (teamIndex: number, player: Player) => {
+    const newTeams = [...teams];
+    const team = newTeams[teamIndex];
+
+    if (team.players.length >= teamSize) {
+      alert(`La squadra puo avere massimo ${teamSize} giocatori!`);
+      return;
+    }
+
+    team.players.push(player);
+    team.totalStrength += player.strengthValue;
+    setTeams(newTeams);
+    updateAvailablePlayers(newTeams);
+    setSelectedTeam(null);
+  };
+
+  const removePlayerFromTeam = (teamIndex: number, playerIndex: number) => {
+    const newTeams = [...teams];
+    const team = newTeams[teamIndex];
+    const player = team.players[playerIndex];
+
+    team.players.splice(playerIndex, 1);
+    team.totalStrength -= player.strengthValue;
+    setTeams(newTeams);
+    updateAvailablePlayers(newTeams);
+  };
+
+  const assignPlayerToTeam = (playerId: string, teamIndex: number) => {
+    const player = availablePlayers.find((p) => p.id === playerId);
+    if (!player) return;
+
+    const newTeams = [...teams];
+    const team = newTeams[teamIndex];
+
+    if (team.players.length >= teamSize) {
+      alert(`La squadra puo avere massimo ${teamSize} giocatori!`);
+      return;
+    }
+
+    team.players.push(player);
+    team.totalStrength += player.strengthValue;
+    setTeams(newTeams);
+    updateAvailablePlayers(newTeams);
+
+    const newAssignments = new Map(playerTeamAssignments);
+    newAssignments.delete(playerId);
+    setPlayerTeamAssignments(newAssignments);
+  };
+
+  const handleSubmit = () => {
+    const allTeamsComplete = teams.every((team) => team.players.length === teamSize);
+
+    if (!allTeamsComplete) {
+      alert(`Tutte le squadre devono avere esattamente ${teamSize} giocatori!`);
+      return;
+    }
+
+    onComplete(teams);
+  };
+
+  const handleRegenerate = () => {
+    if (config.teamCreationMode === 'automatic') {
+      const balancedTeams = generateBalancedTeams(players, teamSize);
+      setTeams(balancedTeams);
+      setAvailablePlayers([]);
+      setEditMode(false);
+    } else if (config.teamCreationMode === 'random') {
+      const randomTeams = generateRandomTeams(players, teamSize);
+      setTeams(randomTeams);
+      setAvailablePlayers([]);
+      setEditMode(false);
+    }
+  };
+
+  const toggleEditMode = () => {
+    if (!editMode) {
+      updateAvailablePlayers(teams);
+    }
+    setEditMode(!editMode);
+  };
+
+  const isManualMode = config.teamCreationMode === 'manual';
+  const isAutoMode = config.teamCreationMode === 'automatic' || config.teamCreationMode === 'random';
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="mb-4 text-2xl font-bold font-heading">
+          {config.teamCreationMode === 'automatic' && (
+            <span className="flex items-center gap-3">
+              <Users2 className="h-7 w-7 text-primary" />
+              <span>Squadre Bilanciate</span>
+            </span>
+          )}
+          {config.teamCreationMode === 'random' && (
+            <span className="flex items-center gap-3">
+              <Dice3 className="h-7 w-7 text-primary" />
+              <span>Squadre Casuali</span>
+            </span>
+          )}
+          {config.teamCreationMode === 'manual' && (
+            <span className="flex items-center gap-3">
+              <Shield className="h-7 w-7 text-primary" />
+              <span>Crea le Squadre</span>
+            </span>
+          )}
+        </h2>
+        <p className="mb-6 text-muted-foreground">
+          {config.teamCreationMode === 'automatic' && 'Le squadre sono state generate automaticamente. Puoi modificare i nomi e i giocatori.'}
+          {config.teamCreationMode === 'random' && 'Le squadre sono state generate casualmente. Puoi modificare i nomi e i giocatori.'}
+          {config.teamCreationMode === 'manual' && 'Assegna i giocatori alle squadre manualmente.'}
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {isAutoMode && (
+          <>
+            <Button onClick={handleRegenerate} variant="ghost" size="sm" className="text-white/75 hover:bg-white/8 hover:text-white">
+              <RefreshCcw className="mr-2 h-4 w-4" />
+              Rigenera squadre
+            </Button>
+            <Button onClick={toggleEditMode} variant="ghost" size="sm" className="text-white/75 hover:bg-white/8 hover:text-white">
+              {editMode ? (
+                <>
+                  <Eye className="mr-2 h-4 w-4" />
+                  Visualizza
+                </>
+              ) : (
+                <>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Modifica giocatori
+                </>
+              )}
+            </Button>
+          </>
+        )}
+      </div>
+
+      {isManualMode && availablePlayers.length > 0 && (
+        <Card>
+          <h3 className="mb-3 font-semibold">Assegna giocatori alle squadre ({availablePlayers.length} rimanenti)</h3>
+          <div className="grid gap-3">
+            {availablePlayers.map((player) => (
+              <div
+                key={player.id}
+                className="glass-card flex items-center justify-between p-3"
+              >
+                <div>
+                  <div className="font-medium">{player.name}</div>
+                  <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+                    <RankIcon rank={player.rank} className="h-4 w-4" />
+                    <span>{getRankDisplay(player.rank)} - Forza: {player.strengthValue}</span>
+                  </div>
+                </div>
+                <Select
+                  value={playerTeamAssignments.get(player.id)?.toString() || ''}
+                  onValueChange={(value) => {
+                    const teamIndex = parseInt(value);
+                    assignPlayerToTeam(player.id, teamIndex);
+                  }}
+                >
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Scegli squadra..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teams.map((team, idx) => (
+                      <SelectItem
+                        key={team.id}
+                        value={idx.toString()}
+                        disabled={team.players.length >= teamSize}
+                      >
+                        {team.name} ({team.players.length}/{teamSize})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {!isManualMode && editMode && availablePlayers.length > 0 && (
+        <Card>
+          <h3 className="mb-3 font-semibold">Giocatori disponibili ({availablePlayers.length})</h3>
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+            {availablePlayers.map((player) => (
+              <div
+                key={player.id}
+                className="glass-card p-2 text-sm"
+              >
+                <div className="font-medium">{player.name}</div>
+                <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+                  <RankIcon rank={player.rank} className="h-4 w-4" />
+                  <span>{getRankDisplay(player.rank)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {selectedTeam !== null && (
+            <p className="mt-3 text-sm font-medium text-primary">
+              Seleziona un giocatore per aggiungerlo a {teams[selectedTeam].name}
+            </p>
+          )}
+        </Card>
+      )}
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {teams.map((team, teamIndex) => (
+          <Card key={team.id} className="space-y-3">
+            <div>
+              <Label className="mb-1 text-sm">Nome squadra</Label>
+              <Input
+                value={team.name}
+                onChange={(e) => updateTeamName(teamIndex, e.target.value)}
+                placeholder="Nome squadra"
+              />
+            </div>
+
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <Label className="text-sm">
+                  Giocatori ({team.players.length}/{teamSize})
+                </Label>
+                <span className="text-xs text-muted-foreground">
+                  Forza: {team.totalStrength}
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                {team.players.map((player, playerIndex) => (
+                  <div
+                    key={player.id}
+                    className="flex items-center justify-between gap-3 rounded-[22px] border border-cyan-200/20 bg-white/6 px-4 py-3 backdrop-blur-md"
+                  >
+                    <div className="min-w-0 flex-1 pr-2">
+                      <div className="truncate text-[15px] font-semibold leading-tight text-white">{player.name}</div>
+                      <div className="mt-1 inline-flex items-center gap-2 text-[11px] leading-tight text-white/65">
+                        <RankIcon rank={player.rank} className="h-4 w-4" />
+                        <span>{getRankDisplay(player.rank)} - {player.strengthValue}</span>
+                      </div>
+                    </div>
+                    {(editMode || isManualMode) && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => removePlayerFromTeam(teamIndex, playerIndex)}
+                        className="h-8 w-8 flex-shrink-0 p-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+
+                {!isManualMode && editMode && team.players.length < teamSize && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => setSelectedTeam(selectedTeam === teamIndex ? null : teamIndex)}
+                  >
+                    {selectedTeam === teamIndex ? 'Annulla' : '+ Aggiungi giocatore'}
+                  </Button>
+                )}
+
+                {!isManualMode && editMode && selectedTeam === teamIndex && availablePlayers.length > 0 && (
+                  <div className="glass-card max-h-48 space-y-1 overflow-y-auto p-2">
+                    {availablePlayers.map((player) => (
+                      <button
+                        key={player.id}
+                        onClick={() => addPlayerToTeam(teamIndex, player)}
+                        className="w-full rounded-[16px] border border-white/8 bg-white/5 px-4 py-3 text-left text-sm transition-colors hover:bg-white/10"
+                      >
+                        <div className="text-[15px] font-semibold leading-tight text-white">{player.name}</div>
+                        <div className="mt-1 inline-flex items-center gap-2 text-[11px] leading-tight text-white/65">
+                          <RankIcon rank={player.rank} className="h-4 w-4" />
+                          <span>{getRankDisplay(player.rank)}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      <div className="glass-card space-y-4 p-5 md:p-6">
+        <div className="space-y-1">
+          <div className="text-sm font-semibold text-white">Conferma squadre</div>
+          <p className="text-sm text-white/70">
+            Controlla nomi, composizione e forza dei team. Quando sei pronto puoi generare il torneo.
+          </p>
+        </div>
+        <div className="flex justify-end">
+          <Button onClick={handleSubmit} size="lg" className="min-w-48 text-base shadow-[0_0_24px_rgba(100,180,255,0.25)]">
+            Genera Torneo
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex justify-start pt-1">
+        <Button onClick={onBack} variant="outline" size="lg">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Indietro
+        </Button>
+      </div>
+    </div>
+  );
+}
