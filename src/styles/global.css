@@ -165,21 +165,27 @@
 
     background: linear-gradient(
       135deg,
-      rgba(10, 239, 255, 0.26) 0%,
-      rgba(11, 0, 58, 0.28) 50%
+      rgba(10, 239, 255, 0.34) 0%,
+      rgba(11, 0, 58, 0.46) 50%,
+      rgba(4, 10, 34, 0.62) 100%
     );
 
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
 
-    border: 1px solid rgba(100, 237, 255, 0.28);
+    border: 1px solid rgba(100, 237, 255, 0.34);
 
     box-shadow:
-      0 0 22px rgba(100, 180, 255, 0.10),
-      inset 0 0 18px rgba(100, 180, 255, 0.06);
+      0 0 26px rgba(100, 180, 255, 0.14),
+      inset 0 0 18px rgba(100, 180, 255, 0.08);
+  }
 
-      .glass-card-sm { padding: 1.5rem; }
-      .glass-card-lg { padding: 3rem; }
+  .glass-card-sm {
+    padding: 1.5rem;
+  }
+
+  .glass-card-lg {
+    padding: 3rem;
   }
 }
 
