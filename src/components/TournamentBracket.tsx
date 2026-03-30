@@ -96,7 +96,7 @@ export default function TournamentBracket({
         </div>
 
         {tournament.winner && (
-          <div className="rounded-[26px] border border-primary/35 bg-primary/14 px-6 py-4 text-center text-primary-foreground shadow-[0_0_34px_rgba(100,180,255,0.24)]">
+          <div className="rounded-[26px] border border-primary/35 bg-primary/14 px-6 py-4 text-center text-primary-foreground shadow-[0_0_34px_rgba(245,180,76,0.24)]">
             <div className="mb-1 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">
               <Crown className="h-4 w-4 text-primary" />
               <span>Campione</span>
@@ -139,7 +139,7 @@ export default function TournamentBracket({
             </div>
           </div>
 
-          <div className="rounded-[20px] border border-primary/20 bg-primary/8 p-3.5 sm:rounded-[24px] sm:p-5 shadow-[0_0_24px_rgba(100,180,255,0.12)]">
+          <div className="rounded-[20px] border border-primary/20 bg-primary/8 p-3.5 sm:rounded-[24px] sm:p-5 shadow-[0_0_24px_rgba(245,180,76,0.12)]">
             <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-white sm:mb-3 sm:text-sm">
               <PlayCircle className="h-4 w-4 text-primary" />
               <span>Prossimo passo</span>
@@ -158,7 +158,7 @@ export default function TournamentBracket({
                 <Button
                   onClick={() => handleMatchClick(nextPlayableMatch)}
                   size="lg"
-                  className="mt-4 w-full justify-center shadow-[0_0_30px_rgba(100,180,255,0.3)] hover:shadow-[0_0_40px_rgba(100,180,255,0.42)]"
+                  className="mt-4 w-full justify-center shadow-[0_0_30px_rgba(245,180,76,0.28)] hover:shadow-[0_0_40px_rgba(245,180,76,0.4)]"
                 >
                   Registra risultato
                   <ChevronRight className="h-4 w-4" />
@@ -337,7 +337,7 @@ function MatchCard({ match, onClick }: MatchCardProps) {
     <Card
       className={cn(
         'p-4 transition-all',
-        isPlayable && 'cursor-pointer border-primary/20 shadow-[0_0_18px_rgba(100,180,255,0.10)] hover:border-primary hover:shadow-[0_0_28px_rgba(100,180,255,0.18)]',
+        isPlayable && 'cursor-pointer border-primary/20 shadow-[0_0_18px_rgba(245,180,76,0.1)] hover:border-primary hover:shadow-[0_0_28px_rgba(245,180,76,0.18)]',
         !isPlayable && 'shadow-none',
         match.winner && !isBye && 'border-white/10 bg-black/10',
         isWaiting && 'opacity-80'
@@ -408,7 +408,7 @@ function TeamDisplay({ team, isWinner, isLoser, score }: TeamDisplayProps) {
     <div
       className={cn(
         'rounded-[22px] border px-4 py-3 transition-all',
-        isWinner ? 'border-primary/30 bg-primary/14 shadow-[0_0_18px_rgba(100,180,255,0.14)]' : 'border-white/10 bg-black/8',
+        isWinner ? 'border-primary/30 bg-primary/14 shadow-[0_0_18px_rgba(245,180,76,0.14)]' : 'border-white/10 bg-black/8',
         isLoser && 'opacity-55'
       )}
     >

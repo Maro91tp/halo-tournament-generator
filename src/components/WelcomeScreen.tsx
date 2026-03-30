@@ -55,7 +55,7 @@ export default function WelcomeScreen({
             className="mx-auto mb-4 w-full max-w-[340px] px-1 sm:mb-6 sm:max-w-[480px] sm:px-0"
             style={{
               height: 'auto',
-              filter: 'drop-shadow(0 0 20px rgba(100, 180, 255, 0.30))',
+              filter: 'drop-shadow(0 0 20px rgba(245, 180, 76, 0.24))',
             }}
           />
 
@@ -87,7 +87,7 @@ export default function WelcomeScreen({
         </div>
 
         {savedTournament && (
-          <div className="mt-7 rounded-[18px] border border-cyan-200/25 bg-black/14 p-3.5 shadow-[0_0_14px_rgba(100,180,255,0.08)] sm:mt-10 sm:rounded-[24px] sm:p-5">
+        <div className="mt-7 rounded-[18px] border border-amber-200/25 bg-black/14 p-3.5 shadow-[0_0_14px_rgba(245,180,76,0.08)] sm:mt-10 sm:rounded-[24px] sm:p-5">
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="m-0 text-[clamp(0.98rem,0.9rem+0.45vw,1.15rem)] font-bold text-white">Torneo salvato</h2>
@@ -116,10 +116,10 @@ export default function WelcomeScreen({
               height: 'auto',
               borderRadius: '18px',
               background:
-                'linear-gradient(180deg, rgba(255, 255, 255, 0.33) 0%, rgba(255, 255, 255, 0.33) 100%), linear-gradient(180deg, rgba(50, 110, 180, 0.40) 0%, rgba(30, 90, 160, 0.60) 100%)',
-              border: '1px solid rgba(136, 255, 249, 0.67)',
+                'linear-gradient(180deg, rgba(255, 252, 244, 0.34) 0%, rgba(255, 247, 224, 0.28) 100%), linear-gradient(180deg, rgba(245, 180, 76, 0.78) 0%, rgba(180, 110, 22, 0.95) 100%)',
+              border: '1px solid rgba(255, 214, 140, 0.78)',
               boxShadow: '0 9px 10px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.10)',
-              color: 'rgb(255, 255, 255)',
+              color: 'rgb(36, 19, 0)',
               fontSize: 'clamp(19px, 6.4vw, 36px)',
               fontFamily: "'Oxanium', sans-serif",
               fontWeight: 500,
@@ -131,11 +131,11 @@ export default function WelcomeScreen({
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                '0 0 45px rgba(100, 180, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
+                '0 0 45px rgba(245, 180, 76, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                '0 0 30px rgba(100, 180, 255, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.10)';
+                '0 0 30px rgba(245, 180, 76, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.10)';
             }}
           >
             Crea nuovo torneo
@@ -158,12 +158,12 @@ export default function WelcomeScreen({
         </div>
 
         <div
-          className="mt-6 rounded-[18px] border border-cyan-200/20 px-3 py-3 sm:mt-8 sm:rounded-[24px] sm:px-5 sm:py-5"
+          className="mt-6 rounded-[18px] border border-amber-200/20 px-3 py-3 sm:mt-8 sm:rounded-[24px] sm:px-5 sm:py-5"
           style={{
-            background: 'linear-gradient(180deg, rgba(28, 78, 150, 0.34) 0%, rgba(15, 48, 104, 0.52) 100%)',
+            background: 'linear-gradient(180deg, rgba(117, 76, 16, 0.34) 0%, rgba(64, 38, 10, 0.56) 100%)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
-            boxShadow: '0 0 22px rgba(100, 180, 255, 0.14), inset 0 0.5px 0 rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 0 22px rgba(245, 180, 76, 0.14), inset 0 0.5px 0 rgba(255, 255, 255, 0.08)',
           }}
         >
           <div className="mb-3 text-center sm:mb-4">
@@ -186,10 +186,10 @@ export default function WelcomeScreen({
             {featureItems.map((item) => (
               <div
                 key={item.title}
-                className="flex items-center gap-2.5 rounded-[16px] border border-cyan-200/18 bg-[linear-gradient(180deg,rgba(255,255,255,0.09)_0%,rgba(255,255,255,0.04)_100%)] px-3 py-2.5 text-left shadow-[0_0_14px_rgba(100,180,255,0.08)] sm:gap-3 sm:rounded-[18px] sm:px-4 sm:py-3"
+                className="flex items-center gap-2.5 rounded-[16px] border border-amber-200/18 bg-[linear-gradient(180deg,rgba(255,255,255,0.09)_0%,rgba(255,255,255,0.04)_100%)] px-3 py-2.5 text-left shadow-[0_0_14px_rgba(245,180,76,0.08)] sm:gap-3 sm:rounded-[18px] sm:px-4 sm:py-3"
               >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-300/28 bg-cyan-300/14 sm:h-9 sm:w-9">
-                  <item.Icon className="h-[15px] w-[15px] text-[#64B4FF] sm:h-5 sm:w-5" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-amber-300/28 bg-amber-300/14 sm:h-9 sm:w-9">
+                  <item.Icon className="h-[15px] w-[15px] text-[#f5b44c] sm:h-5 sm:w-5" />
                 </div>
                 <div className="min-w-0">
                   <div

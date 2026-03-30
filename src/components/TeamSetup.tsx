@@ -302,7 +302,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                 {team.players.map((player, playerIndex) => (
                   <div
                     key={player.id}
-                    className="flex items-start justify-between gap-3 rounded-[18px] border border-cyan-200/20 bg-white/6 px-3 py-3 backdrop-blur-md sm:items-center sm:rounded-[22px] sm:px-4"
+                    className="flex items-start justify-between gap-3 rounded-[18px] border border-amber-200/20 bg-white/6 px-3 py-3 backdrop-blur-md sm:items-center sm:rounded-[22px] sm:px-4"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="truncate text-[15px] font-semibold leading-tight text-white">{player.name}</div>
@@ -366,7 +366,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
           </p>
         </div>
         <div className="flex justify-stretch sm:justify-end">
-          <Button onClick={handleSubmit} size="lg" className="w-full text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] shadow-[0_0_24px_rgba(100,180,255,0.25)] sm:min-w-48 sm:w-auto">
+          <Button onClick={handleSubmit} size="lg" className="w-full text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] shadow-[0_0_24px_rgba(245,180,76,0.24)] hover:shadow-[0_0_34px_rgba(245,180,76,0.34)] sm:min-w-48 sm:w-auto">
             Genera Torneo
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

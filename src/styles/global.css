@@ -51,6 +51,11 @@
 }
 
 :root {
+  --primary: #f5b44c;
+  --primary-foreground: #241300;
+  --ring: #f7c978;
+  --cta-glow: rgba(245, 180, 76, 0.34);
+  --cta-glow-soft: rgba(245, 180, 76, 0.2);
   --body-font: 'Oxanium', var(--_apps---typography--body-font);
   --heading-font: 'Oxanium', var(--_apps---typography--heading-font);
   --button-font: 'Oxanium', var(--_apps---typography--button-font);
@@ -61,8 +66,6 @@
   --card-foreground: var(--_apps---colors--card-foreground);
   --popover: var(--_apps---colors--popover);
   --popover-foreground: var(--_apps---colors--popover-foreground);
-  --primary: var(--_apps---colors--primary);
-  --primary-foreground: var(--_apps---colors--primary-foreground);
   --secondary: var(--_apps---colors--secondary);
   --secondary-foreground: var(--_apps---colors--secondary-foreground);
   --muted: var(--_apps---colors--muted);
@@ -72,7 +75,6 @@
   --destructive: var(--_apps---colors--destructive);
   --border: var(--_apps---colors--border);
   --input: var(--_apps---colors--input);
-  --ring: var(--_apps---colors--ring);
   --chart-1: var(--_apps---charts--chart-1);
   --chart-2: var(--_apps---charts--chart-2);
   --chart-3: var(--_apps---charts--chart-3);
@@ -111,6 +113,9 @@
 }
 
 .dark {
+  --primary: #f5b44c;
+  --primary-foreground: #241300;
+  --ring: #f7c978;
   --body-font: var(--_apps---typography--body-font);
   --heading-font: var(--_apps---typography--heading-font);
   --button-font: var(--_apps---typography--button-font);
@@ -125,8 +130,6 @@
   --popover-foreground: var(
     --_apps---colors--popover-foreground-dark
   );
-  --primary: var(--_apps---colors--primary-dark);
-  --primary-foreground: var(--_apps---colors--primary-foreground-dark);
   --secondary: var(--_apps---colors--secondary-dark);
   --secondary-foreground: var(
     --_apps---colors--secondary-foreground-dark
@@ -140,7 +143,6 @@
   --destructive: var(--_apps---colors--destructive-dark);
   --border: var(--_apps---colors--border-dark);
   --input: var(--_apps---colors--input-dark);
-  --ring: var(--_apps---colors--ring-dark);
   --chart-1: var(--_apps---charts--chart-1-dark);
   --chart-2: var(--_apps---charts--chart-2-dark);
   --chart-3: var(--_apps---charts--chart-3-dark);

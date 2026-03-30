@@ -331,7 +331,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Player precedente
               </Button>
-              <Button onClick={handleNext} disabled={selectedPlayerIndex === players.length - 1} size="sm" className="w-full shadow-[0_0_20px_rgba(100,180,255,0.22)] hover:shadow-[0_0_28px_rgba(100,180,255,0.32)] sm:w-auto">
+              <Button onClick={handleNext} disabled={selectedPlayerIndex === players.length - 1} size="sm" className="w-full shadow-[0_0_20px_rgba(245,180,76,0.22)] hover:shadow-[0_0_28px_rgba(245,180,76,0.34)] sm:w-auto">
                 Player successivo
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -413,7 +413,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                 />
 
                 {showSuggestions && suggestions.length > 0 && (
-                  <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-[24px] border border-cyan-200/35 bg-sky-100/92 shadow-[0_0_30px_rgba(100,180,255,0.18)] backdrop-blur-xl">
+                  <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-[24px] border border-amber-200/45 bg-amber-50/95 shadow-[0_0_30px_rgba(245,180,76,0.16)] backdrop-blur-xl">
                     <div className="border-b border-black/10 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black/55">
                       Giocatori simili
                     </div>
@@ -568,7 +568,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  className="group w-full rounded-[20px] border border-cyan-200/45 bg-primary px-5 py-3.5 text-center text-[clamp(0.86rem,0.82rem+0.2vw,1rem)] font-semibold text-primary-foreground shadow-[0_0_28px_rgba(100,180,255,0.28)] transition hover:shadow-[0_0_36px_rgba(100,180,255,0.38)] sm:rounded-[24px] sm:py-4 sm:text-base"
+                  className="group w-full rounded-[20px] border border-amber-200/55 bg-primary px-5 py-3.5 text-center text-[clamp(0.86rem,0.82rem+0.2vw,1rem)] font-semibold text-primary-foreground shadow-[0_0_28px_rgba(245,180,76,0.28)] transition hover:shadow-[0_0_36px_rgba(245,180,76,0.38)] sm:rounded-[24px] sm:py-4 sm:text-base"
                 >
                   <span className="inline-flex items-center gap-2">
                     <span>Prosegui alla configurazione</span>

@@ -322,7 +322,7 @@ export default function GameResultsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="!top-2 !w-[calc(100vw-0.75rem)] !max-w-[calc(100vw-0.75rem)] !translate-y-0 max-h-[calc(100vh-1rem)] overflow-y-auto border-cyan-300/55 bg-[linear-gradient(180deg,rgba(235,248,255,0.98)_0%,rgba(220,240,252,0.96)_100%)] p-3 sm:!top-4 sm:!w-full sm:!max-w-[calc(100vw-1.5rem)] sm:max-h-[calc(100vh-2rem)] sm:p-6 shadow-[0_20px_70px_rgba(20,140,220,0.22)]">
+      <DialogContent className="!top-2 !w-[calc(100vw-0.75rem)] !max-w-[calc(100vw-0.75rem)] !translate-y-0 max-h-[calc(100vh-1rem)] overflow-y-auto border-amber-300/55 bg-[linear-gradient(180deg,rgba(255,249,238,0.98)_0%,rgba(248,238,218,0.96)_100%)] p-3 sm:!top-4 sm:!w-full sm:!max-w-[calc(100vw-1.5rem)] sm:max-h-[calc(100vh-2rem)] sm:p-6 shadow-[0_20px_70px_rgba(176,120,20,0.18)]">
         <DialogHeader className="gap-3 pb-1">
           <DialogTitle className="flex items-center gap-2 text-slate-950">
             <ModeIcon mode={match.mode ?? 'slayer'} className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
@@ -333,7 +333,7 @@ export default function GameResultsDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="rounded-[22px] border border-cyan-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(243,251,255,0.78)_100%)] p-3 sm:rounded-[30px] sm:p-6 md:p-8 shadow-[0_16px_44px_rgba(70,170,240,0.14)] backdrop-blur-sm">
+        <div className="rounded-[22px] border border-amber-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(255,248,236,0.78)_100%)] p-3 sm:rounded-[30px] sm:p-6 md:p-8 shadow-[0_16px_44px_rgba(176,120,20,0.12)] backdrop-blur-sm">
           <div className="mb-5 sm:mb-8">
             <div className="grid items-center gap-3 sm:gap-4 md:grid-cols-[1fr_auto_1fr]">
               <TeamSideSummary team={match.team1} wins={team1Wins} align="right" />
@@ -349,7 +349,7 @@ export default function GameResultsDialog({
 
           {activeGame && (
             <div className="space-y-4">
-              <div className="flex flex-col gap-3 rounded-[20px] border border-cyan-100/80 bg-white/72 px-3 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-4">
+              <div className="flex flex-col gap-3 rounded-[20px] border border-amber-100/80 bg-white/72 px-3 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-4">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 sm:text-sm sm:tracking-[0.18em]">
                   Game {activeGame.gameNumber} di {visibleGames.length}
                 </div>
@@ -361,10 +361,10 @@ export default function GameResultsDialog({
                       onClick={() => setCurrentGameIndex(index)}
                       className={`rounded-full border px-2 py-1.5 text-center text-[10px] font-semibold transition sm:px-3 sm:py-1.5 sm:text-xs ${
                         index === safeGameIndex
-                          ? 'border-cyan-400/70 bg-cyan-200/35 text-slate-950 shadow-[0_0_16px_rgba(30,190,255,0.22)]'
+                          ? 'border-amber-400/70 bg-amber-200/35 text-slate-950 shadow-[0_0_16px_rgba(245,180,76,0.22)]'
                           : game.winner
-                          ? 'border-cyan-300/80 bg-cyan-100/90 text-slate-800'
-                          : 'border-cyan-100/80 bg-white/78 text-slate-600 hover:border-cyan-300/70 hover:text-slate-900'
+                          ? 'border-amber-300/80 bg-amber-100/90 text-slate-800'
+                          : 'border-amber-100/80 bg-white/78 text-slate-600 hover:border-amber-300/70 hover:text-slate-900'
                       }`}
                     >
                       Game {game.gameNumber}
@@ -391,7 +391,7 @@ export default function GameResultsDialog({
                   variant="ghost"
                   onClick={() => setCurrentGameIndex((current) => Math.max(current - 1, 0))}
                   disabled={!canGoBackGame}
-                  className="w-full text-slate-700 hover:bg-cyan-100/70 hover:text-slate-950 sm:w-auto"
+                  className="w-full text-slate-700 hover:bg-amber-100/70 hover:text-slate-950 sm:w-auto"
                 >
                   Indietro
                 </Button>
@@ -407,7 +407,7 @@ export default function GameResultsDialog({
                   variant="ghost"
                   onClick={() => setCurrentGameIndex((current) => Math.min(current + 1, visibleGames.length - 1))}
                   disabled={!canGoForwardGame}
-                  className="w-full text-slate-700 hover:bg-cyan-100/70 hover:text-slate-950 sm:w-auto"
+                  className="w-full text-slate-700 hover:bg-amber-100/70 hover:text-slate-950 sm:w-auto"
                 >
                   Avanti
                 </Button>
@@ -423,7 +423,7 @@ export default function GameResultsDialog({
           )}
 
           {seriesResult && (
-            <div className="mt-6 rounded-[20px] border border-primary/25 bg-[linear-gradient(180deg,rgba(120,190,255,0.18)_0%,rgba(100,180,255,0.08)_100%)] px-4 py-3 text-center shadow-[0_0_24px_rgba(100,180,255,0.12)] sm:rounded-[24px] sm:px-5 sm:py-4">
+            <div className="mt-6 rounded-[20px] border border-primary/25 bg-[linear-gradient(180deg,rgba(245,180,76,0.18)_0%,rgba(245,180,76,0.08)_100%)] px-4 py-3 text-center shadow-[0_0_24px_rgba(245,180,76,0.12)] sm:rounded-[24px] sm:px-5 sm:py-4">
               <div className="mb-1 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600 sm:text-xs sm:tracking-[0.18em]">
                 <Crown className="h-4 w-4 text-primary" />
                 <span>Vincitore serie</span>
@@ -446,7 +446,7 @@ export default function GameResultsDialog({
             onClick={handleSubmit}
             disabled={!seriesResult}
             size="lg"
-            className="w-full shadow-[0_0_28px_rgba(30,190,255,0.26)] hover:shadow-[0_0_34px_rgba(30,190,255,0.34)] sm:w-auto"
+            className="w-full shadow-[0_0_28px_rgba(245,180,76,0.24)] hover:shadow-[0_0_34px_rgba(245,180,76,0.34)] sm:w-auto"
           >
             Conferma risultati serie
           </Button>
@@ -546,7 +546,7 @@ function GameSection({
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3 sm:mb-6">
         <div className="space-y-3">
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 sm:text-sm sm:tracking-[0.18em]">Game {game.gameNumber}</div>
-          <div className="inline-flex flex-wrap items-center gap-1.5 rounded-[16px] border border-cyan-200/70 bg-[linear-gradient(180deg,rgba(235,250,255,0.96)_0%,rgba(222,245,255,0.88)_100%)] px-2.5 py-2 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-800 shadow-[0_8px_20px_rgba(30,190,255,0.10)] sm:gap-2 sm:rounded-[18px] sm:px-4 sm:py-3 sm:text-base sm:tracking-[0.12em] md:text-lg">
+          <div className="inline-flex flex-wrap items-center gap-1.5 rounded-[16px] border border-amber-200/70 bg-[linear-gradient(180deg,rgba(255,250,240,0.96)_0%,rgba(255,243,214,0.88)_100%)] px-2.5 py-2 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-800 shadow-[0_8px_20px_rgba(245,180,76,0.1)] sm:gap-2 sm:rounded-[18px] sm:px-4 sm:py-3 sm:text-base sm:tracking-[0.12em] md:text-lg">
             <ModeIcon mode={game.mode} className="h-[15px] w-[15px] sm:h-4 sm:w-4" />
             <span>{getGameModeDisplay(game.mode)}</span>
             {game.mode === 'slayer' && <span>Limite {killLimit}</span>}
@@ -578,7 +578,7 @@ function GameSection({
           {game.mode === 'slayer' && (
             <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-200/80">
               <div
-                className="h-full rounded-full bg-[linear-gradient(90deg,rgba(34,211,238,0.95)_0%,rgba(59,130,246,0.95)_100%)] transition-all"
+                className="h-full rounded-full bg-[linear-gradient(90deg,rgba(245,180,76,0.95)_0%,rgba(217,119,6,0.95)_100%)] transition-all"
                 style={{ width: `${Math.max(team1Progress ?? 0, team2Progress ?? 0)}%` }}
               />
             </div>
@@ -658,7 +658,7 @@ function GameSection({
         <Button
           onClick={() => onConfirmResult(gameIndex)}
           size="lg"
-          className="w-full justify-center text-[clamp(0.9rem,0.86rem+0.2vw,1rem)] shadow-[0_0_30px_rgba(100,180,255,0.28)] sm:min-w-[300px] sm:w-auto"
+          className="w-full justify-center text-[clamp(0.9rem,0.86rem+0.2vw,1rem)] shadow-[0_0_30px_rgba(245,180,76,0.26)] hover:shadow-[0_0_38px_rgba(245,180,76,0.36)] sm:min-w-[300px] sm:w-auto"
         >
           Conferma risultato
         </Button>
@@ -691,8 +691,8 @@ function TeamEditor({
     <div
       className={`rounded-[18px] border p-3 sm:rounded-[22px] sm:p-4 ${
         isLeading
-          ? 'border-cyan-400/55 bg-[linear-gradient(180deg,rgba(95,220,255,0.18)_0%,rgba(95,220,255,0.08)_100%)]'
-          : 'border-cyan-100/80 bg-white/72'
+          ? 'border-amber-400/55 bg-[linear-gradient(180deg,rgba(245,180,76,0.18)_0%,rgba(245,180,76,0.08)_100%)]'
+          : 'border-amber-100/80 bg-white/72'
       }`}
     >
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
@@ -709,9 +709,9 @@ function TeamEditor({
       <div className="mb-4">
         <div className="h-2.5 overflow-hidden rounded-full bg-slate-200/80">
           <div
-            className={`h-full rounded-full bg-[linear-gradient(90deg,rgba(34,211,238,0.95)_0%,rgba(59,130,246,0.95)_100%)] transition-all ${
-              isHot ? 'shadow-[0_0_18px_rgba(34,211,238,0.35)]' : ''
-            } ${isMatchPoint ? 'shadow-[0_0_24px_rgba(34,211,238,0.48)] brightness-110' : ''}`}
+            className={`h-full rounded-full bg-[linear-gradient(90deg,rgba(245,180,76,0.95)_0%,rgba(217,119,6,0.95)_100%)] transition-all ${
+              isHot ? 'shadow-[0_0_18px_rgba(245,180,76,0.35)]' : ''
+            } ${isMatchPoint ? 'shadow-[0_0_24px_rgba(245,180,76,0.48)] brightness-110' : ''}`}
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -721,7 +721,7 @@ function TeamEditor({
         {team.players.map((player) => (
           <div
             key={player.id}
-            className="grid gap-3 rounded-[18px] border border-cyan-100/80 bg-white px-3 py-3 shadow-sm transition hover:border-cyan-300/80 hover:shadow-[0_8px_18px_rgba(30,190,255,0.14)] sm:grid-cols-[minmax(160px,1fr)_auto] sm:items-center sm:px-4 sm:py-3.5"
+            className="grid gap-3 rounded-[18px] border border-amber-100/80 bg-white px-3 py-3 shadow-sm transition hover:border-amber-300/80 hover:shadow-[0_8px_18px_rgba(245,180,76,0.14)] sm:grid-cols-[minmax(160px,1fr)_auto] sm:items-center sm:px-4 sm:py-3.5"
           >
             <div className="min-w-0 pr-2">
               <div className="text-[clamp(0.84rem,0.8rem+0.18vw,1rem)] font-semibold leading-tight text-slate-950 sm:text-base">{player.name}</div>
@@ -760,8 +760,8 @@ function ObjectiveEditor({
     <div
       className={`rounded-[18px] border p-3.5 sm:rounded-[22px] sm:p-5 ${
         isLeading
-          ? 'border-cyan-400/55 bg-[linear-gradient(180deg,rgba(95,220,255,0.18)_0%,rgba(95,220,255,0.08)_100%)]'
-          : 'border-cyan-100/80 bg-white/72'
+          ? 'border-amber-400/55 bg-[linear-gradient(180deg,rgba(245,180,76,0.18)_0%,rgba(245,180,76,0.08)_100%)]'
+          : 'border-amber-100/80 bg-white/72'
       }`}
     >
       <div className="mb-4">
@@ -797,7 +797,7 @@ function Stepper({
 
   return (
     <div
-      className={`inline-flex items-center rounded-full border border-cyan-300/80 bg-[linear-gradient(180deg,#ffffff_0%,#e9fbff_100%)] shadow-[0_10px_24px_rgba(30,190,255,0.14)] ${
+      className={`inline-flex items-center rounded-full border border-amber-300/80 bg-[linear-gradient(180deg,#ffffff_0%,#fff4dd_100%)] shadow-[0_10px_24px_rgba(245,180,76,0.14)] ${
         large ? 'px-1.5 py-1.5 sm:px-2 sm:py-2' : compact ? 'px-1 py-1' : 'px-1 py-1 sm:px-1.5 sm:py-1.5'
       }`}
     >
@@ -835,7 +835,7 @@ function StepperButton({
       type="button"
       aria-label={ariaLabel}
       onClick={onClick}
-      className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-300/80 bg-[linear-gradient(180deg,#f4fdff_0%,#dff7ff_100%)] text-slate-800 transition hover:border-cyan-400 hover:bg-white hover:text-slate-950 hover:shadow-[0_0_18px_rgba(30,190,255,0.24)] focus-visible:border-cyan-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-300/25 sm:h-8 sm:w-8"
+      className="flex h-8 w-8 items-center justify-center rounded-full border border-amber-300/80 bg-[linear-gradient(180deg,#fffaf0_0%,#ffe9b8_100%)] text-slate-800 transition hover:border-amber-400 hover:bg-white hover:text-slate-950 hover:shadow-[0_0_18px_rgba(245,180,76,0.24)] focus-visible:border-amber-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/25 sm:h-8 sm:w-8"
     >
       {children}
     </button>

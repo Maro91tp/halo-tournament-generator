@@ -218,7 +218,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
           <ArrowLeft className="mr-2 h-4 w-4" />
           Indietro
         </Button>
-        <Button onClick={handleSubmit} size="lg" className="w-full shadow-[0_0_28px_rgba(100,180,255,0.3)] hover:shadow-[0_0_38px_rgba(100,180,255,0.4)] sm:min-w-44 sm:w-auto">
+        <Button onClick={handleSubmit} size="lg" className="w-full shadow-[0_0_28px_rgba(245,180,76,0.28)] hover:shadow-[0_0_38px_rgba(245,180,76,0.38)] sm:min-w-44 sm:w-auto">
           Continua
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
@@ -271,8 +271,8 @@ function TeamCreationCard({ id, value, selected, title, description, detail, ico
       htmlFor={id}
       className={`glass-card flex min-h-[160px] cursor-pointer flex-col justify-between rounded-[18px] p-4 sm:min-h-[210px] sm:rounded-[24px] sm:p-6 transition-all ${
         selected
-          ? 'border-primary ring-2 ring-primary/25 shadow-[0_0_0_1px_rgba(255,255,255,0.3),0_0_35px_rgba(100,180,255,0.2)]'
-          : 'hover:border-primary/50 hover:shadow-[0_0_24px_rgba(100,180,255,0.14)]'
+          ? 'border-primary ring-2 ring-primary/25 shadow-[0_0_0_1px_rgba(255,255,255,0.3),0_0_35px_rgba(245,180,76,0.18)]'
+          : 'hover:border-primary/50 hover:shadow-[0_0_24px_rgba(245,180,76,0.12)]'
       }`}
     >
       <div className="flex items-start justify-between gap-4">

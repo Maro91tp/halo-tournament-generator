@@ -43,30 +43,30 @@ export default function TournamentVictoryScreen({
 
   return (
     <div className="w-full space-y-6 sm:space-y-8">
-      <section className="relative overflow-hidden rounded-[28px] border border-cyan-300/30 bg-[radial-gradient(circle_at_top,rgba(80,220,255,0.34),transparent_36%),linear-gradient(180deg,rgba(6,24,54,0.96)_0%,rgba(6,14,40,0.98)_100%)] px-4 py-8 shadow-[0_0_80px_rgba(34,211,238,0.24)] sm:px-6 sm:py-12 md:rounded-[40px] md:px-12 md:py-16">
+      <section className="relative overflow-hidden rounded-[28px] border border-amber-300/30 bg-[radial-gradient(circle_at_top,rgba(245,180,76,0.28),transparent_36%),linear-gradient(180deg,rgba(36,20,0,0.96)_0%,rgba(14,10,24,0.98)_100%)] px-4 py-8 shadow-[0_0_80px_rgba(245,180,76,0.22)] sm:px-6 sm:py-12 md:rounded-[40px] md:px-12 md:py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_55%)]" />
         <div className="relative flex flex-col items-center text-center">
-          <div className="mb-5 flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full border border-cyan-300/45 bg-cyan-300/10 shadow-[0_0_44px_rgba(34,211,238,0.32)] motion-safe:animate-pulse sm:h-28 sm:w-28">
+          <div className="mb-5 flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full border border-amber-300/45 bg-amber-300/10 shadow-[0_0_44px_rgba(245,180,76,0.3)] motion-safe:animate-pulse sm:h-28 sm:w-28">
             <img
               src="/halo-cup.svg"
               alt="Coppa Halo"
-              className="h-10 w-10 object-contain drop-shadow-[0_0_26px_rgba(34,211,238,0.38)] sm:h-16 sm:w-16"
+              className="h-10 w-10 object-contain drop-shadow-[0_0_26px_rgba(245,180,76,0.34)] sm:h-16 sm:w-16"
             />
           </div>
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-cyan-300/35 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-100 sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.22em]">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-300/35 bg-amber-300/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-100 sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.22em]">
             <Sparkles className="h-4 w-4" />
             <span>Campione del torneo</span>
           </div>
-          <h1 className="text-[clamp(2rem,1.45rem+3vw,4.6rem)] font-bold font-heading text-white drop-shadow-[0_0_26px_rgba(34,211,238,0.16)] md:text-7xl">
+          <h1 className="text-[clamp(2rem,1.45rem+3vw,4.6rem)] font-bold font-heading text-white drop-shadow-[0_0_26px_rgba(245,180,76,0.16)] md:text-7xl">
             {tournament.winner.name}
           </h1>
-          <p className="mt-4 max-w-3xl text-[clamp(0.95rem,0.9rem+0.3vw,1.2rem)] font-medium text-cyan-50/88 md:text-xl">
+          <p className="mt-4 max-w-3xl text-[clamp(0.95rem,0.9rem+0.3vw,1.2rem)] font-medium text-amber-50/88 md:text-xl">
             {heroSubtitle}
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-2 text-white/80 sm:mt-7 sm:gap-3">
-            <HeroChip icon={<Trophy className="h-4 w-4 text-cyan-200" />} text={`${winnerStats.seriesWins} match vinti`} />
-            <HeroChip icon={<Swords className="h-4 w-4 text-cyan-200" />} text={`${winnerStats.gameWins} game vinti`} />
-            <HeroChip icon={<Crown className="h-4 w-4 text-cyan-200" />} text={getMatchDurationDisplay(tournament.config.matchDuration)} />
+            <HeroChip icon={<Trophy className="h-4 w-4 text-amber-200" />} text={`${winnerStats.seriesWins} match vinti`} />
+            <HeroChip icon={<Swords className="h-4 w-4 text-amber-200" />} text={`${winnerStats.gameWins} game vinti`} />
+            <HeroChip icon={<Crown className="h-4 w-4 text-amber-200" />} text={getMatchDurationDisplay(tournament.config.matchDuration)} />
           </div>
         </div>
       </section>
@@ -84,13 +84,13 @@ export default function TournamentVictoryScreen({
             <StatTile label="Giocatori" value={String(tournament.winner.players.length)} />
           </div>
 
-          <div className="mt-5 rounded-[22px] border border-cyan-300/32 bg-[linear-gradient(180deg,rgba(95,220,255,0.22)_0%,rgba(95,220,255,0.08)_100%)] p-4 shadow-[0_0_36px_rgba(34,211,238,0.16)] sm:mt-6 sm:rounded-[30px] sm:p-6">
-            <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-100/90 sm:mb-4 sm:text-sm sm:tracking-[0.18em]">
-              <Medal className="h-5 w-5 text-cyan-200 motion-safe:animate-pulse" />
+          <div className="mt-5 rounded-[22px] border border-amber-300/32 bg-[linear-gradient(180deg,rgba(245,180,76,0.2)_0%,rgba(245,180,76,0.08)_100%)] p-4 shadow-[0_0_36px_rgba(245,180,76,0.16)] sm:mt-6 sm:rounded-[30px] sm:p-6">
+            <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-amber-100/90 sm:mb-4 sm:text-sm sm:tracking-[0.18em]">
+              <Medal className="h-5 w-5 text-amber-200 motion-safe:animate-pulse" />
               <span>MVP</span>
             </div>
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-cyan-300/36 bg-black/18 shadow-[0_0_20px_rgba(34,211,238,0.16)] sm:h-16 sm:w-16">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-amber-300/36 bg-black/18 shadow-[0_0_20px_rgba(245,180,76,0.16)] sm:h-16 sm:w-16">
                 <RankIcon rank={winnerStats.mvp.player.rank} className="h-8 w-8 sm:h-10 sm:w-10" />
               </div>
               <div className="min-w-0">
@@ -99,7 +99,7 @@ export default function TournamentVictoryScreen({
                   {winnerStats.mvp.kills} kill • {winnerStats.mvp.gameWins} game vinti
                 </div>
               </div>
-              <div className="ml-auto rounded-full border border-cyan-300/45 bg-cyan-300/18 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-cyan-50 shadow-[0_0_18px_rgba(34,211,238,0.22)] sm:px-4 sm:py-1.5 sm:text-sm sm:tracking-[0.18em]">
+              <div className="ml-auto rounded-full border border-amber-300/45 bg-amber-300/18 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-50 shadow-[0_0_18px_rgba(245,180,76,0.22)] sm:px-4 sm:py-1.5 sm:text-sm sm:tracking-[0.18em]">
                 MVP
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function TournamentVictoryScreen({
                 key={summary.player.id}
                 className={`rounded-[18px] border px-3 py-3.5 sm:rounded-[22px] sm:px-4 sm:py-4 ${
                   summary.player.id === winnerStats.mvp.player.id
-                    ? 'border-cyan-300/40 bg-cyan-300/10 shadow-[0_0_22px_rgba(34,211,238,0.12)]'
+                    ? 'border-amber-300/40 bg-amber-300/10 shadow-[0_0_22px_rgba(245,180,76,0.12)]'
                     : 'border-white/10 bg-black/10'
                 }`}
               >
@@ -132,7 +132,7 @@ export default function TournamentVictoryScreen({
                     </div>
                   </div>
                   {summary.player.id === winnerStats.mvp.player.id && (
-                    <div className="rounded-full border border-cyan-300/40 bg-cyan-300/16 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-cyan-100 shadow-[0_0_16px_rgba(34,211,238,0.18)] sm:px-3 sm:text-xs sm:tracking-[0.16em]">
+                    <div className="rounded-full border border-amber-300/40 bg-amber-300/16 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-100 shadow-[0_0_16px_rgba(245,180,76,0.18)] sm:px-3 sm:text-xs sm:tracking-[0.16em]">
                       MVP
                     </div>
                   )}
@@ -154,7 +154,7 @@ export default function TournamentVictoryScreen({
               key={round.index}
               className={`rounded-[20px] border p-3.5 sm:rounded-[24px] sm:p-4 ${
                 round.index === tournament.rounds.length - 1
-                  ? 'border-cyan-300/28 bg-[linear-gradient(180deg,rgba(95,220,255,0.10)_0%,rgba(10,20,45,0.74)_100%)] shadow-[0_0_24px_rgba(34,211,238,0.12)]'
+                  ? 'border-amber-300/28 bg-[linear-gradient(180deg,rgba(245,180,76,0.1)_0%,rgba(10,20,45,0.74)_100%)] shadow-[0_0_24px_rgba(245,180,76,0.12)]'
                   : 'border-white/10 bg-black/10'
               }`}
             >
@@ -188,7 +188,7 @@ export default function TournamentVictoryScreen({
           <RefreshCcw className="h-4 w-4" />
           Rigioca stesso torneo
         </Button>
-        <Button onClick={onReset} size="lg" className="w-full shadow-[0_0_34px_rgba(34,211,238,0.28)] hover:shadow-[0_0_44px_rgba(34,211,238,0.38)] sm:min-w-44 sm:w-auto">
+        <Button onClick={onReset} size="lg" className="w-full shadow-[0_0_34px_rgba(245,180,76,0.28)] hover:shadow-[0_0_44px_rgba(245,180,76,0.38)] sm:min-w-44 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
           Nuovo torneo
         </Button>
@@ -197,7 +197,7 @@ export default function TournamentVictoryScreen({
       <div className="text-center text-[11px] text-white/55 sm:text-xs">
         Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.
       </div>
-      <div className="text-center text-xs font-semibold tracking-[0.08em] text-cyan-100/80 sm:text-sm sm:tracking-[0.1em]">
+      <div className="text-center text-xs font-semibold tracking-[0.08em] text-amber-100/80 sm:text-sm sm:tracking-[0.1em]">
         Made by MrMarozzo
       </div>
     </div>
@@ -353,11 +353,11 @@ function StatTile({
     <div
       className={`rounded-[18px] border p-3 sm:rounded-[22px] sm:p-4 ${
         highlight
-          ? 'border-cyan-300/30 bg-cyan-300/10 shadow-[0_0_20px_rgba(34,211,238,0.12)]'
+          ? 'border-amber-300/30 bg-amber-300/10 shadow-[0_0_20px_rgba(245,180,76,0.12)]'
           : 'border-white/10 bg-black/10'
       }`}
     >
-      <div className={`text-[11px] font-semibold uppercase tracking-[0.14em] sm:text-xs sm:tracking-[0.16em] ${highlight ? 'text-cyan-100/85' : 'text-white/50'}`}>
+      <div className={`text-[11px] font-semibold uppercase tracking-[0.14em] sm:text-xs sm:tracking-[0.16em] ${highlight ? 'text-amber-100/85' : 'text-white/50'}`}>
         {label}
       </div>
       <div className={`mt-2 font-bold ${highlight ? 'text-3xl text-white sm:text-4xl' : 'text-2xl text-white sm:text-3xl'}`}>
@@ -385,7 +385,7 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
       className={`rounded-[16px] border p-3.5 sm:rounded-[18px] sm:p-4 ${
         match.roundIndex === 0
           ? 'border-white/10 bg-slate-950/28'
-          : 'border-cyan-300/18 bg-[linear-gradient(180deg,rgba(34,211,238,0.08)_0%,rgba(2,6,23,0.34)_100%)] shadow-[0_0_22px_rgba(34,211,238,0.10)]'
+          : 'border-amber-300/18 bg-[linear-gradient(180deg,rgba(245,180,76,0.08)_0%,rgba(2,6,23,0.34)_100%)] shadow-[0_0_22px_rgba(245,180,76,0.1)]'
       }`}
     >
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -401,11 +401,11 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
         <div
           className={`min-w-0 flex-[1_1_220px] rounded-[16px] border px-4 py-3 ${
             winnerIsChampion
-              ? 'border-cyan-300/30 bg-cyan-300/12 shadow-[0_0_20px_rgba(34,211,238,0.14)]'
+              ? 'border-amber-300/30 bg-amber-300/12 shadow-[0_0_20px_rgba(245,180,76,0.14)]'
               : 'border-white/10 bg-white/[0.05]'
           }`}
         >
-          <div className="text-[11px] uppercase tracking-[0.16em] text-cyan-100/70">Vincitore</div>
+          <div className="text-[11px] uppercase tracking-[0.16em] text-amber-100/70">Vincitore</div>
           <div className="mt-1 text-lg font-bold text-white sm:text-xl">
             {winnerTeam?.name ?? match.team1?.name ?? match.team2?.name ?? 'TBD'}
           </div>
@@ -461,7 +461,7 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
                     {mapLabel && <span className="mx-2 text-white/28">•</span>}
                     {mapLabel && <span>{mapLabel}</span>}
                   </div>
-                  <div className="font-semibold text-cyan-100">{scoreLabel}</div>
+                  <div className="font-semibold text-amber-100">{scoreLabel}</div>
                 </div>
               );
             })}
