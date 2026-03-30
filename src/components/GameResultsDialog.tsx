@@ -322,7 +322,12 @@ export default function GameResultsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="!top-2 !w-[calc(100vw-0.75rem)] !max-w-[calc(100vw-0.75rem)] !translate-y-0 max-h-[calc(100vh-1rem)] overflow-y-auto border-amber-300/55 bg-[linear-gradient(180deg,rgba(255,249,238,0.98)_0%,rgba(248,238,218,0.96)_100%)] p-3 sm:!top-4 sm:!w-full sm:!max-w-[calc(100vw-1.5rem)] sm:max-h-[calc(100vh-2rem)] sm:p-6 shadow-[0_20px_70px_rgba(176,120,20,0.18)]">
+      <DialogContent
+        className="!top-1.5 !w-[calc(100vw-0.5rem)] !max-w-[calc(100vw-0.5rem)] !translate-y-0 overflow-y-auto overscroll-contain border-amber-300/55 bg-[linear-gradient(180deg,rgba(255,249,238,0.98)_0%,rgba(248,238,218,0.96)_100%)] p-2.5 sm:!top-4 sm:!w-full sm:!max-w-[calc(100vw-1.5rem)] sm:p-6 shadow-[0_20px_70px_rgba(176,120,20,0.18)]"
+        style={{
+          maxHeight: 'calc(100dvh - 0.75rem)',
+        }}
+      >
         <DialogHeader className="gap-3 pb-1">
           <DialogTitle className="flex items-center gap-2 text-slate-950">
             <ModeIcon mode={match.mode ?? 'slayer'} className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
