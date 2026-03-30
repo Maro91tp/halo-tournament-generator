@@ -214,11 +214,11 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
       </div>
 
       <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-between">
-        <Button onClick={onBack} variant="outline" size="lg" className="w-full sm:w-auto">
+        <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/65 hover:text-white sm:w-auto">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Indietro
         </Button>
-        <Button onClick={handleSubmit} size="lg" className="w-full sm:min-w-32 sm:w-auto">
+        <Button onClick={handleSubmit} size="lg" className="w-full shadow-[0_0_28px_rgba(100,180,255,0.3)] hover:shadow-[0_0_38px_rgba(100,180,255,0.4)] sm:min-w-44 sm:w-auto">
           Continua
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>

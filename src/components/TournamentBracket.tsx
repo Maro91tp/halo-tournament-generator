@@ -158,7 +158,7 @@ export default function TournamentBracket({
                 <Button
                   onClick={() => handleMatchClick(nextPlayableMatch)}
                   size="lg"
-                  className="mt-4 w-full justify-center"
+                  className="mt-4 w-full justify-center shadow-[0_0_30px_rgba(100,180,255,0.3)] hover:shadow-[0_0_40px_rgba(100,180,255,0.42)]"
                 >
                   Registra risultato
                   <ChevronRight className="h-4 w-4" />
@@ -261,11 +261,11 @@ export default function TournamentBracket({
       />
 
       <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-        <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/74 sm:w-auto">
+        <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/60 hover:text-white sm:w-auto">
           <ArrowLeft className="h-4 w-4" />
           Modifica squadre
         </Button>
-        <Button onClick={onReset} variant="outline" size="lg" className="w-full text-white/74 sm:w-auto">
+        <Button onClick={onReset} variant="outline" size="lg" className="w-full border-white/18 text-white/70 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
           Nuovo torneo
         </Button>

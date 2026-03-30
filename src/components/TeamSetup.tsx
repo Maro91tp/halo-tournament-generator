@@ -374,7 +374,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
       </div>
 
       <div className="flex justify-start pt-1">
-        <Button onClick={onBack} variant="outline" size="lg" className="w-full sm:w-auto">
+        <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/65 hover:text-white sm:w-auto">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Indietro
         </Button>

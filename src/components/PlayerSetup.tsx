@@ -327,11 +327,11 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h3 className="text-[clamp(1.1rem,1rem+0.7vw,1.4rem)] font-bold">Giocatore {selectedPlayerIndex + 1}</h3>
             <div className="flex flex-col gap-2 sm:flex-row">
-              <Button onClick={handlePrevious} disabled={selectedPlayerIndex === 0} variant="outline" size="sm" className="w-full sm:w-auto">
+              <Button onClick={handlePrevious} disabled={selectedPlayerIndex === 0} variant="ghost" size="sm" className="w-full text-white/65 hover:text-white sm:w-auto">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Player precedente
               </Button>
-              <Button onClick={handleNext} disabled={selectedPlayerIndex === players.length - 1} variant="outline" size="sm" className="w-full sm:w-auto">
+              <Button onClick={handleNext} disabled={selectedPlayerIndex === players.length - 1} size="sm" className="w-full shadow-[0_0_20px_rgba(100,180,255,0.22)] hover:shadow-[0_0_28px_rgba(100,180,255,0.32)] sm:w-auto">
                 Player successivo
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -611,7 +611,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
       </Card>
 
       <div className="flex justify-start pt-1">
-        <Button onClick={onBack} variant="outline" size="lg" className="w-full sm:w-auto">
+        <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/65 hover:text-white sm:w-auto">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Indietro
         </Button>

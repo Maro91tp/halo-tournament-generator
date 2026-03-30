@@ -180,15 +180,15 @@ export default function TournamentVictoryScreen({
       </Card>
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-        <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/86 sm:w-auto">
+        <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/60 hover:text-white sm:w-auto">
           <ArrowLeft className="h-4 w-4" />
           Indietro
         </Button>
-        <Button onClick={onReplay} variant="outline" size="lg" className="w-full text-white/86 sm:w-auto">
+        <Button onClick={onReplay} variant="outline" size="lg" className="w-full border-white/18 text-white/74 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
           Rigioca stesso torneo
         </Button>
-        <Button onClick={onReset} size="lg" className="w-full shadow-[0_0_28px_rgba(34,211,238,0.20)] sm:w-auto">
+        <Button onClick={onReset} size="lg" className="w-full shadow-[0_0_34px_rgba(34,211,238,0.28)] hover:shadow-[0_0_44px_rgba(34,211,238,0.38)] sm:min-w-44 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
           Nuovo torneo
         </Button>
