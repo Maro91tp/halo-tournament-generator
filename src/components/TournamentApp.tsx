@@ -68,14 +68,14 @@ export default function TournamentApp() {
         setConfig(saved.config);
         setTeams(saved.teams);
         setTournament(saved.tournament);
-        setStep('bracket');
+        setStep(saved.step);
       }
     }
   }, []);
 
   useEffect(() => {
-    if (step === 'bracket' && tournament && config && players.length > 0 && teams.length > 0) {
-      saveTournamentState(players, config, teams, tournament);
+    if (step !== 'welcome') {
+      saveTournamentState(step, players, config, teams, tournament);
       setLastSaved(new Date());
     }
   }, [tournament, step, config, players, teams]);

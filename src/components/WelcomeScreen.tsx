@@ -158,22 +158,22 @@ export default function WelcomeScreen({
         </div>
 
         <div
-          className="mt-7 rounded-[20px] border border-cyan-200/28 p-4 sm:mt-8 sm:rounded-[24px] sm:p-6"
+          className="mt-7 rounded-[20px] border border-cyan-200/20 px-3 py-3 sm:mt-8 sm:rounded-[24px] sm:px-5 sm:py-5"
           style={{
-            background: 'linear-gradient(180deg, rgba(30, 80, 160, 0.30) 0%, rgba(20, 60, 140, 0.45) 100%)',
+            background: 'linear-gradient(180deg, rgba(28, 78, 150, 0.34) 0%, rgba(15, 48, 104, 0.52) 100%)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
-            boxShadow: '0 0 20px rgba(100, 180, 255, 0.10), inset 0 0.5px 0 rgba(255, 255, 255, 0.06)',
+            boxShadow: '0 0 22px rgba(100, 180, 255, 0.14), inset 0 0.5px 0 rgba(255, 255, 255, 0.08)',
           }}
         >
-          <div className="mb-4 text-center sm:mb-6">
+          <div className="mb-3 text-center sm:mb-4">
             <p
               style={{
                 fontFamily: "'Oxanium', sans-serif",
-                letterSpacing: '0.14em',
+                letterSpacing: '0.12em',
                 fontSize: '11px',
                 fontWeight: 600,
-                color: 'rgba(200, 220, 255, 0.75)',
+                color: 'rgba(200, 220, 255, 0.68)',
                 textTransform: 'uppercase',
                 margin: 0,
               }}
@@ -182,43 +182,45 @@ export default function WelcomeScreen({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
             {featureItems.map((item) => (
               <div
                 key={item.title}
-                className="glass-card flex min-h-0 flex-col items-center justify-center gap-1.5 rounded-[18px] p-3.5 text-center sm:min-h-40 sm:gap-0 sm:rounded-[24px] sm:p-6"
+                className="flex items-center gap-3 rounded-[16px] border border-cyan-200/18 bg-[linear-gradient(180deg,rgba(255,255,255,0.09)_0%,rgba(255,255,255,0.04)_100%)] px-3 py-2.5 text-left shadow-[0_0_14px_rgba(100,180,255,0.08)] sm:rounded-[18px] sm:px-4 sm:py-3"
               >
-                <item.Icon className="mb-1 h-6 w-6 text-[#64B4FF] sm:mb-4 sm:h-9 sm:w-9" />
-                <div
-                  style={{
-                    fontFamily: "'Oxanium', sans-serif",
-                    fontWeight: 700,
-                    fontSize: '13px',
-                    color: '#FFFFFF',
-                    letterSpacing: '0.06em',
-                    textAlign: 'center',
-                    margin: 0,
-                  }}
-                >
-                  {item.title}
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-300/28 bg-cyan-300/14 sm:h-9 sm:w-9">
+                  <item.Icon className="h-4 w-4 text-[#64B4FF] sm:h-5 sm:w-5" />
                 </div>
-                <div
-                  style={{
-                    fontFamily: "'Oxanium', sans-serif",
-                    fontSize: '11px',
-                    fontWeight: 400,
-                    color: 'rgba(200, 220, 255, 0.80)',
-                    marginTop: '2px',
-                    textAlign: 'center',
-                  }}
-                >
-                  {item.subtitle}
+                <div className="min-w-0">
+                  <div
+                    style={{
+                      fontFamily: "'Oxanium', sans-serif",
+                      fontWeight: 700,
+                      fontSize: '12px',
+                      color: '#FFFFFF',
+                      letterSpacing: '0.05em',
+                      margin: 0,
+                    }}
+                  >
+                    {item.title}
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "'Oxanium', sans-serif",
+                      fontSize: '10px',
+                      fontWeight: 400,
+                      color: 'rgba(216, 232, 255, 0.84)',
+                      marginTop: '2px',
+                    }}
+                  >
+                    {item.subtitle}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-5 text-center text-[11px] text-white/55 sm:mt-8 sm:text-xs">
+          <div className="mt-4 text-center text-[10px] text-white/58 sm:mt-5 sm:text-[11px]">
             Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.
           </div>
         </div>
