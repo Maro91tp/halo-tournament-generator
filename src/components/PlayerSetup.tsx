@@ -178,6 +178,13 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         return;
       }
 
+      const firstIncompleteIndex = players.findIndex((player) => !isPlayerComplete(player));
+      if (firstIncompleteIndex !== -1) {
+        setSelectedPlayerIndex(firstIncompleteIndex);
+        setShowSuggestions(false);
+        return;
+      }
+
       handleSubmit();
     }
   };
@@ -201,15 +208,6 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
       }
     });
     onComplete(players);
-  };
-
-  const handleProgressCta = () => {
-    if (selectedPlayerIndex < players.length - 1) {
-      handleNext();
-      return;
-    }
-
-    handleSubmit();
   };
 
   const handleNext = () => {
@@ -238,6 +236,8 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     !!currentPlayerAlreadyStored &&
     (currentPlayerAlreadyStored.rank.tier !== currentPlayer.rank.tier ||
       currentPlayerAlreadyStored.rank.level !== currentPlayer.rank.level);
+  const completedPlayersCount = players.filter(isPlayerComplete).length;
+  const allPlayersComplete = completedPlayersCount === players.length;
 
   return (
     <div className="app-section flex w-full flex-col">
@@ -249,6 +249,9 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         <p className="app-subtitle mb-5 text-muted-foreground sm:mb-6">
           Inserisci il numero di giocatori e i loro dati. Usa ENTER per passare al successivo.
         </p>
+        <div className="rounded-[18px] border border-white/10 bg-black/10 px-3 py-3 text-[clamp(0.74rem,0.7rem+0.16vw,0.88rem)] text-white/72 sm:px-4">
+          I pulsanti "Player precedente" e "Player successivo" cambiano solo la scheda giocatore. Il pulsante per proseguire allo step seguente compare solo quando tutti i player sono completi.
+        </div>
       </div>
 
       <div className="mb-6">
@@ -326,10 +329,10 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
             <div className="flex flex-col gap-2 sm:flex-row">
               <Button onClick={handlePrevious} disabled={selectedPlayerIndex === 0} variant="outline" size="sm" className="w-full sm:w-auto">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Precedente
+                Player precedente
               </Button>
               <Button onClick={handleNext} disabled={selectedPlayerIndex === players.length - 1} variant="outline" size="sm" className="w-full sm:w-auto">
-                Successivo
+                Player successivo
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
@@ -560,18 +563,20 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
               </div>
             </Card>
 
-            <div>
-              <button
-                type="button"
-                onClick={handleProgressCta}
-                className="group w-full rounded-[20px] border border-cyan-200/45 bg-primary px-5 py-3.5 text-center text-[clamp(0.86rem,0.82rem+0.2vw,1rem)] font-semibold text-primary-foreground shadow-[0_0_28px_rgba(100,180,255,0.28)] transition hover:shadow-[0_0_36px_rgba(100,180,255,0.38)] sm:rounded-[24px] sm:py-4 sm:text-base"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <span>{selectedPlayerIndex < players.length - 1 ? 'Prosegui' : 'Continua'}</span>
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </span>
-              </button>
-            </div>
+            {allPlayersComplete && (
+              <div>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="group w-full rounded-[20px] border border-cyan-200/45 bg-primary px-5 py-3.5 text-center text-[clamp(0.86rem,0.82rem+0.2vw,1rem)] font-semibold text-primary-foreground shadow-[0_0_28px_rgba(100,180,255,0.28)] transition hover:shadow-[0_0_36px_rgba(100,180,255,0.38)] sm:rounded-[24px] sm:py-4 sm:text-base"
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <span>Prosegui alla configurazione</span>
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </button>
+              </div>
+            )}
           </div>
         </Card>
       </div>
@@ -580,18 +585,23 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] font-semibold uppercase tracking-[0.14em] sm:text-sm sm:tracking-normal">
-              Progresso: {players.filter(isPlayerComplete).length} / {players.length} giocatori completati
+              Progresso: {completedPlayersCount} / {players.length} giocatori completati
             </div>
             <div className="mt-2 h-2 w-full max-w-[300px] rounded-full bg-muted">
               <div
                 className="h-2 rounded-full bg-primary transition-all"
                 style={{
-                  width: `${(players.filter(isPlayerComplete).length / players.length) * 100}%`,
+                  width: `${(completedPlayersCount / players.length) * 100}%`,
                 }}
               />
             </div>
+            {!allPlayersComplete && (
+              <div className="mt-3 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-white/65">
+                Completa tutti i player per sbloccare il passaggio allo step successivo.
+              </div>
+            )}
           </div>
-          {players.filter(isPlayerComplete).length === players.length && (
+          {allPlayersComplete && (
             <div className="flex items-center gap-2 text-[clamp(0.82rem,0.78rem+0.18vw,0.95rem)] font-semibold text-primary">
               <CircleCheckBig className="h-4 w-4" />
               <span>Tutti i giocatori pronti!</span>
