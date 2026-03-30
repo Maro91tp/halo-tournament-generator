@@ -147,7 +147,8 @@ export default function TournamentApp() {
   };
 
   const handleBack = () => {
-    if (step === 'config') setStep('players');
+    if (step === 'players') setStep('welcome');
+    else if (step === 'config') setStep('players');
     else if (step === 'teams') setStep('config');
     else if (step === 'bracket') setStep('teams');
   };
@@ -233,7 +234,7 @@ export default function TournamentApp() {
 
         <div className="glass-card flex items-center justify-center overflow-hidden">
           {step === 'players' && (
-            <PlayerSetup onComplete={handlePlayersComplete} initialPlayers={players} />
+            <PlayerSetup onComplete={handlePlayersComplete} onBack={handleBack} initialPlayers={players} />
           )}
 
           {step === 'config' && (

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Crown, Medal, RefreshCcw, Sparkles, Swords, Trophy } from 'lucide-react';
+import { ArrowLeft, Crown, Medal, RefreshCcw, Sparkles, Swords, Trophy } from 'lucide-react';
 import type { Game, Match, Player, Team, Tournament } from '../types/tournament';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -8,6 +8,7 @@ import { RankIcon } from './TournamentIcons';
 
 interface TournamentVictoryScreenProps {
   tournament: Tournament;
+  onBack: () => void;
   onReplay: () => void;
   onReset: () => void;
 }
@@ -30,6 +31,7 @@ interface WinnerStats {
 
 export default function TournamentVictoryScreen({
   tournament,
+  onBack,
   onReplay,
   onReset,
 }: TournamentVictoryScreenProps) {
@@ -178,6 +180,10 @@ export default function TournamentVictoryScreen({
       </Card>
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/86 sm:w-auto">
+          <ArrowLeft className="h-4 w-4" />
+          Indietro
+        </Button>
         <Button onClick={onReplay} variant="outline" size="lg" className="w-full text-white/86 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
           Rigioca stesso torneo

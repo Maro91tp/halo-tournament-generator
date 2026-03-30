@@ -15,10 +15,11 @@ import { RankIcon } from './TournamentIcons';
 
 interface PlayerSetupProps {
   onComplete: (players: Player[]) => void;
+  onBack: () => void;
   initialPlayers: Player[];
 }
 
-export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupProps) {
+export default function PlayerSetup({ onComplete, onBack, initialPlayers }: PlayerSetupProps) {
   const [playerCount, setPlayerCount] = useState<number>(initialPlayers.length || 4);
   const [players, setPlayers] = useState<Player[]>(
     initialPlayers.length > 0
@@ -598,6 +599,13 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
           )}
         </div>
       </Card>
+
+      <div className="flex justify-start pt-1">
+        <Button onClick={onBack} variant="outline" size="lg" className="w-full sm:w-auto">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Indietro
+        </Button>
+      </div>
 
     </div>
   );

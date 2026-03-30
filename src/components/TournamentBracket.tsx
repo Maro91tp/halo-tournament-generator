@@ -74,6 +74,7 @@ export default function TournamentBracket({
     return (
       <TournamentVictoryScreen
         tournament={tournament}
+        onBack={onBack}
         onReplay={onReplay}
         onReset={onReset}
       />
