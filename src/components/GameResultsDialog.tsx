@@ -334,7 +334,7 @@ export default function GameResultsDialog({
         </DialogHeader>
 
         <div className="rounded-[24px] border border-cyan-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(243,251,255,0.78)_100%)] p-3 sm:rounded-[30px] sm:p-6 md:p-8 shadow-[0_16px_44px_rgba(70,170,240,0.14)] backdrop-blur-sm">
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <div className="grid items-center gap-4 md:grid-cols-[1fr_auto_1fr]">
               <TeamSideSummary team={match.team1} wins={team1Wins} align="right" />
               <div className="text-center">
@@ -350,7 +350,7 @@ export default function GameResultsDialog({
           {activeGame && (
             <div className="space-y-4">
               <div className="flex flex-col gap-3 rounded-[22px] border border-cyan-100/80 bg-white/72 px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-                <div className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+                <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-sm sm:tracking-[0.18em]">
                   Game {activeGame.gameNumber} di {visibleGames.length}
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -359,7 +359,7 @@ export default function GameResultsDialog({
                       key={game.gameNumber}
                       type="button"
                       onClick={() => setCurrentGameIndex(index)}
-                      className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                      className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold transition sm:px-3 sm:py-1.5 sm:text-xs ${
                         index === safeGameIndex
                           ? 'border-cyan-400/70 bg-cyan-200/35 text-slate-950 shadow-[0_0_16px_rgba(30,190,255,0.22)]'
                           : game.winner
@@ -423,15 +423,15 @@ export default function GameResultsDialog({
           )}
 
           {seriesResult && (
-            <div className="mt-6 rounded-[24px] border border-primary/25 bg-[linear-gradient(180deg,rgba(120,190,255,0.18)_0%,rgba(100,180,255,0.08)_100%)] px-5 py-4 text-center shadow-[0_0_24px_rgba(100,180,255,0.12)]">
-              <div className="mb-1 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+            <div className="mt-6 rounded-[20px] border border-primary/25 bg-[linear-gradient(180deg,rgba(120,190,255,0.18)_0%,rgba(100,180,255,0.08)_100%)] px-4 py-3 text-center shadow-[0_0_24px_rgba(100,180,255,0.12)] sm:rounded-[24px] sm:px-5 sm:py-4">
+              <div className="mb-1 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600 sm:text-xs sm:tracking-[0.18em]">
                 <Crown className="h-4 w-4 text-primary" />
                 <span>Vincitore serie</span>
               </div>
-              <div className="text-xl font-bold text-slate-950">
+              <div className="text-lg font-bold text-slate-950 sm:text-xl">
                 {seriesResult.winnerId === match.team1.id ? match.team1.name : match.team2.name}
               </div>
-              <div className="mt-1 text-sm text-slate-600">
+              <div className="mt-1 text-xs text-slate-600 sm:text-sm">
                 {seriesResult.team1Wins} - {seriesResult.team2Wins}
               </div>
             </div>
@@ -446,7 +446,7 @@ export default function GameResultsDialog({
             onClick={handleSubmit}
             disabled={!seriesResult}
             size="lg"
-            className="shadow-[0_0_28px_rgba(30,190,255,0.26)] hover:shadow-[0_0_34px_rgba(30,190,255,0.34)]"
+            className="w-full shadow-[0_0_28px_rgba(30,190,255,0.26)] hover:shadow-[0_0_34px_rgba(30,190,255,0.34)] sm:w-auto"
           >
             Conferma risultati serie
           </Button>
@@ -468,7 +468,7 @@ function TeamSideSummary({
   return (
     <div className={align === 'right' ? 'space-y-1 text-center md:text-right' : 'space-y-1 text-center md:text-left'}>
       <div className="text-lg font-semibold text-slate-950 sm:text-xl">{team.name}</div>
-      <div className="text-sm text-slate-600 break-words">{team.players.map((player) => player.name).join(', ')}</div>
+      <div className="text-xs text-slate-600 break-words sm:text-sm">{team.players.map((player) => player.name).join(', ')}</div>
       <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{wins} game vinti</div>
     </div>
   );
@@ -545,8 +545,8 @@ function GameSection({
     <section className="rounded-[22px] border border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(239,247,255,0.76)_100%)] p-3 sm:rounded-[28px] sm:p-5 md:p-6 shadow-[0_10px_32px_rgba(90,150,220,0.08)]">
       <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-3">
-          <div className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Game {game.gameNumber}</div>
-          <div className="inline-flex flex-wrap items-center gap-2 rounded-[18px] border border-cyan-200/70 bg-[linear-gradient(180deg,rgba(235,250,255,0.96)_0%,rgba(222,245,255,0.88)_100%)] px-3 py-2.5 text-sm font-bold uppercase tracking-[0.12em] text-slate-800 shadow-[0_8px_20px_rgba(30,190,255,0.10)] sm:px-4 sm:py-3 sm:text-base md:text-lg">
+          <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-sm sm:tracking-[0.18em]">Game {game.gameNumber}</div>
+          <div className="inline-flex flex-wrap items-center gap-1.5 rounded-[16px] border border-cyan-200/70 bg-[linear-gradient(180deg,rgba(235,250,255,0.96)_0%,rgba(222,245,255,0.88)_100%)] px-2.5 py-2 text-xs font-bold uppercase tracking-[0.1em] text-slate-800 shadow-[0_8px_20px_rgba(30,190,255,0.10)] sm:gap-2 sm:rounded-[18px] sm:px-4 sm:py-3 sm:text-base sm:tracking-[0.12em] md:text-lg">
             <ModeIcon mode={game.mode} className="h-4 w-4" />
             <span>{getGameModeDisplay(game.mode)}</span>
             {game.mode === 'slayer' && <span>• Limite: {killLimit}</span>}
@@ -563,7 +563,7 @@ function GameSection({
         )}
       </div>
 
-      <div className="mb-7 grid items-center gap-4 md:grid-cols-[1fr_auto_1fr]">
+      <div className="mb-6 grid items-center gap-4 md:mb-7 md:grid-cols-[1fr_auto_1fr]">
         <div />
         <div className="text-center">
           {game.mode === 'slayer' && (
@@ -692,16 +692,16 @@ function TeamEditor({
 
   return (
     <div
-      className={`rounded-[22px] border p-4 ${
+      className={`rounded-[18px] border p-3 sm:rounded-[22px] sm:p-4 ${
         isLeading
           ? 'border-cyan-400/55 bg-[linear-gradient(180deg,rgba(95,220,255,0.18)_0%,rgba(95,220,255,0.08)_100%)]'
           : 'border-cyan-100/80 bg-white/72'
       }`}
     >
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-        <div className="text-base font-semibold text-slate-950">{team.name}</div>
+        <div className="text-sm font-semibold text-slate-950 sm:text-base">{team.name}</div>
         <div className="text-left sm:text-right">
-          <div className="text-2xl font-bold text-slate-950">
+          <div className="text-xl font-bold text-slate-950 sm:text-2xl">
             {total}
             <span className="ml-1 text-sm font-semibold text-slate-400">/ {target}</span>
           </div>
@@ -727,7 +727,7 @@ function TeamEditor({
             className="grid gap-4 rounded-[18px] border border-cyan-100/80 bg-white px-4 py-3.5 shadow-sm transition hover:border-cyan-300/80 hover:shadow-[0_8px_18px_rgba(30,190,255,0.14)] sm:grid-cols-[minmax(160px,1fr)_auto] sm:items-center"
           >
             <div className="min-w-0 pr-2">
-              <div className="text-base font-semibold leading-tight text-slate-950">{player.name}</div>
+              <div className="text-sm font-semibold leading-tight text-slate-950 sm:text-base">{player.name}</div>
             </div>
             <div className="flex justify-start sm:justify-end">
               <Stepper
@@ -761,14 +761,14 @@ function ObjectiveEditor({
 }) {
   return (
     <div
-      className={`rounded-[22px] border p-5 ${
+      className={`rounded-[18px] border p-4 sm:rounded-[22px] sm:p-5 ${
         isLeading
           ? 'border-cyan-400/55 bg-[linear-gradient(180deg,rgba(95,220,255,0.18)_0%,rgba(95,220,255,0.08)_100%)]'
           : 'border-cyan-100/80 bg-white/72'
       }`}
     >
       <div className="mb-4">
-        <div className="text-base font-semibold text-slate-950">{team.name}</div>
+        <div className="text-sm font-semibold text-slate-950 sm:text-base">{team.name}</div>
         <div className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">{label}</div>
       </div>
       <div className="flex justify-center">
@@ -801,7 +801,7 @@ function Stepper({
   return (
     <div
       className={`inline-flex items-center rounded-full border border-cyan-300/80 bg-[linear-gradient(180deg,#ffffff_0%,#e9fbff_100%)] shadow-[0_10px_24px_rgba(30,190,255,0.14)] ${
-        large ? 'px-2 py-2' : compact ? 'px-1 py-1' : 'px-1.5 py-1.5'
+        large ? 'px-1.5 py-1.5 sm:px-2 sm:py-2' : compact ? 'px-1 py-1' : 'px-1 py-1 sm:px-1.5 sm:py-1.5'
       }`}
     >
       <StepperButton onClick={() => onChange(clampValue(value - 1))} ariaLabel="Diminuisci valore">
@@ -814,7 +814,7 @@ function Stepper({
         max={max}
         onChange={(e) => onChange(clampValue(Number.parseInt(e.target.value || '0', 10) || 0))}
         className={`bg-transparent text-center font-bold text-slate-950 outline-none ${
-          large ? 'w-16 text-2xl' : compact ? 'w-10 text-base' : 'w-16 text-lg'
+          large ? 'w-12 text-xl sm:w-16 sm:text-2xl' : compact ? 'w-9 text-sm sm:w-10 sm:text-base' : 'w-12 text-base sm:w-16 sm:text-lg'
         }`}
       />
       <StepperButton onClick={() => onChange(clampValue(value + 1))} ariaLabel="Aumenta valore">
@@ -838,7 +838,7 @@ function StepperButton({
       type="button"
       aria-label={ariaLabel}
       onClick={onClick}
-      className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-300/80 bg-[linear-gradient(180deg,#f4fdff_0%,#dff7ff_100%)] text-slate-800 transition hover:border-cyan-400 hover:bg-white hover:text-slate-950 hover:shadow-[0_0_18px_rgba(30,190,255,0.24)] focus-visible:border-cyan-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-300/25"
+      className="flex h-7 w-7 items-center justify-center rounded-full border border-cyan-300/80 bg-[linear-gradient(180deg,#f4fdff_0%,#dff7ff_100%)] text-slate-800 transition hover:border-cyan-400 hover:bg-white hover:text-slate-950 hover:shadow-[0_0_18px_rgba(30,190,255,0.24)] focus-visible:border-cyan-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-cyan-300/25 sm:h-8 sm:w-8"
     >
       {children}
     </button>

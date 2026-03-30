@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { ImageIcon, Paintbrush, X } from 'lucide-react';
 import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
-import { Label } from './ui/label';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
 import { Input } from './ui/input';
-import { ImageIcon, X, Paintbrush } from 'lucide-react';
+import { Label } from './ui/label';
 
 const BACKGROUND_STORAGE_KEY = 'halo_tournament_background';
 
-// Preset backgrounds
 const PRESETS = [
   {
     name: 'Halo Arena',
@@ -37,7 +36,6 @@ export default function BackgroundCustomizer() {
   const [currentBackground, setCurrentBackground] = useState(PRESETS[0].url);
 
   useEffect(() => {
-    // Load saved background
     const saved = localStorage.getItem(BACKGROUND_STORAGE_KEY);
     if (saved) {
       setCurrentBackground(saved);
@@ -46,10 +44,7 @@ export default function BackgroundCustomizer() {
   }, []);
 
   const applyBackground = (url: string) => {
-    const beforeElement = document.querySelector('body::before') as HTMLElement;
     if (url) {
-      document.body.style.setProperty('--bg-image-url', `url('${url}')`);
-      // Update CSS custom property
       document.documentElement.style.setProperty('--background-image', `url('${url}')`);
     } else {
       document.documentElement.style.setProperty('--background-image', 'none');
@@ -64,45 +59,42 @@ export default function BackgroundCustomizer() {
   };
 
   const handleCustomUrl = () => {
-    if (customUrl.trim()) {
-      setCurrentBackground(customUrl);
-      applyBackground(customUrl);
-      localStorage.setItem(BACKGROUND_STORAGE_KEY, customUrl);
-      setCustomUrl('');
-      setOpen(false);
-    }
+    if (!customUrl.trim()) return;
+
+    setCurrentBackground(customUrl);
+    applyBackground(customUrl);
+    localStorage.setItem(BACKGROUND_STORAGE_KEY, customUrl);
+    setCustomUrl('');
+    setOpen(false);
   };
 
   return (
     <>
-      {/* Floating button */}
       <Button
         onClick={() => setOpen(true)}
         size="icon"
         variant="outline"
-        className="fixed bottom-4 left-4 z-50 w-12 h-12 rounded-full shadow-lg bg-card/95 backdrop-blur-sm hover:bg-card"
+        className="fixed bottom-3 left-3 z-50 h-11 w-11 rounded-full bg-card/95 shadow-lg backdrop-blur-sm hover:bg-card sm:bottom-4 sm:left-4 sm:h-12 sm:w-12"
         title="Personalizza sfondo"
       >
-        <Paintbrush className="w-5 h-5" />
+        <Paintbrush className="h-5 w-5" />
       </Button>
 
-      {/* Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>🎨 Personalizza Sfondo</DialogTitle>
+            <DialogTitle>Personalizza sfondo</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-6">
-            {/* Presets */}
             <div>
-              <Label className="text-sm font-semibold mb-3 block">Sfondi Predefiniti</Label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <Label className="mb-3 block text-sm font-semibold">Sfondi predefiniti</Label>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
                 {PRESETS.map((preset) => (
                   <button
                     key={preset.name}
                     onClick={() => handleSelectPreset(preset.url)}
-                    className={`relative h-24 rounded-lg overflow-hidden border-2 transition-all ${
+                    className={`relative h-24 overflow-hidden rounded-lg border-2 transition-all ${
                       currentBackground === preset.url
                         ? 'border-primary ring-2 ring-primary/50'
                         : 'border-border hover:border-primary/50'
@@ -110,21 +102,15 @@ export default function BackgroundCustomizer() {
                   >
                     {preset.url ? (
                       <>
-                        <img
-                          src={preset.url}
-                          alt={preset.name}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                          <span className="text-white text-xs font-semibold text-center px-2">
-                            {preset.name}
-                          </span>
+                        <img src={preset.url} alt={preset.name} className="h-full w-full object-cover" />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                          <span className="px-2 text-center text-xs font-semibold text-white">{preset.name}</span>
                         </div>
                       </>
                     ) : (
-                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                      <div className="flex h-full w-full items-center justify-center bg-muted">
                         <div className="text-center">
-                          <X className="w-6 h-6 mx-auto mb-1 text-muted-foreground" />
+                          <X className="mx-auto mb-1 h-6 w-6 text-muted-foreground" />
                           <span className="text-xs text-muted-foreground">{preset.name}</span>
                         </div>
                       </div>
@@ -134,10 +120,9 @@ export default function BackgroundCustomizer() {
               </div>
             </div>
 
-            {/* Custom URL */}
             <div>
-              <Label className="text-sm font-semibold mb-3 block">URL Personalizzato</Label>
-              <div className="flex gap-2">
+              <Label className="mb-3 block text-sm font-semibold">URL personalizzato</Label>
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <Input
                   placeholder="Incolla l'URL di un'immagine..."
                   value={customUrl}
@@ -146,28 +131,29 @@ export default function BackgroundCustomizer() {
                     if (e.key === 'Enter') handleCustomUrl();
                   }}
                 />
-                <Button onClick={handleCustomUrl} disabled={!customUrl.trim()}>
-                  <ImageIcon className="w-4 h-4 mr-2" />
+                <Button onClick={handleCustomUrl} disabled={!customUrl.trim()} className="w-full sm:w-auto">
+                  <ImageIcon className="mr-2 h-4 w-4" />
                   Applica
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                💡 Consiglio: usa immagini da Unsplash, Pexels o altri siti di immagini free
+              <p className="mt-2 text-xs text-muted-foreground">
+                Consiglio: usa immagini da Unsplash, Pexels o altri siti di immagini free.
               </p>
             </div>
 
-            {/* Current preview */}
             {currentBackground && (
               <div>
-                <Label className="text-sm font-semibold mb-3 block">Anteprima Corrente</Label>
-                <div className="relative h-32 rounded-lg overflow-hidden border">
+                <Label className="mb-3 block text-sm font-semibold">Anteprima corrente</Label>
+                <div className="relative h-32 overflow-hidden rounded-lg border">
                   <img
                     src={currentBackground}
                     alt="Current background"
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60 flex items-center justify-center">
-                    <span className="text-white font-semibold">Con overlay scuro</span>
+                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-black/60 via-black/40 to-black/60">
+                    <span className="text-center text-sm font-semibold text-white sm:text-base">
+                      Anteprima con overlay scuro
+                    </span>
                   </div>
                 </div>
               </div>
@@ -175,7 +161,7 @@ export default function BackgroundCustomizer() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="outline" onClick={() => setOpen(false)} className="w-full sm:w-auto">
               Chiudi
             </Button>
           </DialogFooter>

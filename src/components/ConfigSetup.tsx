@@ -122,7 +122,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
 
       <div>
         <Label className="mb-3 block text-base font-semibold">Limite kill Slayer</Label>
-        <div className="glass-card p-5">
+        <div className="glass-card p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 text-base font-semibold">
@@ -199,7 +199,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         </div>
       )}
 
-      <div className="glass-card p-4">
+      <div className="glass-card rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-4">
         <h3 className="mb-2 flex items-center gap-2 font-semibold">
           <FileText className="h-4 w-4 text-primary" />
           <span>Riepilogo</span>
@@ -240,17 +240,17 @@ function OptionCard({ selected, onClick, title, description, compact, icon }: Op
   return (
     <Card
       onClick={onClick}
-      className={`cursor-pointer transition-all hover:scale-[1.02] ${
+      className={`cursor-pointer rounded-[18px] p-4 transition-all hover:scale-[1.01] sm:rounded-[24px] sm:p-6 ${
         selected
           ? 'border-primary border-2 ring-2 ring-primary/20'
           : 'border-border hover:border-primary/50'
       } ${compact ? 'text-center' : ''}`}
     >
-      <h3 className={`font-semibold ${compact ? 'text-base' : 'mb-1 text-lg'} ${icon ? 'flex items-center gap-2' : ''}`}>
+      <h3 className={`font-semibold ${compact ? 'text-sm sm:text-base' : 'mb-1 text-base sm:text-lg'} ${icon ? 'flex items-center gap-2' : ''}`}>
         {icon}
         <span>{title}</span>
       </h3>
-      {description && <p className="text-sm text-muted-foreground">{description}</p>}
+      {description && <p className="text-xs text-muted-foreground sm:text-sm">{description}</p>}
     </Card>
   );
 }
@@ -269,7 +269,7 @@ function TeamCreationCard({ id, value, selected, title, description, detail, ico
   return (
     <Label
       htmlFor={id}
-      className={`glass-card flex min-h-[190px] cursor-pointer flex-col justify-between p-5 sm:min-h-[210px] sm:p-6 transition-all ${
+      className={`glass-card flex min-h-[160px] cursor-pointer flex-col justify-between rounded-[18px] p-4 sm:min-h-[210px] sm:rounded-[24px] sm:p-6 transition-all ${
         selected
           ? 'border-primary ring-2 ring-primary/25 shadow-[0_0_0_1px_rgba(255,255,255,0.3),0_0_35px_rgba(100,180,255,0.2)]'
           : 'hover:border-primary/50 hover:shadow-[0_0_24px_rgba(100,180,255,0.14)]'
@@ -278,18 +278,18 @@ function TeamCreationCard({ id, value, selected, title, description, detail, ico
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <div className={`flex h-10 w-10 items-center justify-center rounded-full border ${
+            <div className={`flex h-8 w-8 items-center justify-center rounded-full border sm:h-10 sm:w-10 ${
               selected ? 'border-primary bg-primary/15' : 'border-white/20 bg-white/5'
             }`}>
-              <Icon className="h-5 w-5 text-primary" />
+              <Icon className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
             </div>
-            <div className="text-lg font-semibold">{title}</div>
+            <div className="text-base font-semibold sm:text-lg">{title}</div>
           </div>
-          <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
+          <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">{description}</p>
         </div>
         <RadioGroupItem value={value} id={id} className="mt-1" />
       </div>
-      <div className="rounded-2xl border border-white/10 bg-black/10 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+      <div className="rounded-2xl border border-white/10 bg-black/10 px-3 py-2.5 text-[11px] leading-relaxed text-muted-foreground sm:px-4 sm:py-3 sm:text-xs">
         {detail}
       </div>
     </Label>

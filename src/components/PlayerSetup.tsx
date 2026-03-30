@@ -251,7 +251,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
       </div>
 
       <div className="mb-6">
-        <div className="flex flex-wrap items-end gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div>
             <Label htmlFor="player-count" className="mb-2 block text-base font-semibold">
               Numero di giocatori
@@ -271,6 +271,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
             variant="outline"
             onClick={handleLoadRandomPlayers}
             disabled={bundledPlayers.length < playerCount}
+            className="w-full sm:w-auto"
           >
             <Dice3 className="mr-2 h-4 w-4" />
             Carica player casualmente
@@ -284,8 +285,8 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-4">
-        <Card className="h-fit max-h-[600px] overflow-y-auto md:col-span-1">
-          <h3 className="mb-3 text-sm font-semibold text-muted-foreground">
+        <Card className="h-fit max-h-[420px] overflow-y-auto rounded-[18px] p-3 sm:max-h-[600px] sm:rounded-[24px] sm:p-6 md:col-span-1">
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground sm:mb-3 sm:text-sm sm:tracking-normal">
             Giocatori ({players.filter(isPlayerComplete).length}/{players.length})
           </h3>
           <div className="space-y-1">
@@ -293,7 +294,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
               <button
                 key={player.id}
                 onClick={() => selectPlayer(index)}
-                className={`w-full rounded px-3 py-2 text-left transition-all ${
+                className={`w-full rounded-[14px] px-3 py-2 text-left text-sm transition-all ${
                   selectedPlayerIndex === index
                     ? 'bg-primary font-semibold text-primary-foreground'
                     : isPlayerComplete(player)
@@ -318,7 +319,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
           </div>
         </Card>
 
-        <Card className="xl:col-span-3">
+        <Card className="rounded-[18px] p-4 sm:rounded-[24px] sm:p-6 xl:col-span-3">
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h3 className="text-xl font-bold">Giocatore {selectedPlayerIndex + 1}</h3>
             <div className="flex flex-col gap-2 sm:flex-row">
@@ -403,7 +404,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
                     setTimeout(() => setShowSuggestions(false), 200);
                   }}
                   placeholder="oppure inserisci manualmente (premi ENTER per continuare)"
-                  className="text-lg"
+                  className="text-base sm:text-lg"
                   autoComplete="off"
                 />
 
@@ -437,9 +438,9 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
                 )}
               </div>
 
-              <div className="mt-3 rounded-[20px] border border-white/10 bg-black/10 px-4 py-3">
+              <div className="mt-3 rounded-[18px] border border-white/10 bg-black/10 px-3 py-3 sm:rounded-[20px] sm:px-4">
                 {currentPlayerAlreadyStored && !currentPlayerHasStoredChanges ? (
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <div className="text-sm font-semibold text-white">Giocatore già salvato</div>
                       <div className={`text-xs text-white/65 ${currentPlayerHasStoredChanges ? 'hidden' : ''}`}>
@@ -538,20 +539,20 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
               )}
             </div>
 
-            <Card>
-              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+            <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
+              <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold sm:text-base">
                 <Info className="h-4 w-4 text-primary" />
                 <span>Informazioni giocatore</span>
               </h4>
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
+              <div className="space-y-1 text-xs sm:text-sm">
+                <div className="flex items-start justify-between gap-3">
                   <span className="text-muted-foreground">Rank completo:</span>
                   <span className="inline-flex items-center gap-2 font-semibold">
                     <RankIcon rank={currentPlayer.rank} className="h-5 w-5" />
                     <span>{getRankDisplay(currentPlayer.rank)}</span>
                   </span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex items-start justify-between gap-3">
                   <span className="text-muted-foreground">Valore forza:</span>
                   <span className="font-semibold">{currentPlayer.strengthValue}</span>
                 </div>
@@ -562,7 +563,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
               <button
                 type="button"
                 onClick={handleProgressCta}
-                className="group w-full rounded-[24px] border border-cyan-200/45 bg-primary px-5 py-4 text-center text-base font-semibold text-primary-foreground shadow-[0_0_28px_rgba(100,180,255,0.28)] transition hover:shadow-[0_0_36px_rgba(100,180,255,0.38)]"
+                className="group w-full rounded-[20px] border border-cyan-200/45 bg-primary px-5 py-3.5 text-center text-sm font-semibold text-primary-foreground shadow-[0_0_28px_rgba(100,180,255,0.28)] transition hover:shadow-[0_0_36px_rgba(100,180,255,0.38)] sm:rounded-[24px] sm:py-4 sm:text-base"
               >
                 <span className="inline-flex items-center gap-2">
                   <span>{selectedPlayerIndex < players.length - 1 ? 'Prosegui' : 'Continua'}</span>
@@ -574,10 +575,10 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
         </Card>
       </div>
 
-      <Card>
+      <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="text-sm font-semibold">
+            <div className="text-xs font-semibold uppercase tracking-[0.14em] sm:text-sm sm:tracking-normal">
               Progresso: {players.filter(isPlayerComplete).length} / {players.length} giocatori completati
             </div>
             <div className="mt-2 h-2 w-full max-w-[300px] rounded-full bg-muted">
@@ -590,7 +591,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
             </div>
           </div>
           {players.filter(isPlayerComplete).length === players.length && (
-            <div className="flex items-center gap-2 font-semibold text-primary">
+            <div className="flex items-center gap-2 text-sm font-semibold text-primary">
               <CircleCheckBig className="h-4 w-4" />
               <span>Tutti i giocatori pronti!</span>
             </div>

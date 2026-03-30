@@ -110,9 +110,9 @@ export default function BracketExport({
   };
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
       {onOpenPrintView && (
-        <Button onClick={onOpenPrintView} variant="default" className="flex items-center gap-2">
+        <Button onClick={onOpenPrintView} variant="default" className="flex w-full items-center gap-2 sm:w-auto">
           <Printer className="h-4 w-4" />
           Vista stampa
         </Button>
@@ -122,7 +122,7 @@ export default function BracketExport({
         onClick={exportAsImage}
         disabled={isExporting}
         variant="outline"
-        className="flex items-center gap-2"
+        className="flex w-full items-center gap-2 sm:w-auto"
       >
         {isExporting ? (
           <>
@@ -137,12 +137,12 @@ export default function BracketExport({
         )}
       </Button>
 
-      <Button onClick={exportAsJSON} variant="outline" className="flex items-center gap-2">
+      <Button onClick={exportAsJSON} variant="outline" className="flex w-full items-center gap-2 sm:w-auto">
         <Download className="h-4 w-4" />
         Scarica dati (JSON)
       </Button>
 
-      <Button onClick={copyShareableText} variant="outline" className="flex items-center gap-2">
+      <Button onClick={copyShareableText} variant="outline" className="flex w-full items-center gap-2 sm:w-auto">
         <Share2 className="h-4 w-4" />
         Copia info
       </Button>

@@ -105,10 +105,10 @@ export default function TournamentBracket({
         )}
       </div>
 
-      <Card className="p-4 sm:p-6 md:p-7">
+      <Card className="p-3 sm:p-6 md:p-7">
         <div className="grid gap-4 md:grid-cols-[1.35fr_1fr]">
           <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-2.5 text-sm sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
               <InfoStat
                 label="Tipo"
                 value={tournament.config.type === 'slayer' ? 'Slayer' : 'Ranked'}
@@ -123,10 +123,10 @@ export default function TournamentBracket({
               <InfoStat label="Squadre" value={String(tournament.teams.length)} icon={Swords} />
             </div>
 
-            <div className="rounded-[24px] border border-white/10 bg-black/10 p-4">
+            <div className="rounded-[20px] border border-white/10 bg-black/10 p-3 sm:rounded-[24px] sm:p-4">
               <div className="mb-2 flex items-center justify-between gap-3 text-sm">
-                <span className="font-semibold text-white">Avanzamento torneo</span>
-                <span className="text-white/72">{completedMatches}/{totalMatches} match</span>
+                <span className="text-xs font-semibold text-white sm:text-sm">Avanzamento torneo</span>
+                <span className="text-xs text-white/72 sm:text-sm">{completedMatches}/{totalMatches} match</span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-white/10">
                 <div
@@ -134,19 +134,19 @@ export default function TournamentBracket({
                   style={{ width: `${completionPercent}%` }}
                 />
               </div>
-              <div className="mt-2 text-sm text-white/68">{completionPercent}% completato</div>
+              <div className="mt-2 text-xs text-white/68 sm:text-sm">{completionPercent}% completato</div>
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-primary/20 bg-primary/8 p-4 sm:p-5 shadow-[0_0_24px_rgba(100,180,255,0.12)]">
-            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
+          <div className="rounded-[20px] border border-primary/20 bg-primary/8 p-3.5 sm:rounded-[24px] sm:p-5 shadow-[0_0_24px_rgba(100,180,255,0.12)]">
+            <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-white sm:mb-3 sm:text-sm">
               <PlayCircle className="h-4 w-4 text-primary" />
               <span>Prossimo passo</span>
             </div>
 
             {nextPlayableMatch ? (
               <>
-                <div className="text-lg font-semibold text-white">
+                <div className="text-base font-semibold text-white sm:text-lg">
                   {nextPlayableMatch.team1?.name} vs {nextPlayableMatch.team2?.name}
                 </div>
                 <div className="mt-2 flex flex-wrap gap-2 text-xs text-white/72">
@@ -180,12 +180,12 @@ export default function TournamentBracket({
       </Card>
 
       {tournament.config.type === 'ranked' && (
-        <Card className="p-5 md:p-6">
-          <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
+        <Card className="p-3.5 sm:p-5 md:p-6">
+          <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-white sm:mb-3 sm:text-sm">
             <Trophy className="h-4 w-4 text-primary" />
             <span>Rotazione ranked</span>
           </div>
-          <div className="flex flex-wrap items-center gap-2 text-sm text-white/80">
+          <div className="flex flex-wrap items-center gap-1.5 text-xs text-white/80 sm:gap-2 sm:text-sm">
             <Pill icon={<ModeIcon mode="slayer" className="h-3.5 w-3.5" />} text="Massacro" />
             <ChevronRight className="h-4 w-4 text-primary/80" />
             <Pill icon={<ModeIcon mode="oddball" className="h-3.5 w-3.5" />} text="Teschio" />
@@ -205,7 +205,7 @@ export default function TournamentBracket({
               I match evidenziati sono pronti. Quelli in attesa restano secondari finche il round non si sblocca.
             </p>
           </div>
-          <div className="rounded-full border border-white/12 bg-white/6 px-4 py-2 text-sm text-white/78">
+          <div className="rounded-full border border-white/12 bg-white/6 px-3 py-1.5 text-xs text-white/78 sm:px-4 sm:py-2 sm:text-sm">
             {playableMatches.length > 0 ? `${playableMatches.length} match disponibili` : 'In attesa dei risultati'}
           </div>
         </div>
@@ -287,12 +287,12 @@ function InfoStat({
     : createElement(Icon as ComponentType<{ className?: string }>, { className: 'h-3.5 w-3.5 text-primary' });
 
   return (
-    <div className="min-w-0 rounded-[20px] border border-white/10 bg-black/8 p-4">
+    <div className="min-w-0 rounded-[18px] border border-white/10 bg-black/8 p-3 sm:rounded-[20px] sm:p-4">
       <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-white/50">
         {iconNode}
         <span>{label}</span>
       </div>
-      <div className="text-base font-semibold text-white">{value}</div>
+      <div className="text-sm font-semibold text-white sm:text-base">{value}</div>
     </div>
   );
 }
@@ -309,7 +309,7 @@ function Pill({
     : createElement(icon as ComponentType<{ className?: string }>, { className: 'h-3.5 w-3.5 text-primary' });
 
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/10 px-3 py-1.5">
+    <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-black/10 px-2.5 py-1 text-[11px] sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-xs">
       {iconNode}
       <span>{text}</span>
     </span>

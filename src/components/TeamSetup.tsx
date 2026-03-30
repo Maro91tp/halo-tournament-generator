@@ -183,14 +183,14 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         {isAutoMode && (
           <>
-            <Button onClick={handleRegenerate} variant="ghost" size="sm" className="text-white/75 hover:bg-white/8 hover:text-white">
+            <Button onClick={handleRegenerate} variant="ghost" size="sm" className="w-full text-white/75 hover:bg-white/8 hover:text-white sm:w-auto">
               <RefreshCcw className="mr-2 h-4 w-4" />
               Rigenera squadre
             </Button>
-            <Button onClick={toggleEditMode} variant="ghost" size="sm" className="text-white/75 hover:bg-white/8 hover:text-white">
+            <Button onClick={toggleEditMode} variant="ghost" size="sm" className="w-full text-white/75 hover:bg-white/8 hover:text-white sm:w-auto">
               {editMode ? (
                 <>
                   <Eye className="mr-2 h-4 w-4" />
@@ -208,16 +208,16 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
       </div>
 
       {isManualMode && availablePlayers.length > 0 && (
-        <Card>
-          <h3 className="mb-3 font-semibold">Assegna giocatori alle squadre ({availablePlayers.length} rimanenti)</h3>
+        <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
+          <h3 className="mb-3 text-sm font-semibold sm:text-base">Assegna giocatori alle squadre ({availablePlayers.length} rimanenti)</h3>
           <div className="grid gap-3">
             {availablePlayers.map((player) => (
               <div
                 key={player.id}
-                className="glass-card flex items-center justify-between p-3"
+                className="glass-card flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between"
               >
-                <div>
-                  <div className="font-medium">{player.name}</div>
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-medium sm:text-base">{player.name}</div>
                   <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
                     <RankIcon rank={player.rank} className="h-4 w-4" />
                     <span>{getRankDisplay(player.rank)} - Forza: {player.strengthValue}</span>
@@ -252,13 +252,13 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
       )}
 
       {!isManualMode && editMode && availablePlayers.length > 0 && (
-        <Card>
-          <h3 className="mb-3 font-semibold">Giocatori disponibili ({availablePlayers.length})</h3>
+        <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
+          <h3 className="mb-3 text-sm font-semibold sm:text-base">Giocatori disponibili ({availablePlayers.length})</h3>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
             {availablePlayers.map((player) => (
               <div
                 key={player.id}
-                className="glass-card p-2 text-sm"
+                className="glass-card rounded-[16px] p-2 text-xs sm:text-sm"
               >
                 <div className="font-medium">{player.name}</div>
                 <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
@@ -278,7 +278,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
 
       <div className="grid gap-4 xl:grid-cols-2">
         {teams.map((team, teamIndex) => (
-          <Card key={team.id} className="space-y-3">
+          <Card key={team.id} className="space-y-3 rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
             <div>
               <Label className="mb-1 text-sm">Nome squadra</Label>
               <Input
@@ -302,7 +302,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                 {team.players.map((player, playerIndex) => (
                   <div
                     key={player.id}
-                    className="flex items-center justify-between gap-3 rounded-[22px] border border-cyan-200/20 bg-white/6 px-4 py-3 backdrop-blur-md"
+                    className="flex items-start justify-between gap-3 rounded-[18px] border border-cyan-200/20 bg-white/6 px-3 py-3 backdrop-blur-md sm:items-center sm:rounded-[22px] sm:px-4"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="truncate text-[15px] font-semibold leading-tight text-white">{player.name}</div>
@@ -358,10 +358,10 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
         ))}
       </div>
 
-      <div className="glass-card space-y-4 p-5 md:p-6">
+      <div className="glass-card space-y-4 rounded-[18px] p-4 sm:rounded-[24px] sm:p-5 md:p-6">
         <div className="space-y-1">
-          <div className="text-sm font-semibold text-white">Conferma squadre</div>
-          <p className="text-sm text-white/70">
+          <div className="text-xs font-semibold uppercase tracking-[0.14em] text-white sm:text-sm sm:tracking-normal">Conferma squadre</div>
+          <p className="text-xs text-white/70 sm:text-sm">
             Controlla nomi, composizione e forza dei team. Quando sei pronto puoi generare il torneo.
           </p>
         </div>
