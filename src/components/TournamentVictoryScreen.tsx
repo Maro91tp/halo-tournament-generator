@@ -53,6 +53,12 @@ export default function TournamentVictoryScreen({
     { left: '72%', top: '72%', width: '5.2rem', delay: '0.8s', rotate: '-18deg' },
     { left: '27%', top: '78%', width: '3.2rem', delay: '1.7s', rotate: '14deg' },
   ];
+  const celebrationRays = [
+    { left: '50%', top: '-4%', rotate: '-24deg', delay: '0s', height: '22rem' },
+    { left: '50%', top: '-5%', rotate: '-8deg', delay: '0.35s', height: '24rem' },
+    { left: '50%', top: '-6%', rotate: '8deg', delay: '0.7s', height: '24rem' },
+    { left: '50%', top: '-4%', rotate: '24deg', delay: '1.05s', height: '22rem' },
+  ];
 
   return (
     <div className="w-full space-y-6 sm:space-y-8">
@@ -60,6 +66,11 @@ export default function TournamentVictoryScreen({
         @keyframes haloVictoryFloat {
           0%, 100% { transform: translateY(0) scale(1); }
           50% { transform: translateY(-10px) scale(1.03); }
+        }
+        @keyframes haloVictoryIntro {
+          0% { opacity: 0; transform: translateY(34px) scale(0.62); filter: blur(10px); }
+          55% { opacity: 1; transform: translateY(-10px) scale(1.08); filter: blur(0); }
+          100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
         }
         @keyframes haloVictoryPulse {
           0%, 100% { opacity: 0.5; transform: scale(0.92); }
@@ -88,17 +99,63 @@ export default function TournamentVictoryScreen({
           35% { opacity: 0.9; }
           65% { opacity: 0.35; transform: translateY(-6px) rotate(var(--line-rotate)) scaleX(1); }
         }
+        @keyframes haloVictoryFlash {
+          0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.72); }
+          18% { opacity: 0.85; }
+          45% { opacity: 0.18; transform: translate(-50%, -50%) scale(1.18); }
+        }
+        @keyframes haloVictoryNameReveal {
+          0% { opacity: 0; transform: translateY(22px); letter-spacing: 0.34em; filter: blur(8px); }
+          100% { opacity: 1; transform: translateY(0); letter-spacing: 0.02em; filter: blur(0); }
+        }
+        @keyframes haloVictoryPlate {
+          0% { opacity: 0; transform: translateY(22px) scale(0.94); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes haloVictoryMegaPulse {
+          0%, 100% { opacity: 0.24; transform: scale(0.92); }
+          50% { opacity: 0.56; transform: scale(1.12); }
+        }
+        @keyframes haloVictoryRay {
+          0%, 100% { opacity: 0.12; transform: translateX(-50%) rotate(var(--ray-rotate)) scaleY(0.92); }
+          50% { opacity: 0.4; transform: translateX(-50%) rotate(var(--ray-rotate)) scaleY(1.08); }
+        }
+        @keyframes haloVictoryOrbit {
+          from { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+          to { transform: translate(-50%, -50%) rotate(-360deg) scale(1); }
+        }
+        @keyframes haloVictoryStageGlow {
+          0%, 100% { opacity: 0.55; transform: scaleX(0.96); }
+          50% { opacity: 0.95; transform: scaleX(1.04); }
+        }
       `}</style>
 
-      <section className="relative overflow-hidden rounded-[28px] border border-amber-300/38 bg-[radial-gradient(circle_at_top,rgba(255,215,120,0.34),transparent_30%),radial-gradient(circle_at_bottom,rgba(74,33,0,0.34),transparent_42%),linear-gradient(180deg,rgba(42,24,0,0.98)_0%,rgba(14,10,24,0.99)_54%,rgba(8,11,28,1)_100%)] px-4 py-8 shadow-[0_0_90px_rgba(245,180,76,0.24)] sm:px-6 sm:py-12 md:rounded-[40px] md:px-12 md:py-16">
+      <section className="relative overflow-hidden rounded-[28px] border border-amber-300/44 bg-[radial-gradient(circle_at_top,rgba(255,215,120,0.48),transparent_24%),radial-gradient(circle_at_bottom,rgba(104,44,0,0.38),transparent_40%),linear-gradient(180deg,rgba(54,30,0,0.99)_0%,rgba(22,14,32,0.99)_48%,rgba(7,10,28,1)_100%)] px-4 py-8 shadow-[0_0_110px_rgba(245,180,76,0.3)] sm:px-6 sm:py-12 md:rounded-[40px] md:px-12 md:py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.14),transparent_52%)]" />
-        <div className="pointer-events-none absolute inset-x-[-10%] top-[-12%] h-[58%] bg-[radial-gradient(circle_at_top,rgba(255,232,174,0.24),transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-x-[-10%] top-[-12%] h-[58%] bg-[radial-gradient(circle_at_top,rgba(255,232,174,0.34),transparent_60%)]" />
         <div
-          className="pointer-events-none absolute left-1/2 top-[-18%] h-[24rem] w-[140%] -translate-x-1/2 bg-[conic-gradient(from_180deg_at_50%_0%,rgba(255,222,145,0.22),rgba(255,222,145,0.04),rgba(255,222,145,0.22))] opacity-70 blur-2xl"
+          className="pointer-events-none absolute left-1/2 top-[-18%] h-[24rem] w-[140%] -translate-x-1/2 bg-[conic-gradient(from_180deg_at_50%_0%,rgba(255,222,145,0.28),rgba(255,222,145,0.04),rgba(255,222,145,0.28))] opacity-80 blur-2xl"
           style={{ animation: 'haloVictorySweep 8s ease-in-out infinite' }}
         />
-        <div className="pointer-events-none absolute left-1/2 top-[6%] h-[18rem] w-[18rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,228,152,0.24),transparent_65%)] blur-3xl" />
-        <div className="pointer-events-none absolute left-1/2 top-[30%] h-[24rem] w-[24rem] -translate-x-1/2 rounded-full border border-amber-200/12 bg-[radial-gradient(circle,rgba(255,215,106,0.12),transparent_62%)] blur-2xl" />
+        <div className="pointer-events-none absolute left-1/2 top-[6%] h-[18rem] w-[18rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,228,152,0.32),transparent_65%)] blur-3xl" />
+        <div className="pointer-events-none absolute left-1/2 top-[30%] h-[24rem] w-[24rem] -translate-x-1/2 rounded-full border border-amber-200/18 bg-[radial-gradient(circle,rgba(255,215,106,0.16),transparent_62%)] blur-2xl" />
+        <div
+          className="pointer-events-none absolute left-1/2 top-[38%] h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle,rgba(255,215,106,0.18),transparent_58%)] blur-3xl"
+          style={{ animation: 'haloVictoryMegaPulse 6.2s ease-in-out infinite' }}
+        />
+        {celebrationRays.map((ray, index) => (
+          <div
+            key={`${ray.rotate}-${index}`}
+            className="pointer-events-none absolute w-[7rem] rounded-full bg-[linear-gradient(180deg,rgba(255,243,204,0.62)_0%,rgba(255,206,92,0.26)_38%,transparent_100%)] blur-md"
+            style={{
+              left: ray.left,
+              top: ray.top,
+              height: ray.height,
+              ['--ray-rotate' as string]: ray.rotate,
+              animation: `haloVictoryRay 4.8s ease-in-out infinite ${ray.delay}`,
+            }}
+          />
+        ))}
         <div
           className="pointer-events-none absolute left-1/2 top-[37%] h-[17rem] w-[17rem] rounded-full border border-amber-200/20"
           style={{ animation: 'haloVictoryPulse 4.6s ease-in-out infinite' }}
@@ -115,6 +172,14 @@ export default function TournamentVictoryScreen({
           <div className="absolute bottom-0 left-1/2 h-10 w-[2px] -translate-x-1/2 rounded-full bg-gradient-to-t from-amber-100/60 to-transparent" />
           <div className="absolute left-0 top-1/2 h-[2px] w-10 -translate-y-1/2 rounded-full bg-gradient-to-r from-amber-100/70 to-transparent" />
           <div className="absolute right-0 top-1/2 h-[2px] w-10 -translate-y-1/2 rounded-full bg-gradient-to-l from-amber-100/70 to-transparent" />
+        </div>
+        <div
+          className="pointer-events-none absolute left-1/2 top-[37%] h-[26rem] w-[26rem] opacity-40"
+          style={{ animation: 'haloVictoryOrbit 28s linear infinite' }}
+        >
+          <div className="absolute left-1/2 top-0 h-3 w-3 -translate-x-1/2 rounded-full bg-amber-100 shadow-[0_0_18px_rgba(255,226,144,0.72)]" />
+          <div className="absolute bottom-3 right-6 h-2.5 w-2.5 rounded-full bg-amber-200 shadow-[0_0_16px_rgba(255,226,144,0.62)]" />
+          <div className="absolute left-8 top-[68%] h-2 w-2 rounded-full bg-amber-50 shadow-[0_0_14px_rgba(255,226,144,0.62)]" />
         </div>
         {celebrationBursts.map((burst, index) => (
           <span
@@ -146,6 +211,10 @@ export default function TournamentVictoryScreen({
         ))}
         <div className="relative flex flex-col items-center text-center">
           <div className="relative mb-6 flex h-[6.4rem] w-[6.4rem] items-center justify-center sm:h-[9.5rem] sm:w-[9.5rem]">
+            <div
+              className="pointer-events-none absolute left-1/2 top-1/2 h-[12rem] w-[12rem] rounded-full bg-[radial-gradient(circle,rgba(255,236,178,0.62)_0%,rgba(255,207,99,0.34)_38%,transparent_72%)] blur-xl sm:h-[18rem] sm:w-[18rem]"
+              style={{ animation: 'haloVictoryFlash 2.4s ease-out 1' }}
+            />
             <div className="absolute inset-0 rounded-full border border-amber-200/28 bg-[radial-gradient(circle,rgba(255,231,166,0.22)_0%,rgba(245,180,76,0.08)_48%,transparent_72%)] blur-[2px]" />
             <div
               className="absolute inset-[8%] rounded-full border border-amber-200/32"
@@ -156,14 +225,15 @@ export default function TournamentVictoryScreen({
               style={{ animation: 'haloVictoryPulse 3.6s ease-in-out infinite 0.4s' }}
             />
             <div
-              className="relative flex h-full w-full items-center justify-center rounded-full border border-amber-300/55 bg-[radial-gradient(circle_at_top,rgba(255,238,194,0.26),rgba(245,180,76,0.12)_38%,rgba(26,16,6,0.86)_100%)] shadow-[0_0_60px_rgba(245,180,76,0.42),inset_0_1px_0_rgba(255,249,224,0.26)]"
-              style={{ animation: 'haloVictoryFloat 4.6s ease-in-out infinite' }}
+              className="relative flex h-full w-full items-center justify-center rounded-full border border-amber-300/62 bg-[radial-gradient(circle_at_top,rgba(255,238,194,0.34),rgba(245,180,76,0.16)_38%,rgba(26,16,6,0.86)_100%)] shadow-[0_0_86px_rgba(245,180,76,0.52),inset_0_1px_0_rgba(255,249,224,0.26)]"
+              style={{ animation: 'haloVictoryIntro 1s cubic-bezier(0.22, 1, 0.36, 1) 1, haloVictoryFloat 4.6s ease-in-out 1s infinite' }}
             >
+              <div className="absolute inset-[-14%] rounded-full border border-amber-200/18" />
               <div className="absolute inset-x-[18%] top-[8%] h-[18%] rounded-full bg-white/20 blur-md" />
               <img
                 src="/halo-cup.svg"
                 alt="Coppa Halo"
-                className="relative h-[3.2rem] w-[3.2rem] object-contain drop-shadow-[0_0_34px_rgba(255,221,132,0.56)] sm:h-[4.8rem] sm:w-[4.8rem]"
+                className="relative h-[3.5rem] w-[3.5rem] object-contain drop-shadow-[0_0_42px_rgba(255,221,132,0.72)] sm:h-[5.4rem] sm:w-[5.4rem]"
               />
             </div>
           </div>
@@ -174,11 +244,41 @@ export default function TournamentVictoryScreen({
           <div className="relative overflow-hidden">
             <div
               className="pointer-events-none absolute inset-y-0 left-0 w-28 bg-gradient-to-r from-transparent via-amber-100/28 to-transparent blur-sm"
-              style={{ animation: 'haloVictoryShimmer 5.2s ease-in-out infinite' }}
+              style={{ animation: 'haloVictoryShimmer 5.2s ease-in-out 0.9s infinite' }}
             />
-            <h1 className="relative text-[clamp(2rem,1.45rem+3vw,4.6rem)] font-bold font-heading text-white drop-shadow-[0_0_30px_rgba(245,180,76,0.22)] md:text-7xl">
+            <h1
+              className="relative text-[clamp(2.25rem,1.55rem+3.8vw,5.5rem)] font-bold font-heading text-white drop-shadow-[0_0_38px_rgba(245,180,76,0.28)] md:text-8xl"
+              style={{ animation: 'haloVictoryNameReveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both' }}
+            >
               {tournament.winner.name}
             </h1>
+          </div>
+          <div
+            className="relative mt-5 inline-flex flex-col items-center overflow-hidden rounded-[24px] border border-amber-300/52 bg-[linear-gradient(180deg,rgba(255,226,147,0.24)_0%,rgba(245,180,76,0.1)_45%,rgba(255,255,255,0.03)_100%)] px-6 py-4 shadow-[0_0_42px_rgba(245,180,76,0.24),inset_0_1px_0_rgba(255,244,208,0.22)] sm:px-9 sm:py-5"
+            style={{ animation: 'haloVictoryPlate 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both' }}
+          >
+            <div
+              className="pointer-events-none absolute inset-y-0 left-[-20%] w-24 bg-gradient-to-r from-transparent via-amber-100/26 to-transparent blur-md"
+              style={{ animation: 'haloVictoryShimmer 4.6s ease-in-out 1.2s infinite' }}
+            />
+            <div className="text-[10px] font-semibold uppercase tracking-[0.28em] text-amber-100/78 sm:text-[11px]">
+              Vittoria Assoluta
+            </div>
+            <div className="mt-1 text-[clamp(1.25rem,1rem+1.2vw,2.2rem)] font-bold text-white">
+              {winnerStats.seriesWins} match vinti
+              <span className="mx-2 text-amber-200/42">|</span>
+              {winnerStats.gameWins} game vinti
+            </div>
+            <div className="mt-1 text-[11px] uppercase tracking-[0.2em] text-amber-100/60">
+              Halo Infinite Tournament Champion
+            </div>
+          </div>
+          <div className="relative mt-5 h-10 w-full max-w-xl">
+            <div className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 bg-gradient-to-r from-transparent via-amber-200/42 to-transparent" />
+            <div
+              className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-200/36 bg-[radial-gradient(circle,rgba(255,232,174,0.3),rgba(245,180,76,0.08)_68%,transparent_76%)]"
+              style={{ animation: 'haloVictoryStageGlow 3.8s ease-in-out infinite' }}
+            />
           </div>
           <div className="mt-6 flex flex-wrap justify-center gap-2 text-white/80 sm:mt-7 sm:gap-3">
             <HeroChip icon={<Trophy className="h-4 w-4 text-amber-200" />} text={`${winnerStats.seriesWins} match vinti`} />
