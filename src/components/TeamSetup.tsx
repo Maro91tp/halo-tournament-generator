@@ -154,7 +154,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
   const isAutoMode = config.teamCreationMode === 'automatic' || config.teamCreationMode === 'random';
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-6">
       <div>
         <h2 className="mb-4 text-2xl font-bold font-heading">
           {config.teamCreationMode === 'automatic' && (
@@ -230,9 +230,9 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                     assignPlayerToTeam(player.id, teamIndex);
                   }}
                 >
-                  <SelectTrigger className="w-40">
-                    <SelectValue placeholder="Scegli squadra..." />
-                  </SelectTrigger>
+                <SelectTrigger className="w-full sm:w-40">
+                  <SelectValue placeholder="Scegli squadra..." />
+                </SelectTrigger>
                   <SelectContent>
                     {teams.map((team, idx) => (
                       <SelectItem
@@ -254,7 +254,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
       {!isManualMode && editMode && availablePlayers.length > 0 && (
         <Card>
           <h3 className="mb-3 font-semibold">Giocatori disponibili ({availablePlayers.length})</h3>
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
             {availablePlayers.map((player) => (
               <div
                 key={player.id}
@@ -276,7 +276,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
         </Card>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-2">
         {teams.map((team, teamIndex) => (
           <Card key={team.id} className="space-y-3">
             <div>
@@ -365,8 +365,8 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
             Controlla nomi, composizione e forza dei team. Quando sei pronto puoi generare il torneo.
           </p>
         </div>
-        <div className="flex justify-end">
-          <Button onClick={handleSubmit} size="lg" className="min-w-48 text-base shadow-[0_0_24px_rgba(100,180,255,0.25)]">
+        <div className="flex justify-stretch sm:justify-end">
+          <Button onClick={handleSubmit} size="lg" className="w-full text-base shadow-[0_0_24px_rgba(100,180,255,0.25)] sm:min-w-48 sm:w-auto">
             Genera Torneo
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
@@ -374,7 +374,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
       </div>
 
       <div className="flex justify-start pt-1">
-        <Button onClick={onBack} variant="outline" size="lg">
+        <Button onClick={onBack} variant="outline" size="lg" className="w-full sm:w-auto">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Indietro
         </Button>

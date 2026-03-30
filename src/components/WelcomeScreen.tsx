@@ -1,4 +1,4 @@
-import { Flag, Plus, Save, Scale, Share, Trophy } from 'lucide-react';
+import { Flag, Save, Scale, Share, Trophy } from 'lucide-react';
 import { Button } from './ui/button';
 import type { SavedTournament } from '../lib/tournament-storage';
 
@@ -26,7 +26,7 @@ export default function WelcomeScreen({
 
   return (
     <div
-      className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10 text-white md:px-8"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden px-3 py-6 text-white sm:px-4 sm:py-10 md:px-8"
       style={{ background: '#020B1F' }}
     >
       <div
@@ -45,7 +45,7 @@ export default function WelcomeScreen({
           <img
             src="/Halo-infinite-header.svg"
             alt="Halo Infinite"
-            className="mx-auto mb-6 w-full max-w-[480px]"
+            className="mx-auto mb-5 w-full max-w-[480px] px-2 sm:mb-6 sm:px-0"
             style={{
               height: 'auto',
               filter: 'drop-shadow(0 0 20px rgba(100, 180, 255, 0.30))',
@@ -53,12 +53,11 @@ export default function WelcomeScreen({
           />
 
           <h1
-            className="uppercase"
+            className="text-2xl uppercase sm:text-3xl"
             style={{
               fontFamily: "'Oxanium', sans-serif",
               fontWeight: 700,
               letterSpacing: '0.16em',
-              fontSize: '32px',
               color: '#FFFFFF',
               marginBottom: '12px',
             }}
@@ -69,7 +68,7 @@ export default function WelcomeScreen({
           <p
             style={{
               fontFamily: "'Oxanium', sans-serif",
-              fontSize: '14px',
+              fontSize: 'clamp(12px, 3.5vw, 14px)',
               fontWeight: 400,
               letterSpacing: '0.06em',
               color: 'rgba(200, 220, 255, 0.85)',
@@ -82,7 +81,7 @@ export default function WelcomeScreen({
 
         {savedTournament && (
           <div className="mt-10 rounded-[24px] border border-cyan-200/30 bg-black/16 p-5 shadow-[0_0_18px_rgba(100,180,255,0.10)]">
-            <div className="mb-4 flex items-start justify-between gap-4">
+            <div className="mb-4 flex flex-col items-start gap-4 sm:flex-row sm:justify-between">
               <div>
                 <h2 className="m-0 text-lg font-bold text-white">Torneo salvato</h2>
                 <p className="mt-2 text-sm text-white/75">
@@ -92,7 +91,7 @@ export default function WelcomeScreen({
                   {savedTournament.players.length} giocatori • {savedTournament.teams.length} squadre
                 </p>
               </div>
-              <Button onClick={onResumeTournament} size="sm">
+              <Button onClick={onResumeTournament} size="sm" className="w-full sm:w-auto">
                 <Save className="h-4 w-4" />
                 Riprendi torneo
               </Button>
@@ -100,55 +99,7 @@ export default function WelcomeScreen({
           </div>
         )}
 
-        <div className="mt-10 flex items-center justify-between gap-6">
-          <div>
-            <h2
-              style={{
-                fontFamily: "'Oxanium', sans-serif",
-                fontWeight: 700,
-                fontSize: '18px',
-                color: '#FFFFFF',
-                letterSpacing: '0.08em',
-                margin: 0,
-              }}
-            >
-              Nuovo Torneo
-            </h2>
-            <p
-              style={{
-                fontFamily: "'Oxanium', sans-serif",
-                fontSize: '13px',
-                fontWeight: 400,
-                color: 'rgba(200, 220, 255, 0.80)',
-                marginTop: '6px',
-                margin: '6px 0 0 0',
-              }}
-            >
-              Inizia un nuovo torneo da zero
-            </p>
-          </div>
-
-          <button
-            onClick={onNewTournament}
-            aria-label="add"
-            className="ml-6 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-cyan-200/40 bg-transparent transition-all duration-300"
-            style={{
-              boxShadow: '0 0 15px rgba(100, 180, 255, 0.20)',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 25px rgba(100, 180, 255, 0.35)';
-              (e.currentTarget as HTMLButtonElement).style.background = 'rgba(100, 180, 255, 0.10)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 15px rgba(100, 180, 255, 0.20)';
-              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-            }}
-          >
-            <Plus className="h-6 w-6" style={{ color: '#64B4FF', strokeWidth: 3 }} />
-          </button>
-        </div>
-
-        <div className="mt-8 flex justify-center text-center">
+        <div className="mt-10 flex justify-center text-center">
           <Button
             onClick={onNewTournament}
             size="lg"
@@ -162,14 +113,14 @@ export default function WelcomeScreen({
               border: '1px solid rgba(136, 255, 249, 0.67)',
               boxShadow: '0 9px 10px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.10)',
               color: 'rgb(255, 255, 255)',
-              fontSize: '36px',
+              fontSize: 'clamp(22px, 7vw, 36px)',
               fontFamily: "'Oxanium', sans-serif",
               fontWeight: 500,
               letterSpacing: '0.09em',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               backdropFilter: 'blur(12px)',
-              padding: '20px 32px',
+              padding: '16px 20px',
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.boxShadow =
@@ -182,6 +133,21 @@ export default function WelcomeScreen({
           >
             Crea nuovo torneo
           </Button>
+        </div>
+
+        <div className="mt-4 text-center">
+          <p
+            style={{
+              fontFamily: "'Oxanium', sans-serif",
+              fontSize: 'clamp(12px, 3.2vw, 14px)',
+              fontWeight: 400,
+              letterSpacing: '0.05em',
+              color: 'rgba(200, 220, 255, 0.76)',
+              margin: 0,
+            }}
+          >
+            Imposta i giocatori, genera le squadre e fai partire il bracket in pochi passaggi.
+          </p>
         </div>
 
         <div
@@ -209,14 +175,14 @@ export default function WelcomeScreen({
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {[
               { Icon: Scale, title: 'Bilanciamento', subtitle: 'Squadre equilibrate' },
               { Icon: Flag, title: 'Mappe/Modalità', subtitle: 'Assegnazione auto' },
               { Icon: Save, title: 'Salvataggio', subtitle: 'Automatico' },
               { Icon: Share, title: 'Export', subtitle: 'Condivisione facile' },
             ].map((item) => (
-              <div key={item.title} className="glass-card flex flex-col items-center justify-center p-6">
+              <div key={item.title} className="glass-card flex min-h-40 flex-col items-center justify-center p-5 sm:p-6">
                 <item.Icon
                   className="mb-4"
                   style={{
@@ -229,7 +195,7 @@ export default function WelcomeScreen({
                   style={{
                     fontFamily: "'Oxanium', sans-serif",
                     fontWeight: 700,
-                    fontSize: '16px',
+                    fontSize: '15px',
                     color: '#FFFFFF',
                     letterSpacing: '0.06em',
                     textAlign: 'center',

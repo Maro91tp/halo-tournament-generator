@@ -161,7 +161,7 @@
 
 @layer components {
   .glass-card {
-    @apply rounded-[28px] p-12;
+    @apply rounded-[24px] p-4 sm:p-6 lg:rounded-[28px] lg:p-12;
 
     background: linear-gradient(
       135deg,
@@ -182,11 +182,29 @@
   }
 
   .glass-card-sm {
-    padding: 1.5rem;
+    padding: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .glass-card-sm {
+      padding: 1.5rem;
+    }
   }
 
   .glass-card-lg {
-    padding: 3rem;
+    padding: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .glass-card-lg {
+      padding: 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .glass-card-lg {
+      padding: 3rem;
+    }
   }
 }
 
@@ -201,6 +219,7 @@
     letter-spacing: 0.09em;
     min-height: 100vh;
     position: relative;
+    overflow-x: hidden;
   }
 
   h1,h2,h3,h4,h5,h6,button,.btn {
@@ -220,8 +239,14 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-attachment: scroll;
     z-index: -2;
+  }
+
+  @media (min-width: 768px) {
+    body::before {
+      background-attachment: fixed;
+    }
   }
 
   /* Dark overlay for readability */
@@ -244,6 +269,7 @@
 
   p, a, div {
     font-family: var(--body-font);
+    min-width: 0;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -253,6 +279,13 @@
   button {
     font-family: var(--button-font);
   }
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
 }
 
 /* Enhanced card visibility on dark background */

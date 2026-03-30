@@ -239,7 +239,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
       currentPlayerAlreadyStored.rank.level !== currentPlayer.rank.level);
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-6">
       <div>
         <h2 className="mb-4 flex items-center gap-3 text-2xl font-bold font-heading">
           <Users className="h-7 w-7 text-primary" />
@@ -283,7 +283,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-4">
         <Card className="h-fit max-h-[600px] overflow-y-auto md:col-span-1">
           <h3 className="mb-3 text-sm font-semibold text-muted-foreground">
             Giocatori ({players.filter(isPlayerComplete).length}/{players.length})
@@ -318,15 +318,15 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
           </div>
         </Card>
 
-        <Card className="md:col-span-3">
-          <div className="mb-6 flex items-center justify-between">
+        <Card className="xl:col-span-3">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h3 className="text-xl font-bold">Giocatore {selectedPlayerIndex + 1}</h3>
-            <div className="flex gap-2">
-              <Button onClick={handlePrevious} disabled={selectedPlayerIndex === 0} variant="outline" size="sm">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button onClick={handlePrevious} disabled={selectedPlayerIndex === 0} variant="outline" size="sm" className="w-full sm:w-auto">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Precedente
               </Button>
-              <Button onClick={handleNext} disabled={selectedPlayerIndex === players.length - 1} variant="outline" size="sm">
+              <Button onClick={handleNext} disabled={selectedPlayerIndex === players.length - 1} variant="outline" size="sm" className="w-full sm:w-auto">
                 Successivo
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -342,13 +342,13 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
               <div className="flex gap-2">
                 <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" role="combobox" aria-expanded={comboboxOpen} className="w-[400px] justify-between">
+                    <Button variant="outline" role="combobox" aria-expanded={comboboxOpen} className="w-full justify-between sm:max-w-[400px]">
                       <User className="mr-2 h-4 w-4" />
-                      Seleziona giocatore salvato
+                      <span className="truncate">Seleziona giocatore salvato</span>
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[400px] p-0">
+                  <PopoverContent className="w-[min(400px,calc(100vw-2rem))] p-0">
                     <Command className="rounded-[24px] bg-transparent">
                       <CommandInput
                         placeholder="Cerca giocatore..."
@@ -575,12 +575,12 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
       </div>
 
       <Card>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="text-sm font-semibold">
               Progresso: {players.filter(isPlayerComplete).length} / {players.length} giocatori completati
             </div>
-            <div className="mt-2 h-2 w-full rounded-full bg-muted" style={{ width: '300px' }}>
+            <div className="mt-2 h-2 w-full max-w-[300px] rounded-full bg-muted">
               <div
                 className="h-2 rounded-full bg-primary transition-all"
                 style={{

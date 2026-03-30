@@ -50,7 +50,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
   };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-6">
       <div>
         <h2 className="mb-4 flex items-center gap-3 text-2xl font-bold font-heading">
           <Settings2 className="h-7 w-7 text-primary" />
@@ -63,7 +63,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
 
       <div>
         <Label className="mb-3 block text-base font-semibold">Tipo di torneo</Label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <OptionCard
             selected={config.type === 'slayer'}
             onClick={() => updateConfig('type', 'slayer')}
@@ -83,7 +83,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
 
       <div>
         <Label className="mb-3 block text-base font-semibold">Modalita squadra</Label>
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {(['1v1', '2v2', '3v3', '4v4'] as TeamMode[]).map((mode) => (
             <OptionCard
               key={mode}
@@ -98,7 +98,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
 
       <div>
         <Label className="mb-3 block text-base font-semibold">Durata match</Label>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <OptionCard
             selected={config.matchDuration === 'single'}
             onClick={() => updateConfig('matchDuration', 'single')}
@@ -213,12 +213,12 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         </ul>
       </div>
 
-      <div className="flex justify-between pt-4">
-        <Button onClick={onBack} variant="outline" size="lg">
+      <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-between">
+        <Button onClick={onBack} variant="outline" size="lg" className="w-full sm:w-auto">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Indietro
         </Button>
-        <Button onClick={handleSubmit} size="lg" className="min-w-32">
+        <Button onClick={handleSubmit} size="lg" className="w-full sm:min-w-32 sm:w-auto">
           Continua
           <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
@@ -240,7 +240,7 @@ function OptionCard({ selected, onClick, title, description, compact, icon }: Op
   return (
     <Card
       onClick={onClick}
-      className={`cursor-pointer transition-all hover:scale-105 ${
+      className={`cursor-pointer transition-all hover:scale-[1.02] ${
         selected
           ? 'border-primary border-2 ring-2 ring-primary/20'
           : 'border-border hover:border-primary/50'
@@ -269,7 +269,7 @@ function TeamCreationCard({ id, value, selected, title, description, detail, ico
   return (
     <Label
       htmlFor={id}
-      className={`glass-card flex min-h-[210px] cursor-pointer flex-col justify-between p-6 transition-all ${
+      className={`glass-card flex min-h-[190px] cursor-pointer flex-col justify-between p-5 sm:min-h-[210px] sm:p-6 transition-all ${
         selected
           ? 'border-primary ring-2 ring-primary/25 shadow-[0_0_0_1px_rgba(255,255,255,0.3),0_0_35px_rgba(100,180,255,0.2)]'
           : 'hover:border-primary/50 hover:shadow-[0_0_24px_rgba(100,180,255,0.14)]'

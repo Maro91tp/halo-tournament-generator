@@ -41,24 +41,24 @@ export default function TournamentVictoryScreen({
 
   return (
     <div className="w-full space-y-8">
-      <section className="relative overflow-hidden rounded-[40px] border border-cyan-300/30 bg-[radial-gradient(circle_at_top,rgba(80,220,255,0.34),transparent_36%),linear-gradient(180deg,rgba(6,24,54,0.96)_0%,rgba(6,14,40,0.98)_100%)] px-6 py-12 shadow-[0_0_80px_rgba(34,211,238,0.24)] md:px-12 md:py-16">
+      <section className="relative overflow-hidden rounded-[28px] border border-cyan-300/30 bg-[radial-gradient(circle_at_top,rgba(80,220,255,0.34),transparent_36%),linear-gradient(180deg,rgba(6,24,54,0.96)_0%,rgba(6,14,40,0.98)_100%)] px-4 py-8 shadow-[0_0_80px_rgba(34,211,238,0.24)] sm:px-6 sm:py-12 md:rounded-[40px] md:px-12 md:py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_55%)]" />
         <div className="relative flex flex-col items-center text-center">
-          <div className="mb-5 flex h-28 w-28 items-center justify-center rounded-full border border-cyan-300/45 bg-cyan-300/10 shadow-[0_0_44px_rgba(34,211,238,0.32)] motion-safe:animate-pulse">
+          <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full border border-cyan-300/45 bg-cyan-300/10 shadow-[0_0_44px_rgba(34,211,238,0.32)] motion-safe:animate-pulse sm:h-28 sm:w-28">
             <img
               src="/halo-cup.svg"
               alt="Coppa Halo"
-              className="h-16 w-16 object-contain drop-shadow-[0_0_26px_rgba(34,211,238,0.38)]"
+              className="h-12 w-12 object-contain drop-shadow-[0_0_26px_rgba(34,211,238,0.38)] sm:h-16 sm:w-16"
             />
           </div>
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-cyan-300/35 bg-cyan-300/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-100">
             <Sparkles className="h-4 w-4" />
             <span>Campione del torneo</span>
           </div>
-          <h1 className="text-5xl font-bold font-heading text-white drop-shadow-[0_0_26px_rgba(34,211,238,0.16)] md:text-7xl">
+          <h1 className="text-3xl font-bold font-heading text-white drop-shadow-[0_0_26px_rgba(34,211,238,0.16)] sm:text-5xl md:text-7xl">
             {tournament.winner.name}
           </h1>
-          <p className="mt-4 max-w-3xl text-lg font-medium text-cyan-50/88 md:text-xl">
+          <p className="mt-4 max-w-3xl text-base font-medium text-cyan-50/88 sm:text-lg md:text-xl">
             {heroSubtitle}
           </p>
           <div className="mt-7 flex flex-wrap justify-center gap-3 text-white/80">
@@ -146,7 +146,7 @@ export default function TournamentVictoryScreen({
           <Swords className="h-4 w-4 text-primary" />
           <span>Percorso torneo</span>
         </div>
-        <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
+        <div className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))] sm:[grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
           {tournament.rounds.map((round) => (
             <div
               key={round.index}
@@ -177,12 +177,12 @@ export default function TournamentVictoryScreen({
         </div>
       </Card>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Button onClick={onReplay} variant="outline" size="lg" className="text-white/86">
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <Button onClick={onReplay} variant="outline" size="lg" className="w-full text-white/86 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
           Rigioca stesso torneo
         </Button>
-        <Button onClick={onReset} size="lg" className="shadow-[0_0_28px_rgba(34,211,238,0.20)]">
+        <Button onClick={onReset} size="lg" className="w-full shadow-[0_0_28px_rgba(34,211,238,0.20)] sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
           Nuovo torneo
         </Button>
@@ -393,7 +393,7 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
 
       <div className="flex flex-wrap items-stretch gap-3">
         <div
-          className={`min-w-[220px] flex-1 rounded-[16px] border px-4 py-3 ${
+          className={`min-w-0 flex-[1_1_220px] rounded-[16px] border px-4 py-3 ${
             winnerIsChampion
               ? 'border-cyan-300/30 bg-cyan-300/12 shadow-[0_0_20px_rgba(34,211,238,0.14)]'
               : 'border-white/10 bg-white/[0.05]'
@@ -410,7 +410,7 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
           )}
         </div>
 
-        <div className="min-w-[190px] shrink-0 rounded-[16px] border border-white/10 bg-black/16 px-5 py-4 text-center">
+        <div className="w-full rounded-[16px] border border-white/10 bg-black/16 px-5 py-4 text-center sm:w-auto sm:min-w-[190px] sm:shrink-0">
           <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">Risultato finale</div>
           <div className="mt-2 text-3xl font-bold text-white">
             {team1Score} <span className="mx-2 text-white/35">-</span> {team2Score}
@@ -420,7 +420,7 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
           </div>
         </div>
 
-        <div className="min-w-[220px] flex-1 rounded-[16px] border border-white/8 bg-white/[0.03] px-4 py-3">
+        <div className="min-w-0 flex-[1_1_220px] rounded-[16px] border border-white/8 bg-white/[0.03] px-4 py-3">
           <div className="text-[11px] uppercase tracking-[0.16em] text-white/42">Avversario</div>
           <div className="mt-1 text-lg font-semibold text-white/86">
             {loserTeam?.name ?? (winnerTeam ? 'Bye' : match.team2?.name ?? match.team1?.name ?? 'TBD')}

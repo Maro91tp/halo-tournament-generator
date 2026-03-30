@@ -62,6 +62,14 @@ export default function TournamentApp() {
     if (hasSavedTournament()) {
       const saved = loadTournamentState();
       setSavedTournament(saved);
+
+      if (saved) {
+        setPlayers(saved.players);
+        setConfig(saved.config);
+        setTeams(saved.teams);
+        setTournament(saved.tournament);
+        setStep('bracket');
+      }
     }
   }, []);
 
@@ -204,26 +212,26 @@ export default function TournamentApp() {
       />
       <div className="absolute inset-0 z-0 bg-slate-950/18" />
 
-      <div className="relative z-10 container mx-auto max-w-7xl px-4 py-8">
+      <div className="relative z-10 container mx-auto max-w-7xl px-3 py-5 sm:px-4 sm:py-8">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 flex items-center justify-center gap-3 text-4xl font-bold font-heading">
-            <Gamepad2 className="h-9 w-9 text-primary" />
-            <span>Halo Tournament Generator</span>
+          <h1 className="mb-2 flex flex-col items-center justify-center gap-2 text-center text-3xl font-bold font-heading sm:flex-row sm:gap-3 sm:text-4xl">
+            <Gamepad2 className="h-8 w-8 text-primary sm:h-9 sm:w-9" />
+            <span className="text-balance">Halo Tournament Generator</span>
           </h1>
-          <p className="text-muted-foreground">Crea tornei competitivi di Halo Infinite</p>
+          <p className="text-sm text-muted-foreground sm:text-base">Crea tornei competitivi di Halo Infinite</p>
         </div>
 
-        <div className="mb-8 flex items-center justify-center gap-2">
+        <div className="mb-8 flex items-center justify-center gap-1.5 sm:gap-2">
           <StepIndicator active={step === 'players'} completed={['config', 'teams', 'bracket'].includes(step)} label="1" />
-          <div className={`h-1 w-12 ${['config', 'teams', 'bracket'].includes(step) ? 'bg-primary' : 'bg-muted'}`} />
+          <div className={`h-1 w-7 sm:w-12 ${['config', 'teams', 'bracket'].includes(step) ? 'bg-primary' : 'bg-muted'}`} />
           <StepIndicator active={step === 'config'} completed={['teams', 'bracket'].includes(step)} label="2" />
-          <div className={`h-1 w-12 ${['teams', 'bracket'].includes(step) ? 'bg-primary' : 'bg-muted'}`} />
+          <div className={`h-1 w-7 sm:w-12 ${['teams', 'bracket'].includes(step) ? 'bg-primary' : 'bg-muted'}`} />
           <StepIndicator active={step === 'teams'} completed={step === 'bracket'} label="3" />
-          <div className={`h-1 w-12 ${step === 'bracket' ? 'bg-primary' : 'bg-muted'}`} />
+          <div className={`h-1 w-7 sm:w-12 ${step === 'bracket' ? 'bg-primary' : 'bg-muted'}`} />
           <StepIndicator active={step === 'bracket'} completed={false} label="4" />
         </div>
 
-        <div className="glass-card flex items-center justify-center">
+        <div className="glass-card flex items-center justify-center overflow-hidden">
           {step === 'players' && (
             <PlayerSetup onComplete={handlePlayersComplete} initialPlayers={players} />
           )}
@@ -296,7 +304,7 @@ export default function TournamentApp() {
 function StepIndicator({ active, completed, label }: { active: boolean; completed: boolean; label: string }) {
   return (
     <div
-      className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold
+      className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold sm:h-10 sm:w-10
         ${completed ? 'bg-primary text-primary-foreground' : ''}
         ${active && !completed ? 'bg-primary text-primary-foreground ring-4 ring-primary/20' : ''}
         ${!active && !completed ? 'bg-muted text-muted-foreground' : ''}

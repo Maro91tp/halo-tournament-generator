@@ -105,10 +105,10 @@ export default function TournamentBracket({
         )}
       </div>
 
-      <Card className="p-6 md:p-7">
+      <Card className="p-4 sm:p-6 md:p-7">
         <div className="grid gap-4 md:grid-cols-[1.35fr_1fr]">
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2 xl:grid-cols-4">
               <InfoStat
                 label="Tipo"
                 value={tournament.config.type === 'slayer' ? 'Slayer' : 'Ranked'}
@@ -138,7 +138,7 @@ export default function TournamentBracket({
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-primary/20 bg-primary/8 p-5 shadow-[0_0_24px_rgba(100,180,255,0.12)]">
+          <div className="rounded-[24px] border border-primary/20 bg-primary/8 p-4 sm:p-5 shadow-[0_0_24px_rgba(100,180,255,0.12)]">
             <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
               <PlayCircle className="h-4 w-4 text-primary" />
               <span>Prossimo passo</span>
@@ -211,14 +211,14 @@ export default function TournamentBracket({
         </div>
 
         <div id="tournament-bracket" className="overflow-x-auto pb-2">
-          <div className="inline-flex min-w-full gap-5">
+          <div className="inline-flex min-w-full gap-4 sm:gap-5">
             {tournament.rounds.map((round) => {
               const roundCompletedMatches = round.matches.filter((match) => !!match.winner).length;
 
               return (
                 <div
                   key={round.index}
-                  className="flex min-w-[320px] max-w-[340px] flex-1 flex-col rounded-[28px] border border-white/10 bg-black/10 p-4 backdrop-blur-sm"
+                  className="flex min-w-[280px] max-w-[320px] flex-1 flex-col rounded-[24px] border border-white/10 bg-black/10 p-3 sm:min-w-[320px] sm:max-w-[340px] sm:rounded-[28px] sm:p-4 backdrop-blur-sm"
                 >
                   <div className="mb-4 rounded-[20px] border border-white/8 bg-slate-950/36 px-4 py-4">
                     <div className="mb-2 flex items-center justify-between gap-3">
@@ -259,12 +259,12 @@ export default function TournamentBracket({
         onSubmit={handleGameResultsSubmit}
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-        <Button onClick={onBack} variant="ghost" size="lg" className="text-white/74">
+      <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/74 sm:w-auto">
           <ArrowLeft className="h-4 w-4" />
           Modifica squadre
         </Button>
-        <Button onClick={onReset} variant="outline" size="lg" className="text-white/74">
+        <Button onClick={onReset} variant="outline" size="lg" className="w-full text-white/74 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
           Nuovo torneo
         </Button>
@@ -287,7 +287,7 @@ function InfoStat({
     : createElement(Icon as ComponentType<{ className?: string }>, { className: 'h-3.5 w-3.5 text-primary' });
 
   return (
-    <div className="rounded-[20px] border border-white/10 bg-black/8 p-4">
+    <div className="min-w-0 rounded-[20px] border border-white/10 bg-black/8 p-4">
       <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.14em] text-white/50">
         {iconNode}
         <span>{label}</span>

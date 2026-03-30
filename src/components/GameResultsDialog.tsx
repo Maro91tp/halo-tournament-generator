@@ -322,7 +322,7 @@ export default function GameResultsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="!top-4 !w-fit !max-w-[calc(100vw-1.5rem)] !translate-y-0 max-h-[calc(100vh-2rem)] overflow-y-auto border-cyan-300/55 bg-[linear-gradient(180deg,rgba(235,248,255,0.98)_0%,rgba(220,240,252,0.96)_100%)] shadow-[0_20px_70px_rgba(20,140,220,0.22)]">
+      <DialogContent className="!top-4 !w-[calc(100vw-1rem)] sm:!w-full sm:!max-w-[calc(100vw-1.5rem)] !translate-y-0 max-h-[calc(100vh-2rem)] overflow-y-auto border-cyan-300/55 bg-[linear-gradient(180deg,rgba(235,248,255,0.98)_0%,rgba(220,240,252,0.96)_100%)] p-4 sm:p-6 shadow-[0_20px_70px_rgba(20,140,220,0.22)]">
         <DialogHeader className="gap-3 pb-1">
           <DialogTitle className="flex items-center gap-2 text-slate-950">
             <ModeIcon mode={match.mode ?? 'slayer'} className="h-5 w-5" />
@@ -333,13 +333,13 @@ export default function GameResultsDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="rounded-[30px] border border-cyan-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(243,251,255,0.78)_100%)] p-6 shadow-[0_16px_44px_rgba(70,170,240,0.14)] backdrop-blur-sm md:p-8">
+        <div className="rounded-[24px] border border-cyan-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(243,251,255,0.78)_100%)] p-3 sm:rounded-[30px] sm:p-6 md:p-8 shadow-[0_16px_44px_rgba(70,170,240,0.14)] backdrop-blur-sm">
           <div className="mb-8">
             <div className="grid items-center gap-4 md:grid-cols-[1fr_auto_1fr]">
               <TeamSideSummary team={match.team1} wins={team1Wins} align="right" />
               <div className="text-center">
                 <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Serie</div>
-                <div className="mt-2 text-5xl font-bold tracking-tight text-slate-950 drop-shadow-[0_3px_10px_rgba(255,255,255,0.45)] md:text-7xl">
+                <div className="mt-2 text-3xl font-bold tracking-tight text-slate-950 drop-shadow-[0_3px_10px_rgba(255,255,255,0.45)] sm:text-5xl md:text-7xl">
                   {team1Wins} <span className="text-slate-400">-</span> {team2Wins}
                 </div>
               </div>
@@ -349,7 +349,7 @@ export default function GameResultsDialog({
 
           {activeGame && (
             <div className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-[22px] border border-cyan-100/80 bg-white/72 px-4 py-3">
+              <div className="flex flex-col gap-3 rounded-[22px] border border-cyan-100/80 bg-white/72 px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                 <div className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
                   Game {activeGame.gameNumber} di {visibleGames.length}
                 </div>
@@ -385,18 +385,18 @@ export default function GameResultsDialog({
                 gameIndex={safeGameIndex}
               />
 
-              <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => setCurrentGameIndex((current) => Math.max(current - 1, 0))}
                   disabled={!canGoBackGame}
-                  className="text-slate-700 hover:bg-cyan-100/70 hover:text-slate-950"
+                  className="w-full text-slate-700 hover:bg-cyan-100/70 hover:text-slate-950 sm:w-auto"
                 >
                   Indietro
                 </Button>
 
-                <div className="text-sm text-slate-600">
+                <div className="text-center text-sm text-slate-600 sm:text-left">
                   {seriesResult
                     ? 'Serie completata, puoi confermare il risultato finale.'
                     : `Servono ancora ${requiredWins - Math.max(team1Wins, team2Wins)} vittorie per chiudere la serie.`}
@@ -407,7 +407,7 @@ export default function GameResultsDialog({
                   variant="ghost"
                   onClick={() => setCurrentGameIndex((current) => Math.min(current + 1, visibleGames.length - 1))}
                   disabled={!canGoForwardGame}
-                  className="text-slate-700 hover:bg-cyan-100/70 hover:text-slate-950"
+                  className="w-full text-slate-700 hover:bg-cyan-100/70 hover:text-slate-950 sm:w-auto"
                 >
                   Avanti
                 </Button>
@@ -466,9 +466,9 @@ function TeamSideSummary({
   align: 'left' | 'right';
 }) {
   return (
-    <div className={`space-y-1 ${align === 'right' ? 'text-right' : 'text-left'}`}>
-      <div className="text-xl font-semibold text-slate-950">{team.name}</div>
-      <div className="text-sm text-slate-600">{team.players.map((player) => player.name).join(', ')}</div>
+    <div className={align === 'right' ? 'space-y-1 text-center md:text-right' : 'space-y-1 text-center md:text-left'}>
+      <div className="text-lg font-semibold text-slate-950 sm:text-xl">{team.name}</div>
+      <div className="text-sm text-slate-600 break-words">{team.players.map((player) => player.name).join(', ')}</div>
       <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{wins} game vinti</div>
     </div>
   );
@@ -542,11 +542,11 @@ function GameSection({
   const team2Progress = game.mode === 'slayer' ? Math.min(100, Math.round((team2Current / killLimit) * 100)) : undefined;
 
   return (
-    <section className="rounded-[28px] border border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(239,247,255,0.76)_100%)] p-5 shadow-[0_10px_32px_rgba(90,150,220,0.08)] md:p-6">
+    <section className="rounded-[22px] border border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(239,247,255,0.76)_100%)] p-3 sm:rounded-[28px] sm:p-5 md:p-6 shadow-[0_10px_32px_rgba(90,150,220,0.08)]">
       <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-3">
           <div className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Game {game.gameNumber}</div>
-          <div className="inline-flex flex-wrap items-center gap-2 rounded-[18px] border border-cyan-200/70 bg-[linear-gradient(180deg,rgba(235,250,255,0.96)_0%,rgba(222,245,255,0.88)_100%)] px-4 py-3 text-base font-bold uppercase tracking-[0.12em] text-slate-800 shadow-[0_8px_20px_rgba(30,190,255,0.10)] md:text-lg">
+          <div className="inline-flex flex-wrap items-center gap-2 rounded-[18px] border border-cyan-200/70 bg-[linear-gradient(180deg,rgba(235,250,255,0.96)_0%,rgba(222,245,255,0.88)_100%)] px-3 py-2.5 text-sm font-bold uppercase tracking-[0.12em] text-slate-800 shadow-[0_8px_20px_rgba(30,190,255,0.10)] sm:px-4 sm:py-3 sm:text-base md:text-lg">
             <ModeIcon mode={game.mode} className="h-4 w-4" />
             <span>{getGameModeDisplay(game.mode)}</span>
             {game.mode === 'slayer' && <span>• Limite: {killLimit}</span>}
@@ -571,12 +571,12 @@ function GameSection({
               Obiettivo kill
             </div>
           )}
-          <div className="text-5xl font-bold tracking-tight text-slate-950 md:text-6xl">
+          <div className="text-3xl font-bold tracking-tight text-slate-950 sm:text-5xl md:text-6xl">
             {team1Current}
-            {game.mode === 'slayer' && <span className="text-2xl text-slate-400 md:text-3xl">/{killLimit}</span>}
+            {game.mode === 'slayer' && <span className="text-lg text-slate-400 sm:text-2xl md:text-3xl">/{killLimit}</span>}
             <span className="mx-3 text-slate-400">-</span>
             {team2Current}
-            {game.mode === 'slayer' && <span className="text-2xl text-slate-400 md:text-3xl">/{killLimit}</span>}
+            {game.mode === 'slayer' && <span className="text-lg text-slate-400 sm:text-2xl md:text-3xl">/{killLimit}</span>}
           </div>
           {game.mode === 'slayer' && (
             <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-200/80">
@@ -661,7 +661,7 @@ function GameSection({
         <Button
           onClick={() => onConfirmResult(gameIndex)}
           size="lg"
-          className="min-w-[300px] justify-center text-base shadow-[0_0_30px_rgba(100,180,255,0.28)]"
+          className="w-full justify-center text-base shadow-[0_0_30px_rgba(100,180,255,0.28)] sm:min-w-[300px] sm:w-auto"
         >
             Conferma risultato
           </Button>
@@ -698,9 +698,9 @@ function TeamEditor({
           : 'border-cyan-100/80 bg-white/72'
       }`}
     >
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
         <div className="text-base font-semibold text-slate-950">{team.name}</div>
-        <div className="text-right">
+        <div className="text-left sm:text-right">
           <div className="text-2xl font-bold text-slate-950">
             {total}
             <span className="ml-1 text-sm font-semibold text-slate-400">/ {target}</span>
@@ -724,17 +724,19 @@ function TeamEditor({
         {team.players.map((player) => (
           <div
             key={player.id}
-            className="grid grid-cols-[minmax(160px,1fr)_auto] items-center gap-4 rounded-[18px] border border-cyan-100/80 bg-white px-4 py-3.5 shadow-sm transition hover:border-cyan-300/80 hover:shadow-[0_8px_18px_rgba(30,190,255,0.14)]"
+            className="grid gap-4 rounded-[18px] border border-cyan-100/80 bg-white px-4 py-3.5 shadow-sm transition hover:border-cyan-300/80 hover:shadow-[0_8px_18px_rgba(30,190,255,0.14)] sm:grid-cols-[minmax(160px,1fr)_auto] sm:items-center"
           >
-            <div className="min-w-[160px] pr-2">
+            <div className="min-w-0 pr-2">
               <div className="text-base font-semibold leading-tight text-slate-950">{player.name}</div>
             </div>
-            <Stepper
-              value={values[player.id] ?? 0}
-              max={Math.max(0, target - (total - (values[player.id] ?? 0)))}
-              compact
-              onChange={(nextValue) => onChange(player.id, nextValue)}
-            />
+            <div className="flex justify-start sm:justify-end">
+              <Stepper
+                value={values[player.id] ?? 0}
+                max={Math.max(0, target - (total - (values[player.id] ?? 0)))}
+                compact
+                onChange={(nextValue) => onChange(player.id, nextValue)}
+              />
+            </div>
           </div>
         ))}
       </div>
