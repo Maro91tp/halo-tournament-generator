@@ -5,12 +5,12 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-[clamp(0.8rem,0.76rem+0.2vw,0.92rem)] font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-[clamp(0.95rem,0.86rem+0.35vw,1.1rem)] shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-[clamp(0.8rem,0.76rem+0.2vw,0.92rem)] font-semibold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-[clamp(0.95rem,0.86rem+0.35vw,1.1rem)] shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-[0_0_26px_var(--cta-glow-soft)] hover:bg-primary/92 hover:shadow-[0_0_34px_var(--cta-glow)]",
+          "bg-primary text-primary-foreground shadow-[0_0_28px_var(--cta-glow-soft)] hover:bg-primary/92 hover:shadow-[0_0_38px_var(--cta-glow)]",
         destructive:
           "bg-destructive text-white shadow-[0_0_18px_rgba(220,38,38,0.18)] hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
