@@ -12,6 +12,7 @@ import { calculateStrengthValue, getRankDisplay } from '../lib/tournament-utils'
 import { getBundledPlayers, getPlayerByName, getStoredPlayers, searchPlayers, savePlayer, syncBundledPlayers, type StoredPlayer } from '../lib/player-storage';
 import { cn } from '../lib/utils';
 import { RankIcon } from './TournamentIcons';
+import { useLanguage } from './LanguageContext';
 
 interface PlayerSetupProps {
   onComplete: (players: Player[]) => void;
@@ -20,6 +21,7 @@ interface PlayerSetupProps {
 }
 
 export default function PlayerSetup({ onComplete, onBack, initialPlayers }: PlayerSetupProps) {
+  const language = useLanguage();
   const [playerCount, setPlayerCount] = useState<number>(initialPlayers.length || 4);
   const [players, setPlayers] = useState<Player[]>(
     initialPlayers.length > 0
@@ -40,13 +42,43 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
 
   const nameInputRef = useRef<HTMLInputElement>(null);
 
+  const copy = language === 'en'
+    ? {
+        title: 'Player Setup',
+        subtitle: 'Enter the player count and their details. Press ENTER to move to the next one.',
+        helper: 'The "Previous player" and "Next player" buttons only switch the current player card. The continue button appears only when every player is complete.',
+        playerCount: 'Number of players',
+        loadRandom: 'Load random players',
+        availableInFile: 'Available players in `players.txt`',
+        increaseFile: 'Add more to use random loading.',
+        players: 'Players',
+        player: 'Player',
+        previousPlayer: 'Previous player',
+        nextPlayer: 'Next player',
+        missingNames: 'All players must have a name!',
+      }
+    : {
+        title: 'Configurazione Giocatori',
+        subtitle: 'Inserisci il numero di giocatori e i loro dati. Usa ENTER per passare al successivo.',
+        helper: 'I pulsanti "Player precedente" e "Player successivo" cambiano solo la scheda giocatore. Il pulsante per proseguire allo step seguente compare solo quando tutti i player sono completi.',
+        playerCount: 'Numero di giocatori',
+        loadRandom: 'Carica player casualmente',
+        availableInFile: 'Giocatori disponibili in `players.txt`',
+        increaseFile: 'Aumentali per usare il caricamento casuale.',
+        players: 'Giocatori',
+        player: 'Giocatore',
+        previousPlayer: 'Player precedente',
+        nextPlayer: 'Player successivo',
+        missingNames: 'Tutti i giocatori devono avere un nome!',
+      };
+
   const rankTiers: { value: RankTier; label: string }[] = [
-    { value: 'bronze', label: 'Bronzo' },
-    { value: 'silver', label: 'Argento' },
-    { value: 'gold', label: 'Oro' },
-    { value: 'platinum', label: 'Platino' },
-    { value: 'diamond', label: 'Diamante' },
-    { value: 'onyx', label: 'Onice' },
+    { value: 'bronze', label: language === 'en' ? 'Bronze' : 'Bronzo' },
+    { value: 'silver', label: language === 'en' ? 'Silver' : 'Argento' },
+    { value: 'gold', label: language === 'en' ? 'Gold' : 'Oro' },
+    { value: 'platinum', label: language === 'en' ? 'Platinum' : 'Platino' },
+    { value: 'diamond', label: language === 'en' ? 'Diamond' : 'Diamante' },
+    { value: 'onyx', label: language === 'en' ? 'Onyx' : 'Onice' },
   ];
 
   useEffect(() => {
@@ -131,7 +163,9 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
 
   const handleLoadRandomPlayers = () => {
     if (bundledPlayers.length < playerCount) {
-      alert(`Servono almeno ${playerCount} giocatori in players.txt per caricarli casualmente.`);
+      alert(language === 'en'
+        ? `You need at least ${playerCount} players in players.txt to load them randomly.`
+        : `Servono almeno ${playerCount} giocatori in players.txt per caricarli casualmente.`);
       return;
     }
 
@@ -193,7 +227,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     const allValid = players.every((p) => p.name.trim() !== '');
 
     if (!allValid) {
-      alert('Tutti i giocatori devono avere un nome!');
+      alert(copy.missingNames);
       return;
     }
 
@@ -244,13 +278,13 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
       <div>
         <h2 className="app-title mb-3 flex items-center gap-2.5 font-bold font-heading sm:gap-3">
           <Users className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
-          <span>Configurazione Giocatori</span>
+          <span>{copy.title}</span>
         </h2>
         <p className="app-subtitle mb-5 text-muted-foreground sm:mb-6">
-          Inserisci il numero di giocatori e i loro dati. Usa ENTER per passare al successivo.
+          {copy.subtitle}
         </p>
         <div className="rounded-[18px] border border-white/10 bg-black/10 px-3 py-3 text-[clamp(0.74rem,0.7rem+0.16vw,0.88rem)] text-white/72 sm:px-4">
-          I pulsanti "Player precedente" e "Player successivo" cambiano solo la scheda giocatore. Il pulsante per proseguire allo step seguente compare solo quando tutti i player sono completi.
+          {copy.helper}
         </div>
       </div>
 
@@ -258,7 +292,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div>
             <Label htmlFor="player-count" className="mb-2 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">
-              Numero di giocatori
+              {copy.playerCount}
             </Label>
             <Input
               id="player-count"
@@ -278,12 +312,12 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
             className="w-full sm:w-auto"
           >
             <Dice3 className="mr-2 h-4 w-4" />
-            Carica player casualmente
+            {copy.loadRandom}
           </Button>
         </div>
         {bundledPlayers.length < playerCount && (
           <p className="mt-2 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-muted-foreground">
-            Giocatori disponibili in `players.txt`: {bundledPlayers.length}. Aumentali per usare il caricamento casuale.
+            {copy.availableInFile}: {bundledPlayers.length}. {copy.increaseFile}
           </p>
         )}
       </div>
@@ -291,7 +325,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-4">
         <Card className="h-fit max-h-[420px] overflow-y-auto rounded-[18px] p-3 sm:max-h-[600px] sm:rounded-[24px] sm:p-6 md:col-span-1">
           <h3 className="app-eyebrow mb-2 font-semibold uppercase text-muted-foreground sm:mb-3 sm:text-sm sm:tracking-normal">
-            Giocatori ({players.filter(isPlayerComplete).length}/{players.length})
+            {copy.players} ({players.filter(isPlayerComplete).length}/{players.length})
           </h3>
           <div className="space-y-1">
             {players.map((player, index) => (
@@ -308,7 +342,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
               >
                 <div className="flex items-center justify-between">
                   <span className="truncate text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)]">
-                    {player.name || `Giocatore ${index + 1}`}
+                    {player.name || `${copy.player} ${index + 1}`}
                   </span>
                   <div className="ml-2 flex flex-shrink-0 items-center gap-1">
                     {isPlayerComplete(player) ? (
@@ -325,14 +359,14 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
 
         <Card className="rounded-[18px] p-4 sm:rounded-[24px] sm:p-6 xl:col-span-3">
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h3 className="text-[clamp(1.1rem,1rem+0.7vw,1.4rem)] font-bold">Giocatore {selectedPlayerIndex + 1}</h3>
+            <h3 className="text-[clamp(1.1rem,1rem+0.7vw,1.4rem)] font-bold">{copy.player} {selectedPlayerIndex + 1}</h3>
             <div className="flex flex-col gap-2 sm:flex-row">
               <Button onClick={handlePrevious} disabled={selectedPlayerIndex === 0} variant="ghost" size="sm" className="w-full text-white/65 hover:text-white sm:w-auto">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Player precedente
+                {copy.previousPlayer}
               </Button>
               <Button onClick={handleNext} disabled={selectedPlayerIndex === players.length - 1} size="sm" className="w-full shadow-[0_0_20px_rgba(245,180,76,0.22)] hover:shadow-[0_0_28px_rgba(245,180,76,0.34)] sm:w-auto">
-                Player successivo
+                {copy.nextPlayer}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>

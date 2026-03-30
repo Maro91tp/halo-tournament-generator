@@ -1,21 +1,62 @@
 import { Flag, Save, Scale, Share } from 'lucide-react';
 import { Button } from './ui/button';
 import type { SavedTournament } from '../lib/tournament-storage';
+import type { Language } from '../lib/language';
 
 interface WelcomeScreenProps {
+  language: Language;
   savedTournament: SavedTournament | null;
   onNewTournament: () => void;
   onResumeTournament: () => void;
 }
 
 export default function WelcomeScreen({
+  language,
   savedTournament,
   onNewTournament,
   onResumeTournament,
 }: WelcomeScreenProps) {
+  const copy = language === 'it'
+    ? {
+        subtitle: 'Crea e gestisci tornei competitivi di Halo Infinite',
+        savedTitle: 'Torneo salvato',
+        lastSave: 'Ultimo salvataggio',
+        players: 'giocatori',
+        teams: 'squadre',
+        resume: 'Riprendi torneo',
+        create: 'Crea nuovo torneo',
+        helper: 'Imposta i giocatori, genera le squadre e fai partire il bracket in pochi passaggi.',
+        featuresTitle: 'Caratteristiche principali',
+        footer: 'Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.',
+        features: [
+          { title: 'Bilanciamento', subtitle: 'Squadre equilibrate' },
+          { title: 'Mappe e modalita', subtitle: 'Assegnazione automatica' },
+          { title: 'Salvataggio', subtitle: 'Ripresa immediata' },
+          { title: 'Export', subtitle: 'Condivisione veloce' },
+        ],
+      }
+    : {
+        subtitle: 'Create and manage competitive Halo Infinite tournaments',
+        savedTitle: 'Saved tournament',
+        lastSave: 'Last save',
+        players: 'players',
+        teams: 'teams',
+        resume: 'Resume tournament',
+        create: 'Create new tournament',
+        helper: 'Set up players, generate teams, and launch the bracket in just a few steps.',
+        featuresTitle: 'Main features',
+        footer: 'This project is an unofficial fan project. Halo is a registered trademark of Microsoft.',
+        features: [
+          { title: 'Balancing', subtitle: 'Balanced teams' },
+          { title: 'Maps and modes', subtitle: 'Automatic assignment' },
+          { title: 'Saving', subtitle: 'Instant resume' },
+          { title: 'Export', subtitle: 'Quick sharing' },
+        ],
+      };
+
   const formatDate = (isoString: string) => {
     const date = new Date(isoString);
-    return date.toLocaleDateString('it-IT', {
+    return date.toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -25,10 +66,10 @@ export default function WelcomeScreen({
   };
 
   const featureItems = [
-    { Icon: Scale, title: 'Bilanciamento', subtitle: 'Squadre equilibrate' },
-    { Icon: Flag, title: 'Mappe e modalita', subtitle: 'Assegnazione automatica' },
-    { Icon: Save, title: 'Salvataggio', subtitle: 'Ripresa immediata' },
-    { Icon: Share, title: 'Export', subtitle: 'Condivisione veloce' },
+    { Icon: Scale, ...copy.features[0] },
+    { Icon: Flag, ...copy.features[1] },
+    { Icon: Save, ...copy.features[2] },
+    { Icon: Share, ...copy.features[3] },
   ];
 
   return (
@@ -82,25 +123,25 @@ export default function WelcomeScreen({
               opacity: 0.85,
             }}
           >
-            Crea e gestisci tornei competitivi di Halo Infinite
+            {copy.subtitle}
           </p>
         </div>
 
         {savedTournament && (
-        <div className="mt-7 rounded-[18px] border border-amber-200/25 bg-black/14 p-3.5 shadow-[0_0_14px_rgba(245,180,76,0.08)] sm:mt-10 sm:rounded-[24px] sm:p-5">
+          <div className="mt-7 rounded-[18px] border border-amber-200/25 bg-black/14 p-3.5 shadow-[0_0_14px_rgba(245,180,76,0.08)] sm:mt-10 sm:rounded-[24px] sm:p-5">
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="m-0 text-[clamp(0.98rem,0.9rem+0.45vw,1.15rem)] font-bold text-white">Torneo salvato</h2>
+                <h2 className="m-0 text-[clamp(0.98rem,0.9rem+0.45vw,1.15rem)] font-bold text-white">{copy.savedTitle}</h2>
                 <p className="mt-2 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/75 sm:text-sm">
-                  Ultimo salvataggio: {formatDate(savedTournament.savedAt)}
+                  {copy.lastSave}: {formatDate(savedTournament.savedAt)}
                 </p>
                 <p className="mt-1 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/60 sm:text-sm">
-                  {savedTournament.players.length} giocatori • {savedTournament.teams.length} squadre
+                  {savedTournament.players.length} {copy.players} • {savedTournament.teams.length} {copy.teams}
                 </p>
               </div>
               <Button onClick={onResumeTournament} size="sm" className="w-full sm:w-auto">
                 <Save className="h-4 w-4" />
-                Riprendi torneo
+                {copy.resume}
               </Button>
             </div>
           </div>
@@ -139,7 +180,7 @@ export default function WelcomeScreen({
                 '0 0 24px rgba(245, 180, 76, 0.18), 0 9px 10px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.10)';
             }}
           >
-            Crea nuovo torneo
+            {copy.create}
           </Button>
         </div>
 
@@ -154,7 +195,7 @@ export default function WelcomeScreen({
               margin: 0,
             }}
           >
-            Imposta i giocatori, genera le squadre e fai partire il bracket in pochi passaggi.
+            {copy.helper}
           </p>
         </div>
 
@@ -179,7 +220,7 @@ export default function WelcomeScreen({
                 margin: 0,
               }}
             >
-              Caratteristiche principali
+              {copy.featuresTitle}
             </p>
           </div>
 
@@ -222,7 +263,7 @@ export default function WelcomeScreen({
           </div>
 
           <div className="mt-4 text-center text-[clamp(9px,2.3vw,11px)] text-white/58 sm:mt-5">
-            Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.
+            {copy.footer}
           </div>
         </div>
 

@@ -11,6 +11,7 @@ import type {
   Game,
 } from '../types/tournament';
 import { SLAYER_MAPS, RANKED_MAPS, RANKED_MODE_ROTATION } from '../types/tournament';
+import type { Language } from './language';
 
 /**
  * Convert rank to numeric strength value for balancing
@@ -45,7 +46,7 @@ export function calculateStrengthValue(rank: Rank): number {
  * 1. Sort players by strength (highest to lowest)
  * 2. Assign each player to the team with the lowest total strength
  */
-export function generateBalancedTeams(players: Player[], teamSize: number): Team[] {
+export function generateBalancedTeams(players: Player[], teamSize: number, language: Language = 'it'): Team[] {
   const sortedPlayers = [...players].sort((a, b) => b.strengthValue - a.strengthValue);
   const numTeams = Math.floor(players.length / teamSize);
   const teams: Team[] = [];
@@ -53,7 +54,7 @@ export function generateBalancedTeams(players: Player[], teamSize: number): Team
   for (let i = 0; i < numTeams; i++) {
     teams.push({
       id: `team-${i + 1}`,
-      name: `Squadra ${i + 1}`,
+      name: language === 'en' ? `Team ${i + 1}` : `Squadra ${i + 1}`,
       players: [],
       totalStrength: 0,
     });
@@ -80,7 +81,7 @@ export function generateBalancedTeams(players: Player[], teamSize: number): Team
  * 1. Shuffle players randomly
  * 2. Distribute them evenly across teams
  */
-export function generateRandomTeams(players: Player[], teamSize: number): Team[] {
+export function generateRandomTeams(players: Player[], teamSize: number, language: Language = 'it'): Team[] {
   const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
   const numTeams = Math.floor(players.length / teamSize);
   const teams: Team[] = [];
@@ -88,7 +89,7 @@ export function generateRandomTeams(players: Player[], teamSize: number): Team[]
   for (let i = 0; i < numTeams; i++) {
     teams.push({
       id: `team-${i + 1}`,
-      name: `Squadra ${i + 1}`,
+      name: language === 'en' ? `Team ${i + 1}` : `Squadra ${i + 1}`,
       players: [],
       totalStrength: 0,
     });
@@ -125,7 +126,7 @@ function getRandomRankedMap(mode: GameMode, usedMaps: string[] = []): string {
 /**
  * Generate tournament bracket
  */
-export function generateTournament(teams: Team[], config: TournamentConfig): Tournament {
+export function generateTournament(teams: Team[], config: TournamentConfig, language: Language = 'it'): Tournament {
   const numTeams = teams.length;
   const numRounds = Math.ceil(Math.log2(numTeams));
   const rounds: Round[] = [];
@@ -167,7 +168,7 @@ export function generateTournament(teams: Team[], config: TournamentConfig): Tou
 
   rounds.push({
     index: 0,
-    name: getRoundName(0, numRounds),
+    name: getRoundName(0, numRounds, language),
     matches: firstRoundMatches,
     map: firstRoundMap,
     mode: firstRoundMode,
@@ -199,7 +200,7 @@ export function generateTournament(teams: Team[], config: TournamentConfig): Tou
 
     rounds.push({
       index: roundIndex,
-      name: getRoundName(roundIndex, numRounds),
+      name: getRoundName(roundIndex, numRounds, language),
       matches,
       map: roundMap,
       mode: roundMode,
@@ -217,8 +218,16 @@ export function generateTournament(teams: Team[], config: TournamentConfig): Tou
   };
 }
 
-function getRoundName(roundIndex: number, totalRounds: number): string {
+function getRoundName(roundIndex: number, totalRounds: number, language: Language = 'it'): string {
   const roundsFromEnd = totalRounds - roundIndex;
+
+  if (language === 'en') {
+    if (roundsFromEnd === 1) return 'Final';
+    if (roundsFromEnd === 2) return 'Semifinal';
+    if (roundsFromEnd === 3) return 'Quarterfinal';
+    if (roundsFromEnd === 4) return 'Round of 16';
+    return `Round ${roundIndex + 1}`;
+  }
 
   if (roundsFromEnd === 1) return 'Finale';
   if (roundsFromEnd === 2) return 'Semifinale';
@@ -310,18 +319,27 @@ function resolveAutomaticAdvancements(rounds: Round[]) {
 /**
  * Get rank display string
  */
-export function getRankDisplay(rank: Rank): string {
-  const tierNames: Record<string, string> = {
-    bronze: 'Bronzo',
-    silver: 'Argento',
-    gold: 'Oro',
-    platinum: 'Platino',
-    diamond: 'Diamante',
-    onyx: 'Onice',
-  };
+export function getRankDisplay(rank: Rank, language: Language = 'it'): string {
+  const tierNames: Record<string, string> = language === 'en'
+    ? {
+        bronze: 'Bronze',
+        silver: 'Silver',
+        gold: 'Gold',
+        platinum: 'Platinum',
+        diamond: 'Diamond',
+        onyx: 'Onyx',
+      }
+    : {
+        bronze: 'Bronzo',
+        silver: 'Argento',
+        gold: 'Oro',
+        platinum: 'Platino',
+        diamond: 'Diamante',
+        onyx: 'Onice',
+      };
 
   if (rank.tier === 'onyx') {
-    return `Onice ${rank.level}`;
+    return `${tierNames.onyx} ${rank.level}`;
   }
 
   return `${tierNames[rank.tier]} ${rank.level}`;
@@ -365,19 +383,26 @@ export function generateGamesForMatch(
   return games;
 }
 
-export function getGameModeDisplay(mode: GameMode): string {
-  const modeNames: Record<GameMode, string> = {
-    slayer: 'Massacro',
-    ctf: 'Ruba la bandiera',
-    oddball: 'Teschio',
-    koth: 'Re della collina',
-  };
+export function getGameModeDisplay(mode: GameMode, language: Language = 'it'): string {
+  const modeNames: Record<GameMode, string> = language === 'en'
+    ? {
+        slayer: 'Slayer',
+        ctf: 'Capture the Flag',
+        oddball: 'Oddball',
+        koth: 'King of the Hill',
+      }
+    : {
+        slayer: 'Massacro',
+        ctf: 'Ruba la bandiera',
+        oddball: 'Teschio',
+        koth: 'Re della collina',
+      };
 
   return modeNames[mode];
 }
 
-export function getMatchDurationDisplay(duration: string): string {
-  if (duration === 'single') return 'Bo1';
+export function getMatchDurationDisplay(duration: string, language: Language = 'it'): string {
+  if (duration === 'single') return language === 'en' ? 'Bo1' : 'Bo1';
   if (duration === 'bo3') return 'Bo3';
   if (duration === 'bo5') return 'Bo5';
   return duration;

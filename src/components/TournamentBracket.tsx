@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import GameResultsDialog from './GameResultsDialog';
 import { ModeIcon } from './TournamentIcons';
 import TournamentVictoryScreen from './TournamentVictoryScreen';
+import { useLanguage } from './LanguageContext';
 
 interface TournamentBracketProps {
   tournament: Tournament;
@@ -36,7 +37,69 @@ export default function TournamentBracket({
   onReset,
   onBack,
 }: TournamentBracketProps) {
+  const language = useLanguage();
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  const copy = language === 'en'
+    ? {
+        title: 'Tournament bracket',
+        subtitle: 'Follow the bracket, record available results, and complete the tournament without losing track of the next round.',
+        champion: 'Champion',
+        type: 'Type',
+        mode: 'Mode',
+        format: 'Format',
+        teams: 'Teams',
+        progress: 'Tournament progress',
+        match: 'match',
+        matches: 'matches',
+        completed: 'completed',
+        nextStep: 'Next step',
+        recordResult: 'Record result',
+        completedTournament: 'Tournament completed',
+        noMatchReady: 'No match ready',
+        winnerHelp: 'You already have a final winner. You can go back or start a new tournament.',
+        pendingHelp: 'Complete the currently open matches to unlock the next rounds.',
+        rankedRotation: 'Ranked rotation',
+        activeBracket: 'Active bracket',
+        activeBracketHelp: 'Highlighted matches are ready. Waiting matches stay secondary until the round unlocks.',
+        availableMatches: 'available matches',
+        waitingResults: 'Waiting for results',
+        editTeams: 'Edit teams',
+        newTournament: 'New tournament',
+        slayer: 'Slayer',
+        oddball: 'Oddball',
+        ctf: 'Capture the Flag',
+        koth: 'King of the Hill',
+      }
+    : {
+        title: 'Bracket torneo',
+        subtitle: 'Segui il tabellone, registra i risultati disponibili e completa il torneo senza perdere il filo del round successivo.',
+        champion: 'Campione',
+        type: 'Tipo',
+        mode: 'Modalita',
+        format: 'Formato',
+        teams: 'Squadre',
+        progress: 'Avanzamento torneo',
+        match: 'match',
+        matches: 'match',
+        completed: 'completato',
+        nextStep: 'Prossimo passo',
+        recordResult: 'Registra risultato',
+        completedTournament: 'Torneo completato',
+        noMatchReady: 'Nessun match pronto',
+        winnerHelp: 'Hai gia un vincitore finale. Puoi tornare indietro o iniziare un nuovo torneo.',
+        pendingHelp: 'Completa i match gia aperti per sbloccare i round successivi.',
+        rankedRotation: 'Rotazione ranked',
+        activeBracket: 'Tabellone attivo',
+        activeBracketHelp: 'I match evidenziati sono pronti. Quelli in attesa restano secondari finche il round non si sblocca.',
+        availableMatches: 'match disponibili',
+        waitingResults: 'In attesa dei risultati',
+        editTeams: 'Modifica squadre',
+        newTournament: 'Nuovo torneo',
+        slayer: 'Massacro',
+        oddball: 'Teschio',
+        ctf: 'Ruba la bandiera',
+        koth: 'Re della collina',
+      };
 
   const allMatches = useMemo(
     () => tournament.rounds.flatMap((round) => round.matches),
@@ -87,11 +150,10 @@ export default function TournamentBracket({
         <div className="max-w-3xl">
           <h2 className="app-title mb-2 flex items-center gap-2.5 font-bold font-heading sm:gap-3">
             <Trophy className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
-            <span>Bracket torneo</span>
+            <span>{copy.title}</span>
           </h2>
           <p className="app-subtitle text-muted-foreground">
-            Segui il tabellone, registra i risultati disponibili e completa il torneo senza perdere il
-            filo del round successivo.
+            {copy.subtitle}
           </p>
         </div>
 
@@ -99,7 +161,7 @@ export default function TournamentBracket({
           <div className="rounded-[26px] border border-primary/35 bg-primary/14 px-6 py-4 text-center text-primary-foreground shadow-[0_0_34px_rgba(245,180,76,0.24)]">
             <div className="mb-1 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/70">
               <Crown className="h-4 w-4 text-primary" />
-              <span>Campione</span>
+              <span>{copy.champion}</span>
             </div>
             <div className="text-xl font-bold text-white">{tournament.winner.name}</div>
           </div>
@@ -111,23 +173,23 @@ export default function TournamentBracket({
           <div className="space-y-4">
             <div className="grid grid-cols-1 gap-2.5 text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
               <InfoStat
-                label="Tipo"
+                label={copy.type}
                 value={tournament.config.type === 'slayer' ? 'Slayer' : 'Ranked'}
                 icon={tournament.config.type === 'slayer' ? <ModeIcon mode="slayer" className="h-4 w-4" /> : <Trophy className="h-4 w-4 text-primary" />}
               />
-              <InfoStat label="Modalita" value={tournament.config.teamMode} icon={Swords} />
+              <InfoStat label={copy.mode} value={tournament.config.teamMode} icon={Swords} />
               <InfoStat
-                label="Formato"
-                value={getMatchDurationDisplay(tournament.config.matchDuration)}
+                label={copy.format}
+                value={getMatchDurationDisplay(tournament.config.matchDuration, language)}
                 icon={TimerReset}
               />
-              <InfoStat label="Squadre" value={String(tournament.teams.length)} icon={Swords} />
+              <InfoStat label={copy.teams} value={String(tournament.teams.length)} icon={Swords} />
             </div>
 
             <div className="rounded-[20px] border border-white/10 bg-black/10 p-3 sm:rounded-[24px] sm:p-4">
               <div className="mb-2 flex items-center justify-between gap-3 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)]">
-                <span className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] font-semibold text-white sm:text-sm">Avanzamento torneo</span>
-                <span className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-white/72 sm:text-sm">{completedMatches}/{totalMatches} match</span>
+                <span className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] font-semibold text-white sm:text-sm">{copy.progress}</span>
+                <span className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-white/72 sm:text-sm">{completedMatches}/{totalMatches} {totalMatches === 1 ? copy.match : copy.matches}</span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-white/10">
                 <div
@@ -135,14 +197,14 @@ export default function TournamentBracket({
                   style={{ width: `${completionPercent}%` }}
                 />
               </div>
-              <div className="mt-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-white/68 sm:text-sm">{completionPercent}% completato</div>
+              <div className="mt-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-white/68 sm:text-sm">{completionPercent}% {copy.completed}</div>
             </div>
           </div>
 
           <div className="rounded-[20px] border border-primary/20 bg-primary/8 p-3.5 sm:rounded-[24px] sm:p-5 shadow-[0_0_24px_rgba(245,180,76,0.12)]">
             <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-white sm:mb-3 sm:text-sm">
               <PlayCircle className="h-4 w-4 text-primary" />
-              <span>Prossimo passo</span>
+              <span>{copy.nextStep}</span>
             </div>
 
             {nextPlayableMatch ? (
@@ -152,27 +214,27 @@ export default function TournamentBracket({
                 </div>
                 <div className="mt-2 flex flex-wrap gap-2 text-xs text-white/72">
                   <Pill icon={MapPinned} text={nextPlayableMatch.map} />
-                  {nextPlayableMatch.mode && <Pill icon={<ModeIcon mode={nextPlayableMatch.mode} className="h-3.5 w-3.5" />} text={getGameModeDisplay(nextPlayableMatch.mode)} />}
-                  <Pill icon={TimerReset} text={getMatchDurationDisplay(tournament.config.matchDuration)} />
+                  {nextPlayableMatch.mode && <Pill icon={<ModeIcon mode={nextPlayableMatch.mode} className="h-3.5 w-3.5" />} text={getGameModeDisplay(nextPlayableMatch.mode, language)} />}
+                  <Pill icon={TimerReset} text={getMatchDurationDisplay(tournament.config.matchDuration, language)} />
                 </div>
                 <Button
                   onClick={() => handleMatchClick(nextPlayableMatch)}
                   size="lg"
                   className="mt-4 w-full justify-center shadow-[0_0_30px_rgba(245,180,76,0.28)] hover:shadow-[0_0_40px_rgba(245,180,76,0.4)]"
                 >
-                  Registra risultato
+                  {copy.recordResult}
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </>
             ) : (
               <div className="space-y-2">
                 <div className="text-base font-semibold text-white">
-                  {tournament.winner ? 'Torneo completato' : 'Nessun match pronto'}
+                  {tournament.winner ? copy.completedTournament : copy.noMatchReady}
                 </div>
                 <p className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/68">
                   {tournament.winner
-                    ? 'Hai gia un vincitore finale. Puoi tornare indietro o iniziare un nuovo torneo.'
-                    : 'Completa i match gia aperti per sbloccare i round successivi.'}
+                    ? copy.winnerHelp
+                    : copy.pendingHelp}
                 </p>
               </div>
             )}
@@ -184,16 +246,16 @@ export default function TournamentBracket({
         <Card className="p-3.5 sm:p-5 md:p-6">
           <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-white sm:mb-3 sm:text-sm">
             <Trophy className="h-4 w-4 text-primary" />
-            <span>Rotazione ranked</span>
+            <span>{copy.rankedRotation}</span>
           </div>
           <div className="flex flex-wrap items-center gap-1.5 text-xs text-white/80 sm:gap-2 sm:text-sm">
-            <Pill icon={<ModeIcon mode="slayer" className="h-3.5 w-3.5" />} text="Massacro" />
+            <Pill icon={<ModeIcon mode="slayer" className="h-3.5 w-3.5" />} text={copy.slayer} />
             <ChevronRight className="h-4 w-4 text-primary/80" />
-            <Pill icon={<ModeIcon mode="oddball" className="h-3.5 w-3.5" />} text="Teschio" />
+            <Pill icon={<ModeIcon mode="oddball" className="h-3.5 w-3.5" />} text={copy.oddball} />
             <ChevronRight className="h-4 w-4 text-primary/80" />
-            <Pill icon={<ModeIcon mode="ctf" className="h-3.5 w-3.5" />} text="Ruba la bandiera" />
+            <Pill icon={<ModeIcon mode="ctf" className="h-3.5 w-3.5" />} text={copy.ctf} />
             <ChevronRight className="h-4 w-4 text-primary/80" />
-            <Pill icon={<ModeIcon mode="koth" className="h-3.5 w-3.5" />} text="Re della collina" />
+            <Pill icon={<ModeIcon mode="koth" className="h-3.5 w-3.5" />} text={copy.koth} />
           </div>
         </Card>
       )}
@@ -201,13 +263,13 @@ export default function TournamentBracket({
       <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="text-[clamp(0.86rem,0.82rem+0.2vw,1rem)] font-semibold text-white">Tabellone attivo</div>
+            <div className="text-[clamp(0.86rem,0.82rem+0.2vw,1rem)] font-semibold text-white">{copy.activeBracket}</div>
             <p className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/68">
-              I match evidenziati sono pronti. Quelli in attesa restano secondari finche il round non si sblocca.
+              {copy.activeBracketHelp}
             </p>
           </div>
           <div className="rounded-full border border-white/12 bg-white/6 px-3 py-1.5 text-xs text-white/78 sm:px-4 sm:py-2 sm:text-sm">
-            {playableMatches.length > 0 ? `${playableMatches.length} match disponibili` : 'In attesa dei risultati'}
+            {playableMatches.length > 0 ? `${playableMatches.length} ${copy.availableMatches}` : copy.waitingResults}
           </div>
         </div>
 
@@ -230,8 +292,8 @@ export default function TournamentBracket({
                     </div>
                     <div className="flex flex-wrap gap-2 text-xs text-white/72">
                       <Pill icon={MapPinned} text={round.map} />
-                      {round.mode && <Pill icon={<ModeIcon mode={round.mode} className="h-3.5 w-3.5" />} text={getGameModeDisplay(round.mode)} />}
-                      <Pill icon={TimerReset} text={getMatchDurationDisplay(tournament.config.matchDuration)} />
+                      {round.mode && <Pill icon={<ModeIcon mode={round.mode} className="h-3.5 w-3.5" />} text={getGameModeDisplay(round.mode, language)} />}
+                      <Pill icon={TimerReset} text={getMatchDurationDisplay(tournament.config.matchDuration, language)} />
                     </div>
                   </div>
 
@@ -263,11 +325,11 @@ export default function TournamentBracket({
       <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/60 hover:text-white sm:w-auto">
           <ArrowLeft className="h-4 w-4" />
-          Modifica squadre
+          {copy.editTeams}
         </Button>
         <Button onClick={onReset} variant="outline" size="lg" className="w-full border-white/18 text-white/70 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
-          Nuovo torneo
+          {copy.newTournament}
         </Button>
       </div>
     </div>

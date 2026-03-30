@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { getGameModeDisplay, getMatchDurationDisplay } from '../lib/tournament-utils';
 import { RankIcon } from './TournamentIcons';
+import { useLanguage } from './LanguageContext';
 
 interface TournamentVictoryScreenProps {
   tournament: Tournament;
@@ -35,7 +36,39 @@ export default function TournamentVictoryScreen({
   onReplay,
   onReset,
 }: TournamentVictoryScreenProps) {
+  const language = useLanguage();
   if (!tournament.winner) return null;
+  const copy = language === 'en'
+    ? {
+        champion: 'Tournament champion',
+        absoluteVictory: 'Absolute Victory',
+        matchesWon: 'matches won',
+        gamesWon: 'games won',
+        finalStats: 'Final stats',
+        totalKills: 'Total kills',
+        players: 'Players',
+        championRoster: 'Champion roster',
+        tournamentRun: 'Tournament run',
+        back: 'Back',
+        replay: 'Replay same tournament',
+        newTournament: 'New tournament',
+        footer: 'This project is an unofficial fan project. Halo is a registered trademark of Microsoft.',
+      }
+    : {
+        champion: 'Campione del torneo',
+        absoluteVictory: 'Vittoria Assoluta',
+        matchesWon: 'match vinti',
+        gamesWon: 'game vinti',
+        finalStats: 'Statistiche finali',
+        totalKills: 'Kill totali',
+        players: 'Giocatori',
+        championRoster: 'Roster campione',
+        tournamentRun: 'Percorso torneo',
+        back: 'Indietro',
+        replay: 'Rigioca stesso torneo',
+        newTournament: 'Nuovo torneo',
+        footer: 'Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.',
+      };
 
   const completedMatches = tournament.rounds.flatMap((round) => round.matches).filter((match) => match.winner);
   const winnerStats = getWinnerStats(tournament.winner, completedMatches);
@@ -239,7 +272,7 @@ export default function TournamentVictoryScreen({
           </div>
           <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-amber-300/45 bg-[linear-gradient(180deg,rgba(255,232,173,0.18)_0%,rgba(245,180,76,0.08)_100%)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-50 shadow-[0_0_18px_rgba(245,180,76,0.16)] sm:mb-3 sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.22em]">
             <Sparkles className="h-4 w-4 text-[#ffd76a]" />
-            <span>Campione del torneo</span>
+            <span>{copy.champion}</span>
           </div>
           <div className="relative overflow-hidden">
             <div
@@ -262,12 +295,12 @@ export default function TournamentVictoryScreen({
               style={{ animation: 'haloVictoryShimmer 4.6s ease-in-out 1.2s infinite' }}
             />
             <div className="text-[9px] font-semibold uppercase tracking-[0.22em] text-amber-100/78 sm:text-[11px] sm:tracking-[0.28em]">
-              Vittoria Assoluta
+              {copy.absoluteVictory}
             </div>
             <div className="mt-1 text-center text-[clamp(1rem,0.92rem+0.9vw,2.2rem)] font-bold text-white">
-              {winnerStats.seriesWins} match vinti
+              {winnerStats.seriesWins} {copy.matchesWon}
               <span className="mx-2 text-amber-200/42">|</span>
-              {winnerStats.gameWins} game vinti
+              {winnerStats.gameWins} {copy.gamesWon}
             </div>
             <div className="mt-1 text-center text-[9px] uppercase tracking-[0.12em] text-amber-100/60 sm:text-[11px] sm:tracking-[0.2em]">
               Halo Infinite Tournament Champion
@@ -281,9 +314,9 @@ export default function TournamentVictoryScreen({
             />
           </div>
           <div className="mt-6 flex flex-wrap justify-center gap-2 text-white/80 sm:mt-7 sm:gap-3">
-            <HeroChip icon={<Trophy className="h-4 w-4 text-amber-200" />} text={`${winnerStats.seriesWins} match vinti`} />
-            <HeroChip icon={<Swords className="h-4 w-4 text-amber-200" />} text={`${winnerStats.gameWins} game vinti`} />
-            <HeroChip icon={<Crown className="h-4 w-4 text-amber-200" />} text={getMatchDurationDisplay(tournament.config.matchDuration)} />
+            <HeroChip icon={<Trophy className="h-4 w-4 text-amber-200" />} text={`${winnerStats.seriesWins} ${copy.matchesWon}`} />
+            <HeroChip icon={<Swords className="h-4 w-4 text-amber-200" />} text={`${winnerStats.gameWins} ${copy.gamesWon}`} />
+            <HeroChip icon={<Crown className="h-4 w-4 text-amber-200" />} text={getMatchDurationDisplay(tournament.config.matchDuration, language)} />
           </div>
         </div>
       </section>
@@ -292,13 +325,13 @@ export default function TournamentVictoryScreen({
         <Card className="p-4 sm:p-6 md:p-8">
           <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/68 sm:mb-5 sm:text-sm sm:tracking-[0.18em]">
             <Trophy className="h-4 w-4 text-primary" />
-            <span>Statistiche finali</span>
+            <span>{copy.finalStats}</span>
           </div>
           <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
-            <StatTile label="Kill totali" value={String(winnerStats.totalKills)} highlight />
-            <StatTile label="Match vinti" value={String(winnerStats.seriesWins)} />
-            <StatTile label="Game vinti" value={String(winnerStats.gameWins)} />
-            <StatTile label="Giocatori" value={String(tournament.winner.players.length)} />
+            <StatTile label={copy.totalKills} value={String(winnerStats.totalKills)} highlight />
+            <StatTile label={copy.matchesWon} value={String(winnerStats.seriesWins)} />
+            <StatTile label={copy.gamesWon} value={String(winnerStats.gameWins)} />
+            <StatTile label={copy.players} value={String(tournament.winner.players.length)} />
           </div>
 
           <div className="mt-5 rounded-[22px] border border-amber-300/55 bg-[radial-gradient(circle_at_right,rgba(255,214,102,0.24),transparent_30%),radial-gradient(circle_at_left_top,rgba(255,244,200,0.14),transparent_26%),linear-gradient(180deg,rgba(255,205,96,0.28)_0%,rgba(245,180,76,0.16)_42%,rgba(245,180,76,0.07)_100%)] p-4 shadow-[0_0_50px_rgba(245,180,76,0.24),inset_0_1px_0_rgba(255,245,214,0.2)] sm:mt-6 sm:rounded-[30px] sm:p-6">
@@ -326,7 +359,7 @@ export default function TournamentVictoryScreen({
         <Card className="p-4 sm:p-6 md:p-8">
           <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/68 sm:mb-5 sm:text-sm sm:tracking-[0.18em]">
             <Crown className="h-4 w-4 text-primary" />
-            <span>Roster campione</span>
+            <span>{copy.championRoster}</span>
           </div>
           <div className="space-y-3">
             {winnerStats.playerSummaries.map((summary) => (
@@ -363,7 +396,7 @@ export default function TournamentVictoryScreen({
       <Card className="p-4 sm:p-6 md:p-8">
         <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/68 sm:mb-5 sm:text-sm sm:tracking-[0.18em]">
           <Swords className="h-4 w-4 text-primary" />
-          <span>Percorso torneo</span>
+            <span>{copy.tournamentRun}</span>
         </div>
         <div className="grid gap-4 sm:gap-5 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))] sm:[grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
           {tournament.rounds.map((round) => (
@@ -399,20 +432,20 @@ export default function TournamentVictoryScreen({
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/60 hover:text-white sm:w-auto">
           <ArrowLeft className="h-4 w-4" />
-          Indietro
+          {copy.back}
         </Button>
         <Button onClick={onReplay} variant="outline" size="lg" className="w-full border-white/18 text-white/74 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
-          Rigioca stesso torneo
+          {copy.replay}
         </Button>
         <Button onClick={onReset} size="lg" className="w-full shadow-[0_0_34px_rgba(245,180,76,0.28)] hover:shadow-[0_0_44px_rgba(245,180,76,0.38)] sm:min-w-44 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
-          Nuovo torneo
+          {copy.newTournament}
         </Button>
       </div>
 
       <div className="text-center text-[11px] text-white/55 sm:text-xs">
-        Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.
+        {copy.footer}
       </div>
       <div className="text-center text-xs font-semibold tracking-[0.08em] text-amber-100/80 sm:text-sm sm:tracking-[0.1em]">
         Made by MrMarozzo

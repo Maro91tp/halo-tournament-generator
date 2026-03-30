@@ -8,6 +8,7 @@ import { Card } from './ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { generateBalancedTeams, generateRandomTeams, getRankDisplay } from '../lib/tournament-utils';
 import { RankIcon } from './TournamentIcons';
+import { useLanguage } from './LanguageContext';
 
 interface TeamSetupProps {
   players: Player[];
@@ -18,6 +19,7 @@ interface TeamSetupProps {
 }
 
 export default function TeamSetup({ players, config, onComplete, onBack, initialTeams }: TeamSetupProps) {
+  const language = useLanguage();
   const teamSize = parseInt(config.teamMode.charAt(0));
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
@@ -30,11 +32,11 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
       setTeams(initialTeams);
       updateAvailablePlayers(initialTeams);
     } else if (config.teamCreationMode === 'automatic') {
-      const balancedTeams = generateBalancedTeams(players, teamSize);
+      const balancedTeams = generateBalancedTeams(players, teamSize, language);
       setTeams(balancedTeams);
       setAvailablePlayers([]);
     } else if (config.teamCreationMode === 'random') {
-      const randomTeams = generateRandomTeams(players, teamSize);
+      const randomTeams = generateRandomTeams(players, teamSize, language);
       setTeams(randomTeams);
       setAvailablePlayers([]);
     } else {
@@ -45,7 +47,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
       for (let i = 0; i < numTeams; i++) {
         emptyTeams.push({
           id: `team-${i + 1}`,
-          name: teamNames[i] || `Team ${String.fromCharCode(65 + i)}`,
+          name: language === 'en' ? (teamNames[i] || `Team ${String.fromCharCode(65 + i)}`) : `Squadra ${i + 1}`,
           players: [],
           totalStrength: 0,
         });
@@ -54,7 +56,63 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
       setTeams(emptyTeams);
       setAvailablePlayers([...players]);
     }
-  }, []);
+  }, [config.teamCreationMode, initialTeams, language, players, teamSize]);
+
+  const copy = language === 'en'
+    ? {
+        balancedTeams: 'Balanced Teams',
+        randomTeams: 'Random Teams',
+        createTeams: 'Create Teams',
+        automaticDescription: 'Teams were generated automatically. You can still edit names and players.',
+        randomDescription: 'Teams were generated randomly. You can still edit names and players.',
+        manualDescription: 'Assign players to teams manually.',
+        regenerate: 'Regenerate teams',
+        view: 'View',
+        editPlayers: 'Edit players',
+        assignPlayers: 'Assign players to teams',
+        remaining: 'remaining',
+        strength: 'Strength',
+        chooseTeam: 'Choose team...',
+        availablePlayers: 'Available players',
+        selectPlayerForTeam: 'Select a player to add to',
+        teamName: 'Team name',
+        players: 'Players',
+        cancel: 'Cancel',
+        addPlayer: '+ Add player',
+        confirmTeams: 'Confirm teams',
+        confirmHelp: 'Check names, roster, and strength. When you are ready, generate the tournament.',
+        generateTournament: 'Generate Tournament',
+        back: 'Back',
+        teamLimit: `A team can have at most ${teamSize} players!`,
+        allTeamsRequired: `All teams must have exactly ${teamSize} players!`,
+      }
+    : {
+        balancedTeams: 'Squadre Bilanciate',
+        randomTeams: 'Squadre Casuali',
+        createTeams: 'Crea le Squadre',
+        automaticDescription: 'Le squadre sono state generate automaticamente. Puoi modificare i nomi e i giocatori.',
+        randomDescription: 'Le squadre sono state generate casualmente. Puoi modificare i nomi e i giocatori.',
+        manualDescription: 'Assegna i giocatori alle squadre manualmente.',
+        regenerate: 'Rigenera squadre',
+        view: 'Visualizza',
+        editPlayers: 'Modifica giocatori',
+        assignPlayers: 'Assegna giocatori alle squadre',
+        remaining: 'rimanenti',
+        strength: 'Forza',
+        chooseTeam: 'Scegli squadra...',
+        availablePlayers: 'Giocatori disponibili',
+        selectPlayerForTeam: 'Seleziona un giocatore per aggiungerlo a',
+        teamName: 'Nome squadra',
+        players: 'Giocatori',
+        cancel: 'Annulla',
+        addPlayer: '+ Aggiungi giocatore',
+        confirmTeams: 'Conferma squadre',
+        confirmHelp: 'Controlla nomi, composizione e forza dei team. Quando sei pronto puoi generare il torneo.',
+        generateTournament: 'Genera Torneo',
+        back: 'Indietro',
+        teamLimit: `La squadra puo avere massimo ${teamSize} giocatori!`,
+        allTeamsRequired: `Tutte le squadre devono avere esattamente ${teamSize} giocatori!`,
+      };
 
   const updateAvailablePlayers = (currentTeams: Team[]) => {
     const assignedPlayerIds = new Set(
@@ -74,7 +132,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
     const team = newTeams[teamIndex];
 
     if (team.players.length >= teamSize) {
-      alert(`La squadra puo avere massimo ${teamSize} giocatori!`);
+      alert(copy.teamLimit);
       return;
     }
 
@@ -104,7 +162,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
     const team = newTeams[teamIndex];
 
     if (team.players.length >= teamSize) {
-      alert(`La squadra puo avere massimo ${teamSize} giocatori!`);
+      alert(copy.teamLimit);
       return;
     }
 
@@ -122,7 +180,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
     const allTeamsComplete = teams.every((team) => team.players.length === teamSize);
 
     if (!allTeamsComplete) {
-      alert(`Tutte le squadre devono avere esattamente ${teamSize} giocatori!`);
+      alert(copy.allTeamsRequired);
       return;
     }
 
@@ -131,12 +189,12 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
 
   const handleRegenerate = () => {
     if (config.teamCreationMode === 'automatic') {
-      const balancedTeams = generateBalancedTeams(players, teamSize);
+      const balancedTeams = generateBalancedTeams(players, teamSize, language);
       setTeams(balancedTeams);
       setAvailablePlayers([]);
       setEditMode(false);
     } else if (config.teamCreationMode === 'random') {
-      const randomTeams = generateRandomTeams(players, teamSize);
+      const randomTeams = generateRandomTeams(players, teamSize, language);
       setTeams(randomTeams);
       setAvailablePlayers([]);
       setEditMode(false);
@@ -160,26 +218,26 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
           {config.teamCreationMode === 'automatic' && (
             <span className="flex items-center gap-3">
               <Users2 className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
-              <span>Squadre Bilanciate</span>
+              <span>{copy.balancedTeams}</span>
             </span>
           )}
           {config.teamCreationMode === 'random' && (
             <span className="flex items-center gap-3">
               <Dice3 className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
-              <span>Squadre Casuali</span>
+              <span>{copy.randomTeams}</span>
             </span>
           )}
           {config.teamCreationMode === 'manual' && (
             <span className="flex items-center gap-3">
               <Shield className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
-              <span>Crea le Squadre</span>
+              <span>{copy.createTeams}</span>
             </span>
           )}
         </h2>
         <p className="app-subtitle mb-5 text-muted-foreground sm:mb-6">
-          {config.teamCreationMode === 'automatic' && 'Le squadre sono state generate automaticamente. Puoi modificare i nomi e i giocatori.'}
-          {config.teamCreationMode === 'random' && 'Le squadre sono state generate casualmente. Puoi modificare i nomi e i giocatori.'}
-          {config.teamCreationMode === 'manual' && 'Assegna i giocatori alle squadre manualmente.'}
+          {config.teamCreationMode === 'automatic' && copy.automaticDescription}
+          {config.teamCreationMode === 'random' && copy.randomDescription}
+          {config.teamCreationMode === 'manual' && copy.manualDescription}
         </p>
       </div>
 
@@ -188,18 +246,18 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
           <>
             <Button onClick={handleRegenerate} variant="ghost" size="sm" className="w-full text-white/75 hover:bg-white/8 hover:text-white sm:w-auto">
               <RefreshCcw className="mr-2 h-4 w-4" />
-              Rigenera squadre
+              {copy.regenerate}
             </Button>
             <Button onClick={toggleEditMode} variant="ghost" size="sm" className="w-full text-white/75 hover:bg-white/8 hover:text-white sm:w-auto">
               {editMode ? (
                 <>
                   <Eye className="mr-2 h-4 w-4" />
-                  Visualizza
+                  {copy.view}
                 </>
               ) : (
                 <>
                   <Pencil className="mr-2 h-4 w-4" />
-                  Modifica giocatori
+                  {copy.editPlayers}
                 </>
               )}
             </Button>
@@ -209,7 +267,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
 
       {isManualMode && availablePlayers.length > 0 && (
         <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
-          <h3 className="mb-3 text-[clamp(0.84rem,0.8rem+0.18vw,1rem)] font-semibold sm:text-base">Assegna giocatori alle squadre ({availablePlayers.length} rimanenti)</h3>
+          <h3 className="mb-3 text-[clamp(0.84rem,0.8rem+0.18vw,1rem)] font-semibold sm:text-base">{copy.assignPlayers} ({availablePlayers.length} {copy.remaining})</h3>
           <div className="grid gap-3">
             {availablePlayers.map((player) => (
               <div
@@ -220,7 +278,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                   <div className="truncate text-[clamp(0.84rem,0.8rem+0.18vw,1rem)] font-medium sm:text-base">{player.name}</div>
                   <div className="inline-flex items-center gap-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-muted-foreground">
                     <RankIcon rank={player.rank} className="h-4 w-4" />
-                    <span>{getRankDisplay(player.rank)} - Forza: {player.strengthValue}</span>
+                    <span>{getRankDisplay(player.rank, language)} - {copy.strength}: {player.strengthValue}</span>
                   </div>
                 </div>
                 <Select
@@ -230,9 +288,9 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                     assignPlayerToTeam(player.id, teamIndex);
                   }}
                 >
-                <SelectTrigger className="w-full sm:w-40">
-                  <SelectValue placeholder="Scegli squadra..." />
-                </SelectTrigger>
+                  <SelectTrigger className="w-full sm:w-40">
+                    <SelectValue placeholder={copy.chooseTeam} />
+                  </SelectTrigger>
                   <SelectContent>
                     {teams.map((team, idx) => (
                       <SelectItem
@@ -253,7 +311,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
 
       {!isManualMode && editMode && availablePlayers.length > 0 && (
         <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
-          <h3 className="mb-3 text-[clamp(0.84rem,0.8rem+0.18vw,1rem)] font-semibold sm:text-base">Giocatori disponibili ({availablePlayers.length})</h3>
+          <h3 className="mb-3 text-[clamp(0.84rem,0.8rem+0.18vw,1rem)] font-semibold sm:text-base">{copy.availablePlayers} ({availablePlayers.length})</h3>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
             {availablePlayers.map((player) => (
               <div
@@ -263,14 +321,14 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                 <div className="font-medium">{player.name}</div>
                 <div className="inline-flex items-center gap-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-muted-foreground">
                   <RankIcon rank={player.rank} className="h-4 w-4" />
-                  <span>{getRankDisplay(player.rank)}</span>
+                  <span>{getRankDisplay(player.rank, language)}</span>
                 </div>
               </div>
             ))}
           </div>
           {selectedTeam !== null && (
             <p className="mt-3 text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] font-medium text-primary">
-              Seleziona un giocatore per aggiungerlo a {teams[selectedTeam].name}
+              {copy.selectPlayerForTeam} {teams[selectedTeam].name}
             </p>
           )}
         </Card>
@@ -280,21 +338,21 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
         {teams.map((team, teamIndex) => (
           <Card key={team.id} className="space-y-3 rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
             <div>
-              <Label className="mb-1 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)]">Nome squadra</Label>
+              <Label className="mb-1 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)]">{copy.teamName}</Label>
               <Input
                 value={team.name}
                 onChange={(e) => updateTeamName(teamIndex, e.target.value)}
-                placeholder="Nome squadra"
+                placeholder={copy.teamName}
               />
             </div>
 
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <Label className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)]">
-                  Giocatori ({team.players.length}/{teamSize})
+                  {copy.players} ({team.players.length}/{teamSize})
                 </Label>
                 <span className="text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-muted-foreground">
-                  Forza: {team.totalStrength}
+                  {copy.strength}: {team.totalStrength}
                 </span>
               </div>
 
@@ -308,7 +366,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                       <div className="truncate text-[15px] font-semibold leading-tight text-white">{player.name}</div>
                       <div className="mt-1 inline-flex items-center gap-2 text-[11px] leading-tight text-white/65">
                         <RankIcon rank={player.rank} className="h-4 w-4" />
-                        <span>{getRankDisplay(player.rank)} - {player.strengthValue}</span>
+                        <span>{getRankDisplay(player.rank, language)} - {player.strengthValue}</span>
                       </div>
                     </div>
                     {(editMode || isManualMode) && (
@@ -331,7 +389,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                     className="w-full"
                     onClick={() => setSelectedTeam(selectedTeam === teamIndex ? null : teamIndex)}
                   >
-                    {selectedTeam === teamIndex ? 'Annulla' : '+ Aggiungi giocatore'}
+                    {selectedTeam === teamIndex ? copy.cancel : copy.addPlayer}
                   </Button>
                 )}
 
@@ -360,14 +418,14 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
 
       <div className="glass-card space-y-4 rounded-[18px] p-4 sm:rounded-[24px] sm:p-5 md:p-6">
         <div className="space-y-1">
-          <div className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] font-semibold uppercase tracking-[0.14em] text-white sm:text-sm sm:tracking-normal">Conferma squadre</div>
+          <div className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] font-semibold uppercase tracking-[0.14em] text-white sm:text-sm sm:tracking-normal">{copy.confirmTeams}</div>
           <p className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-white/70 sm:text-sm">
-            Controlla nomi, composizione e forza dei team. Quando sei pronto puoi generare il torneo.
+            {copy.confirmHelp}
           </p>
         </div>
         <div className="flex justify-stretch sm:justify-end">
           <Button onClick={handleSubmit} size="lg" className="w-full text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] shadow-[0_0_24px_rgba(245,180,76,0.24)] hover:shadow-[0_0_34px_rgba(245,180,76,0.34)] sm:min-w-48 sm:w-auto">
-            Genera Torneo
+            {copy.generateTournament}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
@@ -376,7 +434,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
       <div className="flex justify-start pt-1">
         <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/65 hover:text-white sm:w-auto">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Indietro
+          {copy.back}
         </Button>
       </div>
     </div>

@@ -7,6 +7,8 @@ import TeamSetup from './TeamSetup';
 import TournamentBracket from './TournamentBracket';
 import WelcomeScreen from './WelcomeScreen';
 import AutoSaveIndicator from './AutoSaveIndicator';
+import LanguageToggle from './LanguageToggle';
+import { LanguageProvider } from './LanguageContext';
 import { generateTournament, updateMatchResult } from '../lib/tournament-utils';
 import {
   saveTournamentState,
@@ -14,6 +16,7 @@ import {
   clearTournamentState,
   hasSavedTournament,
 } from '../lib/tournament-storage';
+import { LANGUAGE_STORAGE_KEY, type Language } from '../lib/language';
 
 type Step = 'welcome' | 'players' | 'config' | 'teams' | 'bracket';
 
@@ -50,6 +53,7 @@ const DEV_TEAMS: Team[] = [
 const DEV_PREVIEW_ENABLED = false;
 
 export default function TournamentApp() {
+  const [language, setLanguage] = useState<Language>('it');
   const [step, setStep] = useState<Step>('welcome');
   const [players, setPlayers] = useState<Player[]>([]);
   const [config, setConfig] = useState<TournamentConfig | null>(null);
@@ -57,6 +61,32 @@ export default function TournamentApp() {
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [savedTournament, setSavedTournament] = useState<ReturnType<typeof loadTournamentState>>(null);
   const [lastSaved, setLastSaved] = useState<Date | undefined>();
+  const copy = language === 'it'
+    ? {
+        title: 'Halo Tournament Generator',
+        description: 'Crea tornei competitivi di Halo Infinite',
+        devPreview: 'Dev Preview',
+        goToPlayers: 'Vai a Players',
+        goToConfig: 'Vai a Config',
+        goToTeams: 'Vai a Teams',
+        goToBracket: 'Vai a Bracket',
+      }
+    : {
+        title: 'Halo Tournament Generator',
+        description: 'Create competitive Halo Infinite tournaments',
+        devPreview: 'Dev Preview',
+        goToPlayers: 'Go to Players',
+        goToConfig: 'Go to Config',
+        goToTeams: 'Go to Teams',
+        goToBracket: 'Go to Bracket',
+      };
+
+  useEffect(() => {
+    const storedLanguage = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    if (storedLanguage === 'it' || storedLanguage === 'en') {
+      setLanguage(storedLanguage);
+    }
+  }, []);
 
   useEffect(() => {
     if (hasSavedTournament()) {
@@ -79,6 +109,12 @@ export default function TournamentApp() {
       setLastSaved(new Date());
     }
   }, [tournament, step, config, players, teams]);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.title = copy.title;
+    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+  }, [copy.title, language]);
 
   const handleNewTournament = () => {
     clearTournamentState();
@@ -115,7 +151,7 @@ export default function TournamentApp() {
     setTeams(completedTeams);
 
     if (config) {
-      const newTournament = generateTournament(completedTeams, config);
+      const newTournament = generateTournament(completedTeams, config, language);
       setTournament(newTournament);
       setStep('bracket');
     }
@@ -141,7 +177,7 @@ export default function TournamentApp() {
   const handleReplayTournament = () => {
     if (!config || teams.length === 0) return;
 
-    const replayTournament = generateTournament(teams, config);
+    const replayTournament = generateTournament(teams, config, language);
     setTournament(replayTournament);
     setStep('bracket');
   };
@@ -181,46 +217,59 @@ export default function TournamentApp() {
       return;
     }
 
-    setTournament(generateTournament(DEV_TEAMS, DEV_CONFIG));
+    setTournament(generateTournament(DEV_TEAMS, DEV_CONFIG, language));
     setStep('bracket');
+  };
+
+  const handleToggleLanguage = () => {
+    setLanguage((current) => (current === 'it' ? 'en' : 'it'));
   };
 
   if (step === 'welcome') {
     return (
-      <WelcomeScreen
-        savedTournament={savedTournament}
-        onNewTournament={handleNewTournament}
-        onResumeTournament={handleResumeTournament}
-      />
+      <LanguageProvider language={language}>
+        <>
+          <LanguageToggle language={language} onToggle={handleToggleLanguage} />
+          <WelcomeScreen
+            language={language}
+            savedTournament={savedTournament}
+            onNewTournament={handleNewTournament}
+            onResumeTournament={handleResumeTournament}
+          />
+        </>
+      </LanguageProvider>
     );
   }
 
   return (
-    <div
-      className="min-h-screen relative overflow-hidden text-white"
-      style={{
-        background: '#020B1F',
-      }}
-    >
+    <LanguageProvider language={language}>
       <div
-        className="absolute inset-0 z-0"
+        className="min-h-screen relative overflow-hidden text-white"
         style={{
-          backgroundImage: 'url(/background.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
+          background: '#020B1F',
         }}
-      />
-      <div className="absolute inset-0 z-0 bg-slate-950/18" />
+      >
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: 'url(/background.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+          }}
+        />
+        <div className="absolute inset-0 z-0 bg-slate-950/18" />
 
-      <div className="relative z-10 container mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-8">
-        <div className="mb-6 text-center sm:mb-8">
-          <h1 className="mb-2 flex flex-col items-center justify-center gap-2 text-center text-[clamp(1.65rem,1.25rem+1.9vw,2.35rem)] font-bold font-heading sm:flex-row sm:gap-3">
-            <Gamepad2 className="h-[clamp(1.6rem,1.35rem+1vw,2.2rem)] w-[clamp(1.6rem,1.35rem+1vw,2.2rem)] text-primary" />
-            <span className="text-balance">Halo Tournament Generator</span>
-          </h1>
-          <p className="text-[clamp(0.82rem,0.78rem+0.18vw,1rem)] text-muted-foreground">Crea tornei competitivi di Halo Infinite</p>
-        </div>
+        <div className="relative z-10 container mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-8">
+          <LanguageToggle language={language} onToggle={handleToggleLanguage} />
+
+          <div className="mb-6 text-center sm:mb-8">
+            <h1 className="mb-2 flex flex-col items-center justify-center gap-2 text-center text-[clamp(1.65rem,1.25rem+1.9vw,2.35rem)] font-bold font-heading sm:flex-row sm:gap-3">
+              <Gamepad2 className="h-[clamp(1.6rem,1.35rem+1vw,2.2rem)] w-[clamp(1.6rem,1.35rem+1vw,2.2rem)] text-primary" />
+              <span className="text-balance">{copy.title}</span>
+            </h1>
+            <p className="text-[clamp(0.82rem,0.78rem+0.18vw,1rem)] text-muted-foreground">{copy.description}</p>
+          </div>
 
         <div className="mb-6 flex items-center justify-center gap-1.5 sm:mb-8 sm:gap-2">
           <StepIndicator active={step === 'players'} completed={['config', 'teams', 'bracket'].includes(step)} label="1" />
@@ -266,39 +315,40 @@ export default function TournamentApp() {
             />
           )}
         </div>
-      </div>
-
-      <AutoSaveIndicator lastSaved={lastSaved} />
-      {import.meta.env.DEV && DEV_PREVIEW_ENABLED && (
-        <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2 rounded-2xl border border-cyan-200/30 bg-black/35 p-3 backdrop-blur-md">
-          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">Dev Preview</div>
-          <button
-            onClick={() => handleDevPreview('players')}
-            className="rounded-full border border-white/20 px-3 py-2 text-left text-xs text-white transition hover:bg-white/10"
-          >
-            Vai a Players
-          </button>
-          <button
-            onClick={() => handleDevPreview('config')}
-            className="rounded-full border border-white/20 px-3 py-2 text-left text-xs text-white transition hover:bg-white/10"
-          >
-            Vai a Config
-          </button>
-          <button
-            onClick={() => handleDevPreview('teams')}
-            className="rounded-full border border-white/20 px-3 py-2 text-left text-xs text-white transition hover:bg-white/10"
-          >
-            Vai a Teams
-          </button>
-          <button
-            onClick={() => handleDevPreview('bracket')}
-            className="rounded-full border border-white/20 px-3 py-2 text-left text-xs text-white transition hover:bg-white/10"
-          >
-            Vai a Bracket
-          </button>
         </div>
-      )}
-    </div>
+
+        <AutoSaveIndicator lastSaved={lastSaved} />
+        {import.meta.env.DEV && DEV_PREVIEW_ENABLED && (
+          <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2 rounded-2xl border border-cyan-200/30 bg-black/35 p-3 backdrop-blur-md">
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">{copy.devPreview}</div>
+            <button
+              onClick={() => handleDevPreview('players')}
+              className="rounded-full border border-white/20 px-3 py-2 text-left text-xs text-white transition hover:bg-white/10"
+            >
+              {copy.goToPlayers}
+            </button>
+            <button
+              onClick={() => handleDevPreview('config')}
+              className="rounded-full border border-white/20 px-3 py-2 text-left text-xs text-white transition hover:bg-white/10"
+            >
+              {copy.goToConfig}
+            </button>
+            <button
+              onClick={() => handleDevPreview('teams')}
+              className="rounded-full border border-white/20 px-3 py-2 text-left text-xs text-white transition hover:bg-white/10"
+            >
+              {copy.goToTeams}
+            </button>
+            <button
+              onClick={() => handleDevPreview('bracket')}
+              className="rounded-full border border-white/20 px-3 py-2 text-left text-xs text-white transition hover:bg-white/10"
+            >
+              {copy.goToBracket}
+            </button>
+          </div>
+        )}
+        </div>
+    </LanguageProvider>
   );
 }
 
