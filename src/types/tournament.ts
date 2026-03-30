@@ -36,6 +36,7 @@ export interface TournamentConfig {
   matchDuration: MatchDuration;
   teamCreationMode: TeamCreationMode;
   killLimit: number;
+  selectedSlayerMaps: string[];
 }
 
 export type GameMode = 'slayer' | 'ctf' | 'oddball' | 'koth';

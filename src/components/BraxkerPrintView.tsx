@@ -43,7 +43,7 @@ export default function BracketPrintView({ open, onClose, tournament }: BracketP
           <div className="mb-8 border-b-2 border-black pb-6 text-center">
             <h1 className="mb-2 text-4xl font-bold">HALO TOURNAMENT</h1>
             <p className="text-lg text-gray-600">
-              {tournament.config.type === 'slayer' ? copy.slayer : copy.ranked} • {tournament.config.teamMode} •{' '}
+              {tournament.config.type === 'slayer' ? copy.slayer : copy.ranked} - {tournament.config.teamMode} -{' '}
               {getMatchDurationDisplay(tournament.config.matchDuration, language)}
             </p>
           </div>
@@ -88,7 +88,7 @@ export default function BracketPrintView({ open, onClose, tournament }: BracketP
                             <PrintTeamRow
                               team={match.team1?.name || 'TBD'}
                               players={match.team1?.players.map((player) => player.name).join(', ')}
-                              score={match.seriesScore?.team1}
+                              score={getDisplaySeriesScore(match).team1}
                               isWinner={match.winner?.id === match.team1?.id}
                               dimmed={!!match.winner && match.winner?.id !== match.team1?.id}
                             />
@@ -98,7 +98,7 @@ export default function BracketPrintView({ open, onClose, tournament }: BracketP
                             <PrintTeamRow
                               team={match.team2?.name || 'TBD'}
                               players={match.team2?.players.map((player) => player.name).join(', ')}
-                              score={match.seriesScore?.team2}
+                              score={getDisplaySeriesScore(match).team2}
                               isWinner={match.winner?.id === match.team2?.id}
                               dimmed={!!match.winner && match.winner?.id !== match.team2?.id}
                             />
@@ -160,7 +160,7 @@ export default function BracketPrintView({ open, onClose, tournament }: BracketP
           </div>
 
           <div className="mt-8 border-t-2 border-black pt-6 text-center text-sm text-gray-600">
-            <p>{copy.generatedWith} • {new Date().toLocaleDateString(language === 'en' ? 'en-US' : 'it-IT')}</p>
+            <p>{copy.generatedWith} - {new Date().toLocaleDateString(language === 'en' ? 'en-US' : 'it-IT')}</p>
           </div>
         </div>
 
@@ -181,6 +181,24 @@ export default function BracketPrintView({ open, onClose, tournament }: BracketP
   );
 }
 
+function getDisplaySeriesScore(match: Match) {
+  if (match.seriesScore) {
+    return {
+      team1: match.seriesScore.team1,
+      team2: match.seriesScore.team2,
+    };
+  }
+
+  if (match.winner?.id === match.team1?.id) {
+    return { team1: 1, team2: 0 };
+  }
+
+  if (match.winner?.id === match.team2?.id) {
+    return { team1: 0, team2: 1 };
+  }
+
+  return { team1: 0, team2: 0 };
+}
 function PrintTeamRow({
   team,
   players,

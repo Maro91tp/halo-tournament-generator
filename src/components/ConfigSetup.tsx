@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, Dice3, FileText, Settings2, Shield, Target, TriangleAlert, Trophy, Users2 } from 'lucide-react';
-import type { TournamentConfig, TeamMode, TeamCreationMode } from '../types/tournament';
+import { SLAYER_MAPS, type TournamentConfig, type TeamMode, type TeamCreationMode } from '../types/tournament';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Card } from './ui/card';
@@ -24,6 +24,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
     matchDuration: 'single',
     teamCreationMode: 'automatic',
     killLimit: 50,
+    selectedSlayerMaps: [...SLAYER_MAPS],
   };
 
   const [config, setConfig] = useState<TournamentConfig>(
@@ -47,6 +48,10 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         killLimit: 'Slayer kill limit',
         killLabel: 'kills',
         killHelp: 'Used for every Slayer game, including Ranked tournaments.',
+        slayerMaps: 'Slayer map pool',
+        slayerMapsHelp: 'Choose the maps available for Slayer tournaments. If you leave more than one active, the app will rotate them from your selected pool.',
+        mapsSelected: 'maps selected',
+        allMaps: 'All maps',
         teamCreation: 'Team creation mode',
         teamCreationHelp: 'Decide how much control you want over team composition before generating the tournament.',
         balanced: 'Balanced',
@@ -86,6 +91,10 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         killLimit: 'Limite kill Slayer',
         killLabel: 'kill',
         killHelp: 'Valido per tutti i game Slayer, anche dentro i tornei Ranked.',
+        slayerMaps: 'Pool mappe Slayer',
+        slayerMapsHelp: 'Scegli le mappe disponibili per i tornei Massacro. Se ne lasci attiva piu di una, l app ruotera solo nella pool selezionata.',
+        mapsSelected: 'mappe selezionate',
+        allMaps: 'Tutte le mappe',
         teamCreation: 'Modalita creazione squadre',
         teamCreationHelp: 'Decidi quanto controllo vuoi avere sulla composizione delle squadre prima di generare il torneo.',
         balanced: 'Bilanciate',
@@ -131,6 +140,17 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
     setError('');
   };
 
+  const toggleSlayerMap = (mapName: string) => {
+    const hasMap = config.selectedSlayerMaps.includes(mapName);
+    const nextMaps = hasMap
+      ? config.selectedSlayerMaps.filter((map) => map !== mapName)
+      : [...config.selectedSlayerMaps, mapName];
+
+    updateConfig('selectedSlayerMaps', nextMaps.length > 0 ? nextMaps : [mapName]);
+  };
+
+  const sectionTitleClass = 'mb-3 block text-[clamp(1.05rem,1rem+0.42vw,1.28rem)] font-bold tracking-[0.01em] text-white sm:mb-4';
+
   return (
     <div className="app-section flex w-full flex-col">
       <div>
@@ -144,7 +164,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
       </div>
 
       <div>
-        <Label className="mb-3 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">{copy.tournamentType}</Label>
+        <Label className={sectionTitleClass}>{copy.tournamentType}</Label>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <OptionCard
             selected={config.type === 'slayer'}
@@ -164,7 +184,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
       </div>
 
       <div>
-        <Label className="mb-3 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">{copy.teamMode}</Label>
+        <Label className={sectionTitleClass}>{copy.teamMode}</Label>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {(['1v1', '2v2', '3v3', '4v4'] as TeamMode[]).map((mode) => (
             <OptionCard
@@ -179,7 +199,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
       </div>
 
       <div>
-        <Label className="mb-3 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">{copy.matchDuration}</Label>
+        <Label className={sectionTitleClass}>{copy.matchDuration}</Label>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <OptionCard
             selected={config.matchDuration === 'single'}
@@ -203,7 +223,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
       </div>
 
       <div>
-        <Label className="mb-3 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">{copy.killLimit}</Label>
+        <Label className={sectionTitleClass}>{copy.killLimit}</Label>
         <div className="glass-card p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -232,15 +252,55 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         </div>
       </div>
 
-      <div>
-        <Label className="mb-3 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">{copy.teamCreation}</Label>
-        <p className="mb-4 max-w-2xl text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-muted-foreground">
+      {config.type === 'slayer' && (
+        <div className="pb-2 sm:pb-3">
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <Label className={sectionTitleClass}>{copy.slayerMaps}</Label>
+              <p className="max-w-3xl text-[clamp(0.76rem,0.73rem+0.16vw,0.9rem)] text-muted-foreground">
+                {copy.slayerMapsHelp}
+              </p>
+            </div>
+            <div className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] font-medium text-white/78">
+              {config.selectedSlayerMaps.length}/{SLAYER_MAPS.length} {copy.mapsSelected}
+            </div>
+          </div>
+
+          <div className="glass-card p-4 sm:p-6">
+            <div className="flex flex-wrap gap-2.5">
+              {SLAYER_MAPS.map((mapName) => {
+                const selected = config.selectedSlayerMaps.includes(mapName);
+
+                return (
+                  <Button
+                    key={mapName}
+                    type="button"
+                    variant={selected ? 'default' : 'outline'}
+                    onClick={() => toggleSlayerMap(mapName)}
+                    className={`min-h-11 rounded-full px-4 text-[0.88rem] sm:text-[0.94rem] ${
+                      selected
+                        ? 'shadow-[0_0_24px_rgba(245,180,76,0.22)]'
+                        : 'border-white/18 bg-white/5 text-white/80 hover:bg-white/10'
+                    }`}
+                  >
+                    {mapName}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="pt-3 sm:pt-5">
+        <Label className={sectionTitleClass}>{copy.teamCreation}</Label>
+        <p className="mb-5 max-w-2xl text-[clamp(0.76rem,0.73rem+0.16vw,0.9rem)] text-muted-foreground sm:mb-6">
           {copy.teamCreationHelp}
         </p>
         <RadioGroup
           value={config.teamCreationMode}
           onValueChange={(value) => updateConfig('teamCreationMode', value as TeamCreationMode)}
-          className="grid gap-4 md:grid-cols-3"
+          className="grid gap-5 md:grid-cols-3"
         >
           <TeamCreationCard
             id="auto"
@@ -282,7 +342,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
       )}
 
       <div className="glass-card rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-4">
-        <h3 className="mb-2 flex items-center gap-2 font-semibold">
+        <h3 className="mb-3 flex items-center gap-2 text-[clamp(1.05rem,1rem+0.42vw,1.24rem)] font-bold text-white">
           <FileText className="h-4 w-4 text-primary" />
           <span>{copy.summary}</span>
         </h3>
@@ -291,6 +351,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
           <li>{copy.mode}: {config.type === 'slayer' ? copy.slayerTitle : copy.rankedTitle}</li>
           <li>{copy.teams}: {config.teamMode}</li>
           <li>{copy.killSummary}: {config.killLimit}</li>
+          {config.type === 'slayer' && <li>{copy.slayerMaps}: {config.selectedSlayerMaps.length === SLAYER_MAPS.length ? copy.allMaps : config.selectedSlayerMaps.join(', ')}</li>}
           <li>{Math.floor(playerCount / parseInt(config.teamMode.charAt(0)))} {copy.teamCount}</li>
         </ul>
       </div>

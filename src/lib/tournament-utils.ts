@@ -110,6 +110,21 @@ function getRandomSlayerMap(usedMaps: string[] = []): string {
   return mapsToUse[Math.floor(Math.random() * mapsToUse.length)];
 }
 
+function getConfiguredSlayerMapPool(config: TournamentConfig): string[] {
+  if (Array.isArray(config.selectedSlayerMaps) && config.selectedSlayerMaps.length > 0) {
+    return config.selectedSlayerMaps;
+  }
+
+  return SLAYER_MAPS;
+}
+
+function getRandomConfiguredSlayerMap(config: TournamentConfig, usedMaps: string[] = []): string {
+  const mapPool = getConfiguredSlayerMapPool(config);
+  const availableMaps = mapPool.filter((map) => !usedMaps.includes(map));
+  const mapsToUse = availableMaps.length > 0 ? availableMaps : mapPool;
+  return mapsToUse[Math.floor(Math.random() * mapsToUse.length)];
+}
+
 function getRandomRankedMap(mode: GameMode, usedMaps: string[] = []): string {
   const availableMaps = RANKED_MAPS.filter((map) => map.modes.includes(mode))
     .filter((map) => !usedMaps.includes(map.name))
@@ -138,7 +153,7 @@ export function generateTournament(teams: Team[], config: TournamentConfig, lang
   const firstRoundMap =
     config.type === 'ranked'
       ? getRandomRankedMap(firstRoundMode!, usedMaps)
-      : getRandomSlayerMap(usedMaps);
+      : getRandomConfiguredSlayerMap(config, usedMaps);
 
   usedMaps.push(firstRoundMap);
 
@@ -184,7 +199,7 @@ export function generateTournament(teams: Team[], config: TournamentConfig, lang
     const roundMap =
       config.type === 'ranked'
         ? getRandomRankedMap(roundMode!, usedMaps)
-        : getRandomSlayerMap(usedMaps);
+        : getRandomConfiguredSlayerMap(config, usedMaps);
 
     usedMaps.push(roundMap);
 
@@ -363,7 +378,7 @@ export function generateGamesForMatch(
 
     if (config.type === 'slayer') {
       mode = 'slayer';
-      map = getRandomSlayerMap(usedMaps);
+      map = getRandomConfiguredSlayerMap(config, usedMaps);
     } else {
       mode = RANKED_MODE_ROTATION[(roundIndex + i) % RANKED_MODE_ROTATION.length];
       map = getRandomRankedMap(mode, usedMaps);
@@ -402,7 +417,7 @@ export function getGameModeDisplay(mode: GameMode, language: Language = 'it'): s
 }
 
 export function getMatchDurationDisplay(duration: string, language: Language = 'it'): string {
-  if (duration === 'single') return language === 'en' ? 'Bo1' : 'Bo1';
+  if (duration === 'single') return language === 'en' ? 'Single game' : 'Partita secca';
   if (duration === 'bo3') return 'Bo3';
   if (duration === 'bo5') return 'Bo5';
   return duration;

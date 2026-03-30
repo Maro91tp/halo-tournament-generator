@@ -1,34 +1,39 @@
 import { Flag, Save, Scale, Share } from 'lucide-react';
 import { Button } from './ui/button';
-import type { SavedTournament } from '../lib/tournament-storage';
+import type { SavedTournamentRecord } from '../lib/tournament-storage';
 import type { Language } from '../lib/language';
 
 interface WelcomeScreenProps {
   language: Language;
-  savedTournament: SavedTournament | null;
+  savedTournaments: SavedTournamentRecord[];
   onNewTournament: () => void;
-  onResumeTournament: () => void;
+  onLoadSavedTournament: (id: string) => void;
 }
 
 export default function WelcomeScreen({
   language,
-  savedTournament,
+  savedTournaments,
   onNewTournament,
-  onResumeTournament,
+  onLoadSavedTournament,
 }: WelcomeScreenProps) {
   const copy = language === 'it'
     ? {
-        subtitle: 'Crea e gestisci tornei competitivi di Halo Infinite',
-        savedTitle: 'Torneo salvato',
-        lastSave: 'Ultimo salvataggio',
-        players: 'giocatori',
-        teams: 'squadre',
-        resume: 'Riprendi torneo',
-        create: 'Crea nuovo torneo',
+        subtitle: 'Crea e gestisci tornei competitivi di Halo Infinite',        create: 'Crea nuovo torneo',
         helper: 'Imposta i giocatori, genera le squadre e fai partire il bracket in pochi passaggi.',
         featuresTitle: 'Caratteristiche principali',
         footer: 'Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.',
         about: 'About',
+        libraryTitle: 'Carica torneo',
+        activeTournaments: 'Tornei attivi',
+        completedTournaments: 'Tornei completati',
+        noSavedTournaments: 'Nessun torneo nominato salvato per ora.',
+        tournamentType: 'Tipo torneo',
+        savedOn: 'Salvato il',
+        expiresOn: 'Scade il',
+        load: 'Carica torneo',
+        completedBadge: 'Completato',
+        activeBadge: 'Attivo',
+        completedHelper: 'I tornei completati restano disponibili per 30 giorni, cosi puoi scaricare o ricontrollare i risultati.',
         features: [
           { title: 'Bilanciamento', subtitle: 'Squadre equilibrate' },
           { title: 'Mappe e modalita', subtitle: 'Assegnazione automatica' },
@@ -37,17 +42,22 @@ export default function WelcomeScreen({
         ],
       }
     : {
-        subtitle: 'Create and manage competitive Halo Infinite tournaments',
-        savedTitle: 'Saved tournament',
-        lastSave: 'Last save',
-        players: 'players',
-        teams: 'teams',
-        resume: 'Resume tournament',
-        create: 'Create new tournament',
+        subtitle: 'Create and manage competitive Halo Infinite tournaments',        create: 'Create new tournament',
         helper: 'Set up players, generate teams, and launch the bracket in just a few steps.',
         featuresTitle: 'Main features',
         footer: 'This project is an unofficial fan project. Halo is a registered trademark of Microsoft.',
         about: 'About',
+        libraryTitle: 'Load tournament',
+        activeTournaments: 'Active tournaments',
+        completedTournaments: 'Completed tournaments',
+        noSavedTournaments: 'No named tournaments saved yet.',
+        tournamentType: 'Tournament type',
+        savedOn: 'Saved on',
+        expiresOn: 'Expires on',
+        load: 'Load tournament',
+        completedBadge: 'Completed',
+        activeBadge: 'Active',
+        completedHelper: 'Completed tournaments stay available for 30 days, so you can download or review the results.',
         features: [
           { title: 'Balancing', subtitle: 'Balanced teams' },
           { title: 'Maps and modes', subtitle: 'Automatic assignment' },
@@ -73,6 +83,8 @@ export default function WelcomeScreen({
     { Icon: Save, ...copy.features[2] },
     { Icon: Share, ...copy.features[3] },
   ];
+  const activeTournaments = savedTournaments.filter((tournament) => tournament.status === 'active');
+  const completedTournaments = savedTournaments.filter((tournament) => tournament.status === 'completed');
 
   return (
     <div
@@ -129,26 +141,6 @@ export default function WelcomeScreen({
           </p>
         </div>
 
-        {savedTournament && (
-          <div className="mt-7 rounded-[18px] border border-amber-200/25 bg-black/14 p-3.5 shadow-[0_0_14px_rgba(245,180,76,0.08)] sm:mt-10 sm:rounded-[24px] sm:p-5">
-            <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="m-0 text-[clamp(0.98rem,0.9rem+0.45vw,1.15rem)] font-bold text-white">{copy.savedTitle}</h2>
-                <p className="mt-2 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/75 sm:text-sm">
-                  {copy.lastSave}: {formatDate(savedTournament.savedAt)}
-                </p>
-                <p className="mt-1 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/60 sm:text-sm">
-                  {savedTournament.players.length} {copy.players} • {savedTournament.teams.length} {copy.teams}
-                </p>
-              </div>
-              <Button onClick={onResumeTournament} size="sm" className="w-full sm:w-auto">
-                <Save className="h-4 w-4" />
-                {copy.resume}
-              </Button>
-            </div>
-          </div>
-        )}
-
         <div className="mt-7 flex justify-center text-center sm:mt-10">
           <Button
             onClick={onNewTournament}
@@ -199,6 +191,63 @@ export default function WelcomeScreen({
           >
             {copy.helper}
           </p>
+        </div>
+
+        <div className="mt-6 rounded-[18px] border border-white/10 bg-black/10 p-3.5 sm:mt-8 sm:rounded-[24px] sm:p-5">
+          <div className="mb-4 flex flex-col gap-1 sm:mb-5">
+            <h2 className="m-0 text-[clamp(0.98rem,0.9rem+0.45vw,1.15rem)] font-bold text-white">{copy.libraryTitle}</h2>
+            <p className="text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/65 sm:text-sm">
+              {copy.completedHelper}
+            </p>
+          </div>
+
+          {savedTournaments.length === 0 ? (
+            <div className="rounded-[16px] border border-dashed border-white/12 bg-white/[0.03] px-4 py-5 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/60 sm:text-sm">
+              {copy.noSavedTournaments}
+            </div>
+          ) : (
+            <div className="space-y-5">
+              {activeTournaments.length > 0 && (
+                <div className="space-y-3">
+                  <div className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] font-semibold uppercase tracking-[0.12em] text-white/70">
+                    {copy.activeTournaments}
+                  </div>
+                  <div className="grid gap-3">
+                    {activeTournaments.map((tournament) => (
+                      <SavedTournamentRow
+                        key={tournament.id}
+                        tournament={tournament}
+                        language={language}
+                        copy={copy}
+                        onLoad={onLoadSavedTournament}
+                        formatDate={formatDate}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {completedTournaments.length > 0 && (
+                <div className="space-y-3">
+                  <div className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] font-semibold uppercase tracking-[0.12em] text-white/70">
+                    {copy.completedTournaments}
+                  </div>
+                  <div className="grid gap-3">
+                    {completedTournaments.map((tournament) => (
+                      <SavedTournamentRow
+                        key={tournament.id}
+                        tournament={tournament}
+                        language={language}
+                        copy={copy}
+                        onLoad={onLoadSavedTournament}
+                        formatDate={formatDate}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div
@@ -290,6 +339,57 @@ export default function WelcomeScreen({
             </a>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function SavedTournamentRow({
+  tournament,
+  language,
+  copy,
+  onLoad,
+  formatDate,
+}: {
+  tournament: SavedTournamentRecord;
+  language: Language;
+  copy: Record<string, string | { title: string; subtitle: string }[]>;
+  onLoad: (id: string) => void;
+  formatDate: (isoString: string) => string;
+}) {
+  const statusLabel = tournament.status === 'completed' ? copy.completedBadge : copy.activeBadge;
+  const typeLabel = tournament.config?.type === 'slayer'
+    ? (language === 'en' ? 'Slayer' : 'Massacro')
+    : 'Ranked';
+
+  return (
+    <div className="rounded-[18px] border border-white/10 bg-white/[0.03] p-3.5 sm:rounded-[20px] sm:p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="truncate text-[clamp(0.9rem,0.84rem+0.24vw,1.02rem)] font-semibold text-white">
+              {tournament.name}
+            </div>
+            <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${
+              tournament.status === 'completed'
+                ? 'border border-amber-200/25 bg-amber-200/10 text-amber-50'
+                : 'border border-cyan-200/25 bg-cyan-300/10 text-cyan-100'
+            }`}>
+              {statusLabel as string}
+            </span>
+          </div>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/62 sm:text-sm">
+            <span>{copy.tournamentType as string}: {typeLabel} - {tournament.config?.teamMode ?? '-'}</span>
+            <span>{copy.savedOn as string}: {formatDate(tournament.savedAt)}</span>
+            {tournament.status === 'completed' && tournament.expiresAt && (
+              <span>{copy.expiresOn as string}: {formatDate(tournament.expiresAt)}</span>
+            )}
+          </div>
+        </div>
+        <Button onClick={() => onLoad(tournament.id)} variant={tournament.status === 'completed' ? 'outline' : 'default'} className="w-full sm:w-auto">
+          <Save className="h-4 w-4" />
+          {copy.load as string}
+        </Button>
       </div>
     </div>
   );

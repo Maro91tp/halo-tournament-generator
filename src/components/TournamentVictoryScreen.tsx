@@ -1,11 +1,12 @@
-import type { ReactNode } from 'react';
-import { ArrowLeft, Crown, Medal, RefreshCcw, Sparkles, Swords, Trophy } from 'lucide-react';
+import { useState, type ReactNode } from 'react';
+import { ArrowLeft, Crown, Download, Medal, RefreshCcw, Sparkles, Swords, Trophy } from 'lucide-react';
 import type { Game, Match, Player, Team, Tournament } from '../types/tournament';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { getGameModeDisplay, getMatchDurationDisplay } from '../lib/tournament-utils';
 import { RankIcon } from './TournamentIcons';
 import { useLanguage } from './LanguageContext';
+import BracketPrintView from './BraxkerPrintView';
 
 interface TournamentVictoryScreenProps {
   tournament: Tournament;
@@ -37,13 +38,14 @@ export default function TournamentVictoryScreen({
   onReset,
 }: TournamentVictoryScreenProps) {
   const language = useLanguage();
+  const [printViewOpen, setPrintViewOpen] = useState(false);
   if (!tournament.winner) return null;
   const copy = language === 'en'
     ? {
         champion: 'Tournament champion',
         absoluteVictory: 'Absolute Victory',
-        matchesWon: 'matches won',
-        gamesWon: 'games won',
+        matchesWon: 'Matches won',
+        gamesWon: 'Games won',
         finalStats: 'Final stats',
         totalKills: 'Total kills',
         players: 'Players',
@@ -53,8 +55,8 @@ export default function TournamentVictoryScreen({
         replay: 'Replay same tournament',
         newTournament: 'New tournament',
         footer: 'This project is an unofficial fan project. Halo is a registered trademark of Microsoft.',
-        kills: 'kills',
-        appearances: 'appearances',
+        kills: 'Kills',
+        appearances: 'Appearances',
         haloChampion: 'Halo Infinite Tournament Champion',
         round: 'Round',
         matches: 'matches',
@@ -67,12 +69,15 @@ export default function TournamentVictoryScreen({
         bye: 'Bye',
         teamFallback: 'Team',
         gameDetails: 'Game details',
+        playerResults: 'Player results',
+        downloadPdf: 'Download tournament PDF',
+        downloadPdfHelp: 'Open the print view to save the full tournament recap as PDF.',
       }
     : {
         champion: 'Campione del torneo',
         absoluteVictory: 'Vittoria Assoluta',
-        matchesWon: 'match vinti',
-        gamesWon: 'game vinti',
+        matchesWon: 'Match vinti',
+        gamesWon: 'Game vinti',
         finalStats: 'Statistiche finali',
         totalKills: 'Kill totali',
         players: 'Giocatori',
@@ -82,8 +87,8 @@ export default function TournamentVictoryScreen({
         replay: 'Rigioca stesso torneo',
         newTournament: 'Nuovo torneo',
         footer: 'Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.',
-        kills: 'kill',
-        appearances: 'presenze',
+        kills: 'Kill',
+        appearances: 'Presenze',
         haloChampion: 'Halo Infinite Tournament Champion',
         round: 'Round',
         matches: 'match',
@@ -96,6 +101,9 @@ export default function TournamentVictoryScreen({
         bye: 'Bye',
         teamFallback: 'Team',
         gameDetails: 'Dettaglio game',
+        playerResults: 'Risultati giocatori',
+        downloadPdf: 'Scarica PDF risultati',
+        downloadPdfHelp: 'Apri la vista stampa per salvare in PDF il riepilogo completo del torneo.',
       };
 
   const completedMatches = tournament.rounds.flatMap((round) => round.matches).filter((match) => match.winner);
@@ -374,7 +382,7 @@ export default function TournamentVictoryScreen({
               <div className="min-w-0">
                 <div className="truncate text-xl font-bold text-white drop-shadow-[0_0_14px_rgba(255,218,125,0.16)] sm:text-3xl">{winnerStats.mvp.player.name}</div>
                 <div className="mt-1 text-xs text-amber-50/82 sm:text-sm">
-                  {winnerStats.mvp.kills} {copy.kills} • {winnerStats.mvp.gameWins} {copy.gamesWon}
+                  {winnerStats.mvp.kills} {copy.kills}{' - '}{winnerStats.mvp.gameWins} {copy.gamesWon}
                 </div>
               </div>
               <div className="ml-auto rounded-full border border-amber-300/72 bg-[linear-gradient(180deg,rgba(255,225,132,0.34)_0%,rgba(245,180,76,0.2)_100%)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#fff3c7] shadow-[0_0_24px_rgba(245,180,76,0.34),inset_0_1px_0_rgba(255,245,214,0.24)] sm:px-4 sm:py-1.5 sm:text-sm sm:tracking-[0.18em]">
@@ -406,7 +414,7 @@ export default function TournamentVictoryScreen({
                       <div className="truncate text-base font-semibold text-white sm:text-lg">{summary.player.name}</div>
                     </div>
                     <div className="mt-2 text-xs text-white/70 sm:text-sm">
-                      {summary.kills} {copy.kills} • {summary.gameWins} {copy.gamesWon} • {summary.appearances} {copy.appearances}
+                      {summary.kills} {copy.kills}{' - '}{summary.gameWins} {copy.gamesWon}{' - '}{summary.appearances} {copy.appearances}
                     </div>
                   </div>
                   {summary.player.id === winnerStats.mvp.player.id && (
@@ -420,6 +428,27 @@ export default function TournamentVictoryScreen({
           </div>
         </Card>
       </section>
+
+      <Card className="border-amber-300/24 bg-[linear-gradient(180deg,rgba(245,180,76,0.1)_0%,rgba(10,18,40,0.82)_100%)] p-4 shadow-[0_0_32px_rgba(245,180,76,0.12)] sm:p-6 md:p-7">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-2xl">
+            <div className="text-[clamp(1rem,0.95rem+0.3vw,1.18rem)] font-bold text-white">
+              {copy.downloadPdf}
+            </div>
+            <p className="mt-2 text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] leading-7 text-white/70">
+              {copy.downloadPdfHelp}
+            </p>
+          </div>
+          <Button
+            onClick={() => setPrintViewOpen(true)}
+            size="lg"
+            className="min-h-12 w-full shadow-[0_0_34px_rgba(245,180,76,0.28)] hover:shadow-[0_0_44px_rgba(245,180,76,0.38)] lg:min-w-[260px] lg:w-auto"
+          >
+            <Download className="h-4 w-4" />
+            {copy.downloadPdf}
+          </Button>
+        </div>
+      </Card>
 
       <Card className="p-4 sm:p-6 md:p-8">
         <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-white/68 sm:mb-5 sm:text-sm sm:tracking-[0.18em]">
@@ -436,16 +465,8 @@ export default function TournamentVictoryScreen({
                   : 'border-white/10 bg-black/10'
               }`}
             >
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div>
-                  <div className="text-sm font-semibold text-white sm:text-base">{round.name}</div>
-                  <div className="mt-1 text-[11px] uppercase tracking-[0.14em] text-white/50 sm:text-xs sm:tracking-[0.16em]">
-                    {round.mode ? getGameModeDisplay(round.mode, language) : copy.round} {round.map ? `• ${round.map}` : ''}
-                  </div>
-                </div>
-                <div className="rounded-full border border-white/10 bg-white/6 px-2.5 py-1 text-[11px] text-white/72 sm:px-3 sm:text-xs">
-                  {round.matches.length} {copy.matches}
-                </div>
+              <div className="mb-4">
+                <div className="text-lg font-bold text-white sm:text-xl">{round.name}</div>
               </div>
               <div className="space-y-3">
                 {round.matches.map((match) => (
@@ -478,6 +499,12 @@ export default function TournamentVictoryScreen({
       <div className="text-center text-xs font-semibold tracking-[0.08em] text-amber-100/80 sm:text-sm sm:tracking-[0.1em]">
         Made by MrMarozzo
       </div>
+
+      <BracketPrintView
+        open={printViewOpen}
+        onClose={() => setPrintViewOpen(false)}
+        tournament={tournament}
+      />
     </div>
   );
 }
@@ -533,12 +560,20 @@ function getWinnerStats(winner: Team, matches: Match[]): WinnerStats {
     return b.appearances - a.appearances;
   });
 
+  const fallbackPlayer = winner.players[0];
+  const fallbackSummary: PlayerSummary = playerSummaries[0] ?? {
+    player: fallbackPlayer,
+    kills: 0,
+    gameWins: 0,
+    appearances: 0,
+  };
+
   return {
     seriesWins,
     gameWins,
     totalKills,
     objectivePoints,
-    mvp: playerSummaries[0],
+    mvp: fallbackSummary,
     playerSummaries,
   };
 }
@@ -640,8 +675,23 @@ function StatTile({
 }
 
 function MiniMatchCard({ match, championId }: { match: Match; championId?: string }) {
-  const team1Score = match.seriesScore?.team1 ?? 0;
-  const team2Score = match.seriesScore?.team2 ?? 0;
+  const language = useLanguage();
+  const copy = language === 'en'
+    ? {
+        winner: 'Winner',
+        finalResult: 'Final result',
+        opponent: 'Opponent',
+        bye: 'Bye',
+        kills: 'kills',
+      }
+    : {
+        winner: 'Vincitore',
+        finalResult: 'Risultato finale',
+        opponent: 'Avversario',
+        bye: 'Bye',
+        kills: 'kill',
+      };
+  const { team1Score, team2Score } = getDisplaySeriesScore(match);
   const hasGames = Boolean(match.games && match.games.length > 0);
   const winnerTeam = match.winner;
   const loserTeam =
@@ -660,15 +710,6 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
           : 'border-amber-300/18 bg-[linear-gradient(180deg,rgba(245,180,76,0.08)_0%,rgba(2,6,23,0.34)_100%)] shadow-[0_0_22px_rgba(245,180,76,0.1)]'
       }`}
     >
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div className="text-[11px] uppercase tracking-[0.16em] text-white/42">
-          Match {match.matchIndex + 1}
-        </div>
-        <div className="text-[11px] uppercase tracking-[0.16em] text-white/36">
-          {hasGames ? `${match.games?.length ?? 0} ${copy.games}` : winnerTeam ? copy.seriesCompleted : copy.pending}
-        </div>
-      </div>
-
       <div className="flex flex-wrap items-stretch gap-3">
         <div
           className={`min-w-0 flex-[1_1_220px] rounded-[16px] border px-4 py-3 ${
@@ -683,18 +724,15 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
           </div>
           {winnerTeam && (
             <div className="mt-1 text-xs text-white/70 sm:text-sm">
-              {winnerTeam.players.map((player) => player.name).join(', ')}
+              {winnerTeam.players.map((player) => player.name).join(' - ')}
             </div>
           )}
         </div>
 
-        <div className="w-full rounded-[16px] border border-white/10 bg-black/16 px-4 py-3 text-center sm:w-auto sm:min-w-[190px] sm:shrink-0 sm:px-5 sm:py-4">
+        <div className="w-full rounded-[16px] border border-white/10 bg-black/16 px-4 py-3 text-center sm:w-auto sm:min-w-[210px] sm:shrink-0 sm:px-5 sm:py-4">
           <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">{copy.finalResult}</div>
-          <div className="mt-2 text-2xl font-bold text-white sm:text-3xl">
+          <div className="mt-2 text-[2.35rem] font-black leading-none text-white sm:text-[3.2rem]">
             {team1Score} <span className="mx-2 text-white/35">-</span> {team2Score}
-          </div>
-          <div className="mt-1 text-xs text-white/55">
-            {(match.team1?.name ?? `${copy.teamFallback} 1`)} vs {(match.team2?.name ?? `${copy.teamFallback} 2`)}
           </div>
         </div>
 
@@ -705,35 +743,59 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
           </div>
           {loserTeam && (
             <div className="mt-1 text-xs text-white/58 sm:text-sm">
-              {loserTeam.players.map((player) => player.name).join(', ')}
+              {loserTeam.players.map((player) => player.name).join(' - ')}
             </div>
           )}
         </div>
       </div>
 
       {hasGames && (
-        <div className="mt-4 rounded-[16px] border border-white/8 bg-black/12 p-4">
-          <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/48">
-            {copy.gameDetails}
-          </div>
-          <div className="space-y-2">
+        <div className="mt-4 border-t border-white/8 pt-4">
+          <div className="space-y-2.5">
             {match.games?.map((game) => {
               const modeLabel = getGameModeDisplay(game.mode, language);
               const mapLabel = game.map?.trim() ? game.map : null;
               const scoreLabel = formatGameScore(game);
+              const showPlayerBreakdown = Boolean(
+                game.score &&
+                'team1PlayerKills' in game.score &&
+                match.team1 &&
+                match.team2
+              );
 
               return (
                 <div
                   key={game.gameNumber}
-                  className="grid gap-2 rounded-[14px] border border-white/8 bg-white/[0.03] px-3 py-3 text-sm md:grid-cols-[auto_1fr_auto]"
+                  className="rounded-[14px] border border-white/8 bg-white/[0.03] px-3 py-3 text-sm"
                 >
-                  <div className="font-semibold text-white/90">Game {game.gameNumber}</div>
-                  <div className="min-w-0 text-white/68">
-                    <span>{modeLabel}</span>
-                    {mapLabel && <span className="mx-2 text-white/28">•</span>}
-                    {mapLabel && <span>{mapLabel}</span>}
+                  <div className="grid gap-2 md:grid-cols-[auto_1fr_auto] md:items-center">
+                    <div className="font-semibold text-white/90">Game {game.gameNumber}</div>
+                    <div className="min-w-0 text-[1rem] font-semibold text-white/84 sm:text-[1.08rem]">
+                      <span>{modeLabel}</span>
+                      {mapLabel && <span className="mx-2 text-white/28">-</span>}
+                      {mapLabel && <span>{mapLabel}</span>}
+                    </div>
+                    <div className="text-lg font-bold text-amber-100 sm:text-xl">{scoreLabel}</div>
                   </div>
-                  <div className="font-semibold text-amber-100">{scoreLabel}</div>
+
+                  {showPlayerBreakdown && (
+                    <div className="mt-3 border-t border-white/8 pt-3">
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <PlayerBreakdownColumn
+                          team={match.team1!}
+                          killsByPlayer={game.score.team1PlayerKills}
+                          totalKills={game.score.team1TotalKills}
+                          killsLabel={copy.kills}
+                        />
+                        <PlayerBreakdownColumn
+                          team={match.team2!}
+                          killsByPlayer={game.score.team2PlayerKills}
+                          totalKills={game.score.team2TotalKills}
+                          killsLabel={copy.kills}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -743,7 +805,41 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
     </div>
   );
 }
-
+function PlayerBreakdownColumn({
+  team,
+  killsByPlayer,
+  totalKills,
+  killsLabel,
+}: {
+  team: Team;
+  killsByPlayer: Record<string, number>;
+  totalKills: number;
+  killsLabel: string;
+}) {
+  return (
+    <div className="rounded-[12px] border border-white/8 bg-black/12 p-3">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <div className="truncate text-sm font-semibold text-white/90">{team.name}</div>
+        <div className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-100">
+          {totalKills} {killsLabel}
+        </div>
+      </div>
+      <div className="space-y-2">
+        {team.players.map((player) => (
+          <div
+            key={player.id}
+            className="flex items-center justify-between gap-3 rounded-[10px] border border-white/8 bg-white/[0.03] px-3 py-2"
+          >
+            <div className="truncate text-sm text-white/78">{player.name}</div>
+            <div className="shrink-0 text-sm font-semibold text-white">
+              {killsByPlayer[player.id] ?? 0}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 function formatGameScore(game: Game): string {
   if (!game.score) return '-';
 
@@ -760,4 +856,23 @@ function formatGameScore(game: Game): string {
   }
 
   return '-';
+}
+
+function getDisplaySeriesScore(match: Match) {
+  if (match.seriesScore) {
+    return {
+      team1Score: match.seriesScore.team1,
+      team2Score: match.seriesScore.team2,
+    };
+  }
+
+  if (match.winner?.id === match.team1?.id) {
+    return { team1Score: 1, team2Score: 0 };
+  }
+
+  if (match.winner?.id === match.team2?.id) {
+    return { team1Score: 0, team2Score: 1 };
+  }
+
+  return { team1Score: 0, team2Score: 0 };
 }

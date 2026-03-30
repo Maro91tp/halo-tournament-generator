@@ -3,6 +3,7 @@ import { Download, Share2, Image as ImageIcon, Printer } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { Button } from './ui/button';
 import { useLanguage } from './LanguageContext';
+import { getMatchDurationDisplay } from '../lib/tournament-utils';
 
 interface BracketExportProps {
   bracketElementId: string;
@@ -131,14 +132,21 @@ export default function BracketExport({
       }
 
       const data = JSON.parse(savedData);
+      const typeLabel =
+        data.config.type === 'slayer'
+          ? language === 'en'
+            ? 'Slayer'
+            : 'Massacro'
+          : 'Ranked';
+      const formatLabel = getMatchDurationDisplay(data.config.matchDuration, language);
 
       let text = `${tournamentName}\n\n`;
       text += `${copy.info}:\n`;
       text += `- ${copy.players}: ${data.players.length}\n`;
       text += `- ${copy.teams}: ${data.teams.length}\n`;
-      text += `- ${copy.type}: ${data.config.type}\n`;
+      text += `- ${copy.type}: ${typeLabel}\n`;
       text += `- ${copy.mode}: ${data.config.teamMode}\n`;
-      text += `- ${copy.format}: ${data.config.matchDuration}\n\n`;
+      text += `- ${copy.format}: ${formatLabel}\n\n`;
 
       text += `${copy.teamsTitle}:\n`;
       data.teams.forEach((team: any, index: number) => {

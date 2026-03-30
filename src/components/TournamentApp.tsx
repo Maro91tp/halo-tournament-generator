@@ -15,6 +15,10 @@ import {
   loadTournamentState,
   clearTournamentState,
   hasSavedTournament,
+  listSavedTournamentRecords,
+  loadSavedTournamentRecord,
+  saveNamedTournament,
+  type SavedTournamentRecord,
 } from '../lib/tournament-storage';
 import { LANGUAGE_STORAGE_KEY, type Language } from '../lib/language';
 
@@ -60,6 +64,8 @@ export default function TournamentApp() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [savedTournament, setSavedTournament] = useState<ReturnType<typeof loadTournamentState>>(null);
+  const [savedTournaments, setSavedTournaments] = useState<SavedTournamentRecord[]>([]);
+  const [currentSavedTournamentId, setCurrentSavedTournamentId] = useState<string | null>(null);
   const [lastSaved, setLastSaved] = useState<Date | undefined>();
   const copy = language === 'it'
     ? {
@@ -92,15 +98,8 @@ export default function TournamentApp() {
     if (hasSavedTournament()) {
       const saved = loadTournamentState();
       setSavedTournament(saved);
-
-      if (saved) {
-        setPlayers(saved.players);
-        setConfig(saved.config);
-        setTeams(saved.teams);
-        setTournament(saved.tournament);
-        setStep(saved.step);
-      }
     }
+    setSavedTournaments(listSavedTournamentRecords());
   }, []);
 
   useEffect(() => {
@@ -111,6 +110,31 @@ export default function TournamentApp() {
   }, [tournament, step, config, players, teams]);
 
   useEffect(() => {
+    if (!currentSavedTournamentId || step === 'welcome') return;
+
+    const existingRecord = loadSavedTournamentRecord(currentSavedTournamentId);
+    if (!existingRecord) {
+      setCurrentSavedTournamentId(null);
+      return;
+    }
+
+    const updatedRecord = saveNamedTournament({
+      id: existingRecord.id,
+      name: existingRecord.name,
+      step: step === 'welcome' ? 'players' : step,
+      players,
+      config,
+      teams,
+      tournament,
+    });
+
+    setSavedTournaments(listSavedTournamentRecords());
+    if (updatedRecord.status === 'completed') {
+      setCurrentSavedTournamentId(updatedRecord.id);
+    }
+  }, [config, currentSavedTournamentId, players, step, teams, tournament]);
+
+  useEffect(() => {
     document.documentElement.lang = language;
     document.title = copy.title;
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
@@ -119,6 +143,7 @@ export default function TournamentApp() {
   const handleNewTournament = () => {
     clearTournamentState();
     setSavedTournament(null);
+    setCurrentSavedTournamentId(null);
     setStep('players');
     setPlayers([]);
     setConfig(null);
@@ -133,8 +158,20 @@ export default function TournamentApp() {
       setConfig(saved.config);
       setTeams(saved.teams);
       setTournament(saved.tournament);
-      setStep('bracket');
+      setStep(saved.step === 'welcome' ? 'players' : saved.step);
     }
+  };
+
+  const handleLoadSavedTournament = (id: string) => {
+    const saved = loadSavedTournamentRecord(id);
+    if (!saved) return;
+
+    setPlayers(saved.players);
+    setConfig(saved.config);
+    setTeams(saved.teams);
+    setTournament(saved.tournament);
+    setCurrentSavedTournamentId(saved.id);
+    setStep(saved.step);
   };
 
   const handlePlayersComplete = (completedPlayers: Player[]) => {
@@ -167,6 +204,8 @@ export default function TournamentApp() {
   const handleReset = () => {
     clearTournamentState();
     setSavedTournament(null);
+    setCurrentSavedTournamentId(null);
+    setSavedTournaments(listSavedTournamentRecords());
     setStep('welcome');
     setPlayers([]);
     setConfig(null);
@@ -225,6 +264,27 @@ export default function TournamentApp() {
     setLanguage((current) => (current === 'it' ? 'en' : 'it'));
   };
 
+  const handleSaveNamedTournament = (name: string) => {
+    if (step === 'welcome') return;
+
+    const savedRecord = saveNamedTournament({
+      id: currentSavedTournamentId,
+      name,
+      step,
+      players,
+      config,
+      teams,
+      tournament,
+    });
+
+    setCurrentSavedTournamentId(savedRecord.id);
+    setSavedTournaments(listSavedTournamentRecords());
+  };
+
+  const currentSavedTournament = currentSavedTournamentId
+    ? savedTournaments.find((record) => record.id === currentSavedTournamentId) ?? null
+    : null;
+
   if (step === 'welcome') {
     return (
       <LanguageProvider language={language}>
@@ -233,8 +293,10 @@ export default function TournamentApp() {
           <WelcomeScreen
             language={language}
             savedTournament={savedTournament}
+            savedTournaments={savedTournaments}
             onNewTournament={handleNewTournament}
             onResumeTournament={handleResumeTournament}
+            onLoadSavedTournament={handleLoadSavedTournament}
           />
         </>
       </LanguageProvider>
@@ -312,6 +374,12 @@ export default function TournamentApp() {
               onReplay={handleReplayTournament}
               onReset={handleReset}
               onBack={handleBack}
+              onSaveTournament={handleSaveNamedTournament}
+              currentSavedTournamentName={currentSavedTournament?.name ?? null}
+              currentSavedTournamentStatus={currentSavedTournament?.status ?? null}
+              currentSavedTournamentSavedAt={currentSavedTournament?.savedAt ?? null}
+              currentSavedTournamentTeamMode={currentSavedTournament?.config?.teamMode ?? null}
+              currentSavedTournamentType={currentSavedTournament?.config?.type ?? null}
             />
           )}
         </div>

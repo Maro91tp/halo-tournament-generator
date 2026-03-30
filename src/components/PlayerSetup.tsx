@@ -566,6 +566,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                     value={currentPlayer.gamertag ?? ''}
                     onChange={(e) => updatePlayer(selectedPlayerIndex, { gamertag: e.target.value })}
                     placeholder={currentPlayer.name || copy.gamertag}
+                    className="h-11"
                   />
                 </div>
                 <Button
@@ -573,7 +574,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                   variant="outline"
                   onClick={handleOpenHaloDataHive}
                   disabled={!(currentPlayer.gamertag || currentPlayer.name).trim()}
-                  className="min-h-11 w-full border-white/18 bg-white/6 text-white shadow-[0_0_18px_rgba(100,180,255,0.12)] hover:bg-white/10 hover:shadow-[0_0_26px_rgba(100,180,255,0.18)] sm:self-end"
+                  className="h-11 w-full border-white/18 bg-white/6 text-white shadow-[0_0_18px_rgba(100,180,255,0.12)] hover:bg-white/10 hover:shadow-[0_0_26px_rgba(100,180,255,0.18)] sm:self-end"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   {copy.openDataHive}
@@ -583,7 +584,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                   variant="outline"
                   onClick={handleOpenHaloTracker}
                   disabled={!(currentPlayer.gamertag || currentPlayer.name).trim()}
-                  className="min-h-11 w-full border-white/18 bg-white/6 text-white shadow-[0_0_18px_rgba(100,180,255,0.12)] hover:bg-white/10 hover:shadow-[0_0_26px_rgba(100,180,255,0.18)] sm:self-end"
+                  className="h-11 w-full border-white/18 bg-white/6 text-white shadow-[0_0_18px_rgba(100,180,255,0.12)] hover:bg-white/10 hover:shadow-[0_0_26px_rgba(100,180,255,0.18)] sm:self-end"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   {copy.openTracker}
