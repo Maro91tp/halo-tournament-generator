@@ -28,6 +28,7 @@ export default function WelcomeScreen({
         helper: 'Imposta i giocatori, genera le squadre e fai partire il bracket in pochi passaggi.',
         featuresTitle: 'Caratteristiche principali',
         footer: 'Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.',
+        about: 'About',
         features: [
           { title: 'Bilanciamento', subtitle: 'Squadre equilibrate' },
           { title: 'Mappe e modalita', subtitle: 'Assegnazione automatica' },
@@ -46,6 +47,7 @@ export default function WelcomeScreen({
         helper: 'Set up players, generate teams, and launch the bracket in just a few steps.',
         featuresTitle: 'Main features',
         footer: 'This project is an unofficial fan project. Halo is a registered trademark of Microsoft.',
+        about: 'About',
         features: [
           { title: 'Balancing', subtitle: 'Balanced teams' },
           { title: 'Maps and modes', subtitle: 'Automatic assignment' },
@@ -279,6 +281,14 @@ export default function WelcomeScreen({
           >
             Made by MrMarozzo
           </span>
+          <div className="mt-3">
+            <a
+              href="/about"
+              className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/54 transition hover:text-primary"
+            >
+              {copy.about}
+            </a>
+          </div>
         </div>
       </div>
     </div>

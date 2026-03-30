@@ -3,6 +3,7 @@ import { Dialog, DialogContent } from './ui/dialog';
 import { Button } from './ui/button';
 import type { Tournament, Game, Match } from '../types/tournament';
 import { getGameModeDisplay, getMatchDurationDisplay } from '../lib/tournament-utils';
+import { useLanguage } from './LanguageContext';
 
 interface BracketPrintViewProps {
   open: boolean;
@@ -11,6 +12,30 @@ interface BracketPrintViewProps {
 }
 
 export default function BracketPrintView({ open, onClose, tournament }: BracketPrintViewProps) {
+  const language = useLanguage();
+  const copy = language === 'en'
+    ? {
+        winner: 'TOURNAMENT WINNER',
+        map: 'MAP',
+        mode: 'MODE',
+        autoAdvance: 'Advances automatically (bye)',
+        gameDetails: 'Game details',
+        generatedWith: 'Generated with Halo Tournament Generator',
+        printHint: 'Use Cmd/Ctrl + P to print or capture a screenshot',
+        slayer: 'Slayer',
+        ranked: 'Ranked',
+      }
+    : {
+        winner: 'VINCITORE DEL TORNEO',
+        map: 'MAPPA',
+        mode: 'MODALITA',
+        autoAdvance: 'Avanza automaticamente (bye)',
+        gameDetails: 'Dettagli game',
+        generatedWith: 'Generato con Halo Tournament Generator',
+        printHint: 'Usa Cmd/Ctrl + P per stampare o catturare uno screenshot',
+        slayer: 'Slayer',
+        ranked: 'Ranked',
+      };
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-h-[95vh] max-w-[95vw] overflow-auto p-0">
@@ -18,14 +43,14 @@ export default function BracketPrintView({ open, onClose, tournament }: BracketP
           <div className="mb-8 border-b-2 border-black pb-6 text-center">
             <h1 className="mb-2 text-4xl font-bold">HALO TOURNAMENT</h1>
             <p className="text-lg text-gray-600">
-              {tournament.config.type === 'slayer' ? 'Slayer' : 'Ranked'} • {tournament.config.teamMode} •{' '}
-              {getMatchDurationDisplay(tournament.config.matchDuration)}
+              {tournament.config.type === 'slayer' ? copy.slayer : copy.ranked} • {tournament.config.teamMode} •{' '}
+              {getMatchDurationDisplay(tournament.config.matchDuration, language)}
             </p>
           </div>
 
           {tournament.winner && (
             <div className="mb-8 rounded-lg bg-black p-6 text-center text-white">
-              <div className="mb-2 text-2xl font-bold">VINCITORE DEL TORNEO</div>
+              <div className="mb-2 text-2xl font-bold">{copy.winner}</div>
               <div className="text-3xl font-bold">{tournament.winner.name}</div>
               <div className="mt-2 text-lg">{tournament.winner.players.map((player) => player.name).join(', ')}</div>
             </div>
@@ -37,9 +62,9 @@ export default function BracketPrintView({ open, onClose, tournament }: BracketP
                 <div className="mb-4 rounded-lg border-2 border-black bg-gray-100 p-4">
                   <h3 className="mb-2 text-xl font-bold">{round.name}</h3>
                   <div className="space-y-1 text-sm">
-                    <div>MAPPA: <strong>{round.map}</strong></div>
+                    <div>{copy.map}: <strong>{round.map}</strong></div>
                     {tournament.config.type === 'ranked' && round.mode && (
-                      <div>MODALITA: <strong>{getGameModeDisplay(round.mode)}</strong></div>
+                      <div>{copy.mode}: <strong>{getGameModeDisplay(round.mode, language)}</strong></div>
                     )}
                   </div>
                 </div>
@@ -56,7 +81,7 @@ export default function BracketPrintView({ open, onClose, tournament }: BracketP
                         {isBye ? (
                           <div className="py-2 text-center">
                             <div className="text-lg font-bold">{match.team1!.name}</div>
-                            <div className="mt-1 text-sm text-gray-600">Avanza automaticamente (bye)</div>
+                            <div className="mt-1 text-sm text-gray-600">{copy.autoAdvance}</div>
                           </div>
                         ) : (
                           <>
@@ -80,13 +105,13 @@ export default function BracketPrintView({ open, onClose, tournament }: BracketP
 
                             {match.games && match.games.length > 0 && match.winner && (
                               <div className="mt-3 border-t-2 border-gray-300 pt-3">
-                                <div className="mb-2 text-xs font-semibold text-gray-700">Dettagli game</div>
+                                <div className="mb-2 text-xs font-semibold text-gray-700">{copy.gameDetails}</div>
                                 <div className="space-y-2">
                                   {match.games.map((game) => (
                                     <div key={game.gameNumber} className="rounded bg-gray-50 px-2 py-2">
                                       <div className="mb-1 flex items-center justify-between text-xs">
                                         <span className="font-semibold text-gray-600">
-                                          Game {game.gameNumber}: {getGameModeDisplay(game.mode)}
+                                          Game {game.gameNumber}: {getGameModeDisplay(game.mode, language)}
                                         </span>
                                         <span className="font-bold">{formatGameScorePrint(game, match)}</span>
                                       </div>
@@ -135,7 +160,7 @@ export default function BracketPrintView({ open, onClose, tournament }: BracketP
           </div>
 
           <div className="mt-8 border-t-2 border-black pt-6 text-center text-sm text-gray-600">
-            <p>Generato con Halo Tournament Generator • {new Date().toLocaleDateString('it-IT')}</p>
+            <p>{copy.generatedWith} • {new Date().toLocaleDateString(language === 'en' ? 'en-US' : 'it-IT')}</p>
           </div>
         </div>
 
@@ -149,7 +174,7 @@ export default function BracketPrintView({ open, onClose, tournament }: BracketP
         </Button>
 
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-lg bg-black px-4 py-2 text-sm text-white">
-          Usa Cmd/Ctrl + P per stampare o catturare uno screenshot
+          {copy.printHint}
         </div>
       </DialogContent>
     </Dialog>

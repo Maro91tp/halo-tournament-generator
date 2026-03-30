@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Download, Share2, Image as ImageIcon, Printer } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { Button } from './ui/button';
+import { useLanguage } from './LanguageContext';
 
 interface BracketExportProps {
   bracketElementId: string;
@@ -14,14 +15,58 @@ export default function BracketExport({
   tournamentName = 'Halo Tournament',
   onOpenPrintView,
 }: BracketExportProps) {
+  const language = useLanguage();
   const [isExporting, setIsExporting] = useState(false);
+  const copy = language === 'en'
+    ? {
+        bracketNotFound: 'Unable to find the bracket to export',
+        exportBracketError: 'Error while exporting the bracket',
+        noTournamentToExport: 'No saved tournament to export',
+        exportDataError: 'Error while exporting data',
+        noTournamentToShare: 'No tournament to share',
+        info: 'Info',
+        players: 'Players',
+        teams: 'Teams',
+        type: 'Type',
+        mode: 'Mode',
+        format: 'Format',
+        teamsTitle: 'Teams',
+        copied: 'Tournament info copied to clipboard',
+        copyError: 'Error while copying',
+        printView: 'Print view',
+        exporting: 'Exporting...',
+        downloadImage: 'Download image',
+        downloadJson: 'Download data (JSON)',
+        copyInfo: 'Copy info',
+      }
+    : {
+        bracketNotFound: 'Impossibile trovare il bracket da esportare',
+        exportBracketError: 'Errore durante l export del bracket',
+        noTournamentToExport: 'Nessun torneo salvato da esportare',
+        exportDataError: 'Errore durante l export dei dati',
+        noTournamentToShare: 'Nessun torneo da condividere',
+        info: 'Informazioni',
+        players: 'Giocatori',
+        teams: 'Squadre',
+        type: 'Tipo',
+        mode: 'Modalita',
+        format: 'Formato',
+        teamsTitle: 'Squadre',
+        copied: 'Informazioni torneo copiate negli appunti',
+        copyError: 'Errore durante la copia',
+        printView: 'Vista stampa',
+        exporting: 'Esportazione...',
+        downloadImage: 'Scarica come immagine',
+        downloadJson: 'Scarica dati (JSON)',
+        copyInfo: 'Copia info',
+      };
 
   const exportAsImage = async () => {
     setIsExporting(true);
     try {
       const element = document.getElementById(bracketElementId);
       if (!element) {
-        alert('Impossibile trovare il bracket da esportare');
+        alert(copy.bracketNotFound);
         return;
       }
 
@@ -44,7 +89,7 @@ export default function BracketExport({
       });
     } catch (error) {
       console.error('Error exporting bracket:', error);
-      alert("Errore durante l'export del bracket");
+      alert(copy.exportBracketError);
     } finally {
       setIsExporting(false);
     }
@@ -54,13 +99,13 @@ export default function BracketExport({
     try {
       const element = document.getElementById(bracketElementId);
       if (!element) {
-        alert('Impossibile trovare il bracket da esportare');
+        alert(copy.bracketNotFound);
         return;
       }
 
       const savedData = localStorage.getItem('halo_tournament_state');
       if (!savedData) {
-        alert('Nessun torneo salvato da esportare');
+        alert(copy.noTournamentToExport);
         return;
       }
 
@@ -73,7 +118,7 @@ export default function BracketExport({
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error exporting JSON:', error);
-      alert("Errore durante l'export dei dati");
+      alert(copy.exportDataError);
     }
   };
 
@@ -81,31 +126,31 @@ export default function BracketExport({
     try {
       const savedData = localStorage.getItem('halo_tournament_state');
       if (!savedData) {
-        alert('Nessun torneo da condividere');
+        alert(copy.noTournamentToShare);
         return;
       }
 
       const data = JSON.parse(savedData);
 
       let text = `${tournamentName}\n\n`;
-      text += 'Informazioni:\n';
-      text += `- Giocatori: ${data.players.length}\n`;
-      text += `- Squadre: ${data.teams.length}\n`;
-      text += `- Tipo: ${data.config.type}\n`;
-      text += `- Modalita: ${data.config.teamMode}\n`;
-      text += `- Formato: ${data.config.matchDuration}\n\n`;
+      text += `${copy.info}:\n`;
+      text += `- ${copy.players}: ${data.players.length}\n`;
+      text += `- ${copy.teams}: ${data.teams.length}\n`;
+      text += `- ${copy.type}: ${data.config.type}\n`;
+      text += `- ${copy.mode}: ${data.config.teamMode}\n`;
+      text += `- ${copy.format}: ${data.config.matchDuration}\n\n`;
 
-      text += 'Squadre:\n';
+      text += `${copy.teamsTitle}:\n`;
       data.teams.forEach((team: any, index: number) => {
         text += `${index + 1}. ${team.name}: ${team.players.map((player: any) => player.name).join(', ')}\n`;
       });
 
       navigator.clipboard.writeText(text).then(() => {
-        alert('Informazioni torneo copiate negli appunti');
+        alert(copy.copied);
       });
     } catch (error) {
       console.error('Error copying text:', error);
-      alert('Errore durante la copia');
+      alert(copy.copyError);
     }
   };
 
@@ -114,7 +159,7 @@ export default function BracketExport({
       {onOpenPrintView && (
         <Button onClick={onOpenPrintView} variant="default" className="flex w-full items-center gap-2 sm:w-auto">
           <Printer className="h-4 w-4" />
-          Vista stampa
+          {copy.printView}
         </Button>
       )}
 
@@ -127,24 +172,24 @@ export default function BracketExport({
         {isExporting ? (
           <>
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            Esportazione...
+            {copy.exporting}
           </>
         ) : (
           <>
             <ImageIcon className="h-4 w-4" />
-            Scarica come immagine
+            {copy.downloadImage}
           </>
         )}
       </Button>
 
       <Button onClick={exportAsJSON} variant="outline" className="flex w-full items-center gap-2 sm:w-auto">
         <Download className="h-4 w-4" />
-        Scarica dati (JSON)
+        {copy.downloadJson}
       </Button>
 
       <Button onClick={copyShareableText} variant="outline" className="flex w-full items-center gap-2 sm:w-auto">
         <Share2 className="h-4 w-4" />
-        Copia info
+        {copy.copyInfo}
       </Button>
     </div>
   );

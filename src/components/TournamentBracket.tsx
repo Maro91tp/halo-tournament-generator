@@ -69,6 +69,7 @@ export default function TournamentBracket({
         oddball: 'Oddball',
         ctf: 'Capture the Flag',
         koth: 'King of the Hill',
+        ranked: 'Ranked',
       }
     : {
         title: 'Bracket torneo',
@@ -99,6 +100,7 @@ export default function TournamentBracket({
         oddball: 'Teschio',
         ctf: 'Ruba la bandiera',
         koth: 'Re della collina',
+        ranked: 'Ranked',
       };
 
   const allMatches = useMemo(
@@ -174,7 +176,7 @@ export default function TournamentBracket({
             <div className="grid grid-cols-1 gap-2.5 text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
               <InfoStat
                 label={copy.type}
-                value={tournament.config.type === 'slayer' ? 'Slayer' : 'Ranked'}
+                value={tournament.config.type === 'slayer' ? copy.slayer : copy.ranked}
                 icon={tournament.config.type === 'slayer' ? <ModeIcon mode="slayer" className="h-4 w-4" /> : <Trophy className="h-4 w-4 text-primary" />}
               />
               <InfoStat label={copy.mode} value={tournament.config.teamMode} icon={Swords} />
@@ -385,15 +387,35 @@ interface MatchCardProps {
 }
 
 function MatchCard({ match, onClick }: MatchCardProps) {
+  const language = useLanguage();
   const isPlayable = !!match.team1 && !!match.team2 && !match.winner;
   const isBye = !!match.team1 && !match.team2 && !!match.winner;
   const isWaiting = !match.team1 || !match.team2;
+  const copy = language === 'en'
+    ? {
+        bye: 'Bye',
+        completed: 'Completed',
+        toPlay: 'To play',
+        waiting: 'Waiting',
+        autoAdvance: 'Advances automatically to the next round',
+        waitingPreviousRound: 'Waiting for results from the previous round',
+        versus: 'VS',
+      }
+    : {
+        bye: 'Bye',
+        completed: 'Completato',
+        toPlay: 'Da giocare',
+        waiting: 'In attesa',
+        autoAdvance: 'Avanza automaticamente al round successivo',
+        waitingPreviousRound: 'In attesa dei risultati del round precedente',
+        versus: 'VS',
+      };
 
   const status = match.winner
-    ? { label: isBye ? 'Bye' : 'Completato', icon: CheckCircle2, className: 'border-primary/20 bg-primary/10 text-white' }
+    ? { label: isBye ? copy.bye : copy.completed, icon: CheckCircle2, className: 'border-primary/20 bg-primary/10 text-white' }
     : isPlayable
-    ? { label: 'Da giocare', icon: PlayCircle, className: 'border-primary/20 bg-primary/10 text-white' }
-    : { label: 'In attesa', icon: Clock3, className: 'border-white/10 bg-white/6 text-white/70' };
+    ? { label: copy.toPlay, icon: PlayCircle, className: 'border-primary/20 bg-primary/10 text-white' }
+    : { label: copy.waiting, icon: Clock3, className: 'border-white/10 bg-white/6 text-white/70' };
 
   return (
     <Card
@@ -417,15 +439,15 @@ function MatchCard({ match, onClick }: MatchCardProps) {
       </div>
 
       {isBye ? (
-        <div className="rounded-[22px] border border-primary/20 bg-primary/10 px-4 py-4 text-center">
-          <div className="text-[clamp(1rem,0.94rem+0.38vw,1.1rem)] font-semibold text-white">{match.team1?.name}</div>
-          <div className="mt-1 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/65">Avanza automaticamente al round successivo</div>
-        </div>
-      ) : isWaiting && !match.team1 && !match.team2 ? (
-        <div className="rounded-[22px] border border-white/10 bg-black/8 px-4 py-6 text-center text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/60">
-          In attesa dei risultati del round precedente
-        </div>
-      ) : (
+          <div className="rounded-[22px] border border-primary/20 bg-primary/10 px-4 py-4 text-center">
+            <div className="text-[clamp(1rem,0.94rem+0.38vw,1.1rem)] font-semibold text-white">{match.team1?.name}</div>
+            <div className="mt-1 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/65">{copy.autoAdvance}</div>
+          </div>
+        ) : isWaiting && !match.team1 && !match.team2 ? (
+          <div className="rounded-[22px] border border-white/10 bg-black/8 px-4 py-6 text-center text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/60">
+          {copy.waitingPreviousRound}
+          </div>
+        ) : (
         <div className="space-y-2.5">
           <TeamDisplay
             team={match.team1}
@@ -435,7 +457,7 @@ function MatchCard({ match, onClick }: MatchCardProps) {
           />
 
           <div className="py-0.5 text-center text-xs font-semibold uppercase tracking-[0.18em] text-white/42">
-            VS
+            {copy.versus}
           </div>
 
           <TeamDisplay
@@ -458,10 +480,11 @@ interface TeamDisplayProps {
 }
 
 function TeamDisplay({ team, isWinner, isLoser, score }: TeamDisplayProps) {
+  const language = useLanguage();
   if (!team) {
     return (
       <div className="rounded-[20px] border border-dashed border-white/14 bg-black/8 px-4 py-4 text-center text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/50">
-        TBD
+        {language === 'en' ? 'TBD' : 'Da definire'}
       </div>
     );
   }

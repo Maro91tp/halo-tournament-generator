@@ -14,6 +14,7 @@ import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
 import { generateGamesForMatch, getGameModeDisplay } from '../lib/tournament-utils';
 import { ModeIcon } from './TournamentIcons';
+import { useLanguage } from './LanguageContext';
 
 interface GameResultsDialogProps {
   open: boolean;
@@ -32,10 +33,40 @@ export default function GameResultsDialog({
   onClose,
   onSubmit,
 }: GameResultsDialogProps) {
+  const language = useLanguage();
   const [games, setGames] = useState<Game[]>([]);
   const [error, setError] = useState('');
   const [currentGameIndex, setCurrentGameIndex] = useState(0);
   const killLimit = config.killLimit ?? 50;
+  const copy = language === 'en'
+    ? {
+        matchResults: 'Match results',
+        series: 'Series',
+        of: 'of',
+        back: 'Back',
+        forward: 'Next',
+        cancel: 'Cancel',
+        seriesCompleted: 'Series completed, you can confirm the final result.',
+        winsToClose: 'wins still needed to close the series.',
+        seriesWinner: 'Series winner',
+        gamesWon: 'games won',
+        limit: 'Limit',
+        confirmed: 'Confirmed',
+      }
+    : {
+        matchResults: 'Risultati match',
+        series: 'Serie',
+        of: 'di',
+        back: 'Indietro',
+        forward: 'Avanti',
+        cancel: 'Annulla',
+        seriesCompleted: 'Serie completata, puoi confermare il risultato finale.',
+        winsToClose: 'vittorie necessarie per chiudere la serie.',
+        seriesWinner: 'Vincitore serie',
+        gamesWon: 'game vinti',
+        limit: 'Limite',
+        confirmed: 'Confermato',
+      };
 
   useEffect(() => {
     if (!open || !match) return;
@@ -331,7 +362,7 @@ export default function GameResultsDialog({
         <DialogHeader className="gap-3 pb-1">
           <DialogTitle className="flex items-center gap-2 text-slate-950">
             <ModeIcon mode={match.mode ?? 'slayer'} className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
-            <span>Risultati match</span>
+            <span>{copy.matchResults}</span>
           </DialogTitle>
           <DialogDescription className="text-slate-600">
             {match.team1.name} vs {match.team2.name}
@@ -341,14 +372,14 @@ export default function GameResultsDialog({
         <div className="rounded-[22px] border border-amber-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(255,248,236,0.78)_100%)] p-3 sm:rounded-[30px] sm:p-6 md:p-8 shadow-[0_16px_44px_rgba(176,120,20,0.12)] backdrop-blur-sm">
           <div className="mb-5 sm:mb-8">
             <div className="grid items-center gap-3 sm:gap-4 md:grid-cols-[1fr_auto_1fr]">
-              <TeamSideSummary team={match.team1} wins={team1Wins} align="right" />
+              <TeamSideSummary team={match.team1} wins={team1Wins} align="right" gamesWonLabel={copy.gamesWon} />
               <div className="text-center">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500 sm:text-xs sm:tracking-[0.24em]">Serie</div>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500 sm:text-xs sm:tracking-[0.24em]">{copy.series}</div>
                 <div className="mt-2 text-[clamp(2rem,1.5rem+3vw,4.5rem)] font-bold tracking-tight text-slate-950 drop-shadow-[0_3px_10px_rgba(255,255,255,0.45)] md:text-7xl">
                   {team1Wins} <span className="text-slate-400">-</span> {team2Wins}
                 </div>
               </div>
-              <TeamSideSummary team={match.team2} wins={team2Wins} align="left" />
+              <TeamSideSummary team={match.team2} wins={team2Wins} align="left" gamesWonLabel={copy.gamesWon} />
             </div>
           </div>
 
@@ -356,7 +387,7 @@ export default function GameResultsDialog({
             <div className="space-y-4">
               <div className="flex flex-col gap-3 rounded-[20px] border border-amber-100/80 bg-white/72 px-3 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-4">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 sm:text-sm sm:tracking-[0.18em]">
-                  Game {activeGame.gameNumber} di {visibleGames.length}
+                  Game {activeGame.gameNumber} {copy.of} {visibleGames.length}
                 </div>
                 <div className="grid grid-cols-3 gap-1.5 sm:flex sm:flex-wrap sm:gap-2">
                   {visibleGames.map((game, index) => (
@@ -384,6 +415,9 @@ export default function GameResultsDialog({
                 team2={match.team2}
                 killLimit={killLimit}
                 seriesCompleted={Boolean(seriesResult)}
+                language={language}
+                limitLabel={copy.limit}
+                confirmedLabel={copy.confirmed}
                 onAdjustSlayerKills={updateSlayerKills}
                 onAdjustObjectiveScore={updateObjectiveScore}
                 onAdjustOddballScore={updateOddballScore}
@@ -400,13 +434,13 @@ export default function GameResultsDialog({
                   disabled={!canGoBackGame}
                   className="w-full text-slate-700 hover:bg-amber-100/70 hover:text-slate-950 sm:w-auto"
                 >
-                  Indietro
+                  {copy.back}
                 </Button>
 
                 <div className="text-center text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] text-slate-600 sm:text-left">
                   {seriesResult
-                    ? 'Serie completata, puoi confermare il risultato finale.'
-                    : `Servono ancora ${requiredWins - Math.max(team1Wins, team2Wins)} vittorie per chiudere la serie.`}
+                    ? copy.seriesCompleted
+                    : `${requiredWins - Math.max(team1Wins, team2Wins)} ${copy.winsToClose}`}
                 </div>
 
                 {shouldShowForwardGame && (
@@ -416,7 +450,7 @@ export default function GameResultsDialog({
                     onClick={() => setCurrentGameIndex((current) => Math.min(current + 1, visibleGames.length - 1))}
                     className="w-full text-slate-700 hover:bg-amber-100/70 hover:text-slate-950 sm:w-auto"
                   >
-                    Avanti
+                    {copy.forward}
                   </Button>
                 )}
               </div>
@@ -434,7 +468,7 @@ export default function GameResultsDialog({
             <div className="mt-6 rounded-[20px] border border-primary/25 bg-[linear-gradient(180deg,rgba(245,180,76,0.18)_0%,rgba(245,180,76,0.08)_100%)] px-4 py-3 text-center shadow-[0_0_24px_rgba(245,180,76,0.12)] sm:rounded-[24px] sm:px-5 sm:py-4">
               <div className="mb-1 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600 sm:text-xs sm:tracking-[0.18em]">
                 <Crown className="h-4 w-4 text-primary" />
-                <span>Vincitore serie</span>
+                <span>{copy.seriesWinner}</span>
               </div>
               <div className="text-[clamp(1rem,0.94rem+0.38vw,1.2rem)] font-bold text-slate-950 sm:text-xl">
                 {seriesResult.winnerId === match.team1.id ? match.team1.name : match.team2.name}
@@ -448,7 +482,7 @@ export default function GameResultsDialog({
 
         <DialogFooter className="mt-2 flex-col gap-3 sm:flex-row sm:justify-between">
           <Button variant="ghost" onClick={onClose} className="text-slate-700 hover:bg-slate-900/6 hover:text-slate-950">
-            Annulla
+            {copy.cancel}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -460,16 +494,18 @@ function TeamSideSummary({
   team,
   wins,
   align,
+  gamesWonLabel,
 }: {
   team: Team;
   wins: number;
   align: 'left' | 'right';
+  gamesWonLabel: string;
 }) {
   return (
     <div className={align === 'right' ? 'space-y-1 text-center md:text-right' : 'space-y-1 text-center md:text-left'}>
       <div className="text-[clamp(0.98rem,0.92rem+0.32vw,1.25rem)] font-semibold text-slate-950 sm:text-xl">{team.name}</div>
       <div className="break-words text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-slate-600 sm:text-sm">{team.players.map((player) => player.name).join(', ')}</div>
-      <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-xs sm:tracking-[0.18em]">{wins} game vinti</div>
+      <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-xs sm:tracking-[0.18em]">{wins} {gamesWonLabel}</div>
     </div>
   );
 }
@@ -492,6 +528,9 @@ interface GameSectionProps {
   team2: Team;
   killLimit: number;
   seriesCompleted: boolean;
+  language: 'it' | 'en';
+  limitLabel: string;
+  confirmedLabel: string;
   onAdjustSlayerKills: (
     gameIndex: number,
     teamKey: 'team1PlayerKills' | 'team2PlayerKills',
@@ -515,6 +554,9 @@ function GameSection({
   team2,
   killLimit,
   seriesCompleted,
+  language,
+  limitLabel,
+  confirmedLabel,
   onAdjustSlayerKills,
   onAdjustObjectiveScore,
   onAdjustOddballScore,
@@ -552,14 +594,14 @@ function GameSection({
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 sm:text-sm sm:tracking-[0.18em]">Game {game.gameNumber}</div>
           <div className="inline-flex flex-wrap items-center gap-1.5 rounded-[16px] border border-amber-200/70 bg-[linear-gradient(180deg,rgba(255,250,240,0.96)_0%,rgba(255,243,214,0.88)_100%)] px-2.5 py-2 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-800 shadow-[0_8px_20px_rgba(245,180,76,0.1)] sm:gap-2 sm:rounded-[18px] sm:px-4 sm:py-3 sm:text-base sm:tracking-[0.12em] md:text-lg">
             <ModeIcon mode={game.mode} className="h-[15px] w-[15px] sm:h-4 sm:w-4" />
-            <span>{getGameModeDisplay(game.mode)}</span>
-            {game.mode === 'slayer' && <span>Limite {killLimit}</span>}
+            <span>{getGameModeDisplay(game.mode, language)}</span>
+            {game.mode === 'slayer' && <span>{limitLabel} {killLimit}</span>}
             <span>{game.map}</span>
           </div>
         </div>
         {game.winner && (
           <div className="rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-800">
-            Confermato
+            {confirmedLabel}
           </div>
         )}
       </div>

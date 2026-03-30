@@ -13,6 +13,7 @@ export interface Rank {
 export interface Player {
   id: string;
   name: string;
+  gamertag?: string;
   rank: Rank;
   strengthValue: number; // Calculated numeric value for balancing
 }

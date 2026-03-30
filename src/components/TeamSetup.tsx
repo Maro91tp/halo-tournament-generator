@@ -404,7 +404,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                         <div className="text-[15px] font-semibold leading-tight text-white">{player.name}</div>
                         <div className="mt-1 inline-flex items-center gap-2 text-[11px] leading-tight text-white/65">
                           <RankIcon rank={player.rank} className="h-4 w-4" />
-                          <span>{getRankDisplay(player.rank)}</span>
+                          <span>{getRankDisplay(player.rank, language)}</span>
                         </div>
                       </button>
                     ))}

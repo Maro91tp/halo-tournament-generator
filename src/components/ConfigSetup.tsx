@@ -63,6 +63,11 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         mode: 'Mode',
         teams: 'Teams',
         killSummary: 'Kill limit',
+        slayerTitle: 'Slayer',
+        rankedTitle: 'Ranked',
+        bo3Title: 'Best of 3',
+        bo5Title: 'Best of 5',
+        teamCount: 'teams',
         back: 'Back',
         continue: 'Continue',
       }
@@ -97,6 +102,11 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         mode: 'Modalita',
         teams: 'Squadre',
         killSummary: 'Limite kill',
+        slayerTitle: 'Slayer',
+        rankedTitle: 'Ranked',
+        bo3Title: 'Best of 3',
+        bo5Title: 'Best of 5',
+        teamCount: 'squadre',
         back: 'Indietro',
         continue: 'Continua',
       };
@@ -140,14 +150,14 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
             selected={config.type === 'slayer'}
             onClick={() => updateConfig('type', 'slayer')}
             icon={<ModeIcon mode="slayer" className="h-4 w-4" />}
-            title="Slayer"
+            title={copy.slayerTitle}
             description={copy.slayerDescription}
           />
           <OptionCard
             selected={config.type === 'ranked'}
             onClick={() => updateConfig('type', 'ranked')}
             icon={<Trophy className="h-4 w-4 text-primary" />}
-            title="Ranked"
+            title={copy.rankedTitle}
             description={copy.rankedDescription}
           />
         </div>
@@ -180,13 +190,13 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
           <OptionCard
             selected={config.matchDuration === 'bo3'}
             onClick={() => updateConfig('matchDuration', 'bo3')}
-            title="Best of 3"
+            title={copy.bo3Title}
             description={copy.bo3Description}
           />
           <OptionCard
             selected={config.matchDuration === 'bo5'}
             onClick={() => updateConfig('matchDuration', 'bo5')}
-            title="Best of 5"
+            title={copy.bo5Title}
             description={copy.bo5Description}
           />
         </div>
@@ -278,10 +288,10 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         </h3>
         <ul className="space-y-1 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-muted-foreground">
           <li>{copy.totalPlayers}</li>
-          <li>{copy.mode}: {config.type === 'slayer' ? 'Slayer' : 'Ranked'}</li>
+          <li>{copy.mode}: {config.type === 'slayer' ? copy.slayerTitle : copy.rankedTitle}</li>
           <li>{copy.teams}: {config.teamMode}</li>
           <li>{copy.killSummary}: {config.killLimit}</li>
-          <li>{Math.floor(playerCount / parseInt(config.teamMode.charAt(0)))} {language === 'en' ? 'teams' : 'squadre'}</li>
+          <li>{Math.floor(playerCount / parseInt(config.teamMode.charAt(0)))} {copy.teamCount}</li>
         </ul>
       </div>
 

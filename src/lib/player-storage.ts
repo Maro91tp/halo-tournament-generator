@@ -5,8 +5,13 @@ const STORAGE_KEY = 'halo_tournament_players';
 
 export interface StoredPlayer {
   name: string;
+  gamertag?: string;
   rank: Rank;
   lastUsed: number;
+}
+
+function sortPlayersAlphabetically(players: StoredPlayer[]): StoredPlayer[] {
+  return [...players].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 }
 
 function parseRank(text: string): Rank | null {
@@ -61,7 +66,7 @@ function parseBundledPlayers(text: string): StoredPlayer[] {
 }
 
 export function getBundledPlayers(): StoredPlayer[] {
-  return parseBundledPlayers(bundledPlayersText);
+  return sortPlayersAlphabetically(parseBundledPlayers(bundledPlayersText));
 }
 
 export async function syncBundledPlayers(): Promise<StoredPlayer[]> {
@@ -70,7 +75,7 @@ export async function syncBundledPlayers(): Promise<StoredPlayer[]> {
   try {
     const bundledPlayers = getBundledPlayers();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(bundledPlayers));
-    return bundledPlayers;
+    return sortPlayersAlphabetically(bundledPlayers);
   } catch (error) {
     console.error('Error syncing bundled players:', error);
     return getStoredPlayers();
@@ -88,7 +93,7 @@ export function getStoredPlayers(): StoredPlayer[] {
     if (!stored) return [];
     
     const players: StoredPlayer[] = JSON.parse(stored);
-    return players.sort((a, b) => b.lastUsed - a.lastUsed); // Most recent first
+    return sortPlayersAlphabetically(players);
   } catch (error) {
     console.error('Error loading stored players:', error);
     return [];
@@ -111,6 +116,7 @@ export function savePlayer(player: Player): void {
     
     const storedPlayer: StoredPlayer = {
       name: player.name,
+      gamertag: player.gamertag,
       rank: player.rank,
       lastUsed: Date.now()
     };

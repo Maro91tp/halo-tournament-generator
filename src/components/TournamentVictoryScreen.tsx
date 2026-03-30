@@ -53,6 +53,20 @@ export default function TournamentVictoryScreen({
         replay: 'Replay same tournament',
         newTournament: 'New tournament',
         footer: 'This project is an unofficial fan project. Halo is a registered trademark of Microsoft.',
+        kills: 'kills',
+        appearances: 'appearances',
+        haloChampion: 'Halo Infinite Tournament Champion',
+        round: 'Round',
+        matches: 'matches',
+        games: 'games',
+        seriesCompleted: 'Series completed',
+        pending: 'Pending',
+        winner: 'Winner',
+        finalResult: 'Final result',
+        opponent: 'Opponent',
+        bye: 'Bye',
+        teamFallback: 'Team',
+        gameDetails: 'Game details',
       }
     : {
         champion: 'Campione del torneo',
@@ -68,6 +82,20 @@ export default function TournamentVictoryScreen({
         replay: 'Rigioca stesso torneo',
         newTournament: 'Nuovo torneo',
         footer: 'Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.',
+        kills: 'kill',
+        appearances: 'presenze',
+        haloChampion: 'Halo Infinite Tournament Champion',
+        round: 'Round',
+        matches: 'match',
+        games: 'game',
+        seriesCompleted: 'Serie completata',
+        pending: 'In attesa',
+        winner: 'Vincitore',
+        finalResult: 'Risultato finale',
+        opponent: 'Avversario',
+        bye: 'Bye',
+        teamFallback: 'Team',
+        gameDetails: 'Dettaglio game',
       };
 
   const completedMatches = tournament.rounds.flatMap((round) => round.matches).filter((match) => match.winner);
@@ -303,7 +331,7 @@ export default function TournamentVictoryScreen({
               {winnerStats.gameWins} {copy.gamesWon}
             </div>
             <div className="mt-1 text-center text-[9px] uppercase tracking-[0.12em] text-amber-100/60 sm:text-[11px] sm:tracking-[0.2em]">
-              Halo Infinite Tournament Champion
+              {copy.haloChampion}
             </div>
           </div>
           <div className="relative mt-4 h-7 w-full max-w-[20rem] sm:mt-5 sm:h-10 sm:max-w-xl">
@@ -346,7 +374,7 @@ export default function TournamentVictoryScreen({
               <div className="min-w-0">
                 <div className="truncate text-xl font-bold text-white drop-shadow-[0_0_14px_rgba(255,218,125,0.16)] sm:text-3xl">{winnerStats.mvp.player.name}</div>
                 <div className="mt-1 text-xs text-amber-50/82 sm:text-sm">
-                  {winnerStats.mvp.kills} kill • {winnerStats.mvp.gameWins} game vinti
+                  {winnerStats.mvp.kills} {copy.kills} • {winnerStats.mvp.gameWins} {copy.gamesWon}
                 </div>
               </div>
               <div className="ml-auto rounded-full border border-amber-300/72 bg-[linear-gradient(180deg,rgba(255,225,132,0.34)_0%,rgba(245,180,76,0.2)_100%)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#fff3c7] shadow-[0_0_24px_rgba(245,180,76,0.34),inset_0_1px_0_rgba(255,245,214,0.24)] sm:px-4 sm:py-1.5 sm:text-sm sm:tracking-[0.18em]">
@@ -378,7 +406,7 @@ export default function TournamentVictoryScreen({
                       <div className="truncate text-base font-semibold text-white sm:text-lg">{summary.player.name}</div>
                     </div>
                     <div className="mt-2 text-xs text-white/70 sm:text-sm">
-                      {summary.kills} kill • {summary.gameWins} game vinti • {summary.appearances} presenze
+                      {summary.kills} {copy.kills} • {summary.gameWins} {copy.gamesWon} • {summary.appearances} {copy.appearances}
                     </div>
                   </div>
                   {summary.player.id === winnerStats.mvp.player.id && (
@@ -412,11 +440,11 @@ export default function TournamentVictoryScreen({
                 <div>
                   <div className="text-sm font-semibold text-white sm:text-base">{round.name}</div>
                   <div className="mt-1 text-[11px] uppercase tracking-[0.14em] text-white/50 sm:text-xs sm:tracking-[0.16em]">
-                    {round.mode ? getGameModeDisplay(round.mode) : 'Round'} {round.map ? `• ${round.map}` : ''}
+                    {round.mode ? getGameModeDisplay(round.mode, language) : copy.round} {round.map ? `• ${round.map}` : ''}
                   </div>
                 </div>
                 <div className="rounded-full border border-white/10 bg-white/6 px-2.5 py-1 text-[11px] text-white/72 sm:px-3 sm:text-xs">
-                  {round.matches.length} match
+                  {round.matches.length} {copy.matches}
                 </div>
               </div>
               <div className="space-y-3">
@@ -637,7 +665,7 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
           Match {match.matchIndex + 1}
         </div>
         <div className="text-[11px] uppercase tracking-[0.16em] text-white/36">
-          {hasGames ? `${match.games?.length ?? 0} game` : winnerTeam ? 'Serie completata' : 'In attesa'}
+          {hasGames ? `${match.games?.length ?? 0} ${copy.games}` : winnerTeam ? copy.seriesCompleted : copy.pending}
         </div>
       </div>
 
@@ -649,7 +677,7 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
               : 'border-white/10 bg-white/[0.05]'
           }`}
         >
-          <div className="text-[11px] uppercase tracking-[0.16em] text-amber-100/70">Vincitore</div>
+          <div className="text-[11px] uppercase tracking-[0.16em] text-amber-100/70">{copy.winner}</div>
           <div className="mt-1 text-lg font-bold text-white sm:text-xl">
             {winnerTeam?.name ?? match.team1?.name ?? match.team2?.name ?? 'TBD'}
           </div>
@@ -661,19 +689,19 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
         </div>
 
         <div className="w-full rounded-[16px] border border-white/10 bg-black/16 px-4 py-3 text-center sm:w-auto sm:min-w-[190px] sm:shrink-0 sm:px-5 sm:py-4">
-          <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">Risultato finale</div>
+          <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">{copy.finalResult}</div>
           <div className="mt-2 text-2xl font-bold text-white sm:text-3xl">
             {team1Score} <span className="mx-2 text-white/35">-</span> {team2Score}
           </div>
           <div className="mt-1 text-xs text-white/55">
-            {(match.team1?.name ?? 'Team 1')} vs {(match.team2?.name ?? 'Team 2')}
+            {(match.team1?.name ?? `${copy.teamFallback} 1`)} vs {(match.team2?.name ?? `${copy.teamFallback} 2`)}
           </div>
         </div>
 
         <div className="min-w-0 flex-[1_1_220px] rounded-[16px] border border-white/8 bg-white/[0.03] px-4 py-3">
-          <div className="text-[11px] uppercase tracking-[0.16em] text-white/42">Avversario</div>
+          <div className="text-[11px] uppercase tracking-[0.16em] text-white/42">{copy.opponent}</div>
           <div className="mt-1 text-base font-semibold text-white/86 sm:text-lg">
-            {loserTeam?.name ?? (winnerTeam ? 'Bye' : match.team2?.name ?? match.team1?.name ?? 'TBD')}
+            {loserTeam?.name ?? (winnerTeam ? copy.bye : match.team2?.name ?? match.team1?.name ?? 'TBD')}
           </div>
           {loserTeam && (
             <div className="mt-1 text-xs text-white/58 sm:text-sm">
@@ -686,11 +714,11 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
       {hasGames && (
         <div className="mt-4 rounded-[16px] border border-white/8 bg-black/12 p-4">
           <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/48">
-            Dettaglio game
+            {copy.gameDetails}
           </div>
           <div className="space-y-2">
             {match.games?.map((game) => {
-              const modeLabel = getGameModeDisplay(game.mode);
+              const modeLabel = getGameModeDisplay(game.mode, language);
               const mapLabel = game.map?.trim() ? game.map : null;
               const scoreLabel = formatGameScore(game);
 
