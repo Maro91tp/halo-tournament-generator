@@ -310,15 +310,15 @@ export default function GameResultsDialog({
   const seriesResult = calculateSeriesWinner();
   const team1Wins = games.filter((game) => game.winner === 1).length;
   const team2Wins = games.filter((game) => game.winner === 2).length;
-  const visibleGames = games.filter((game, index) => {
-    if (matchDuration === 'single') return index === 0;
-    if (matchDuration === 'bo3') return index < 3;
-    return index < 5;
-  });
+  const maxGamesForSeries = matchDuration === 'single' ? 1 : matchDuration === 'bo3' ? 3 : 5;
+  const completedGamesCount = team1Wins + team2Wins;
+  const visibleGameCount = seriesResult ? completedGamesCount : maxGamesForSeries;
+  const visibleGames = games.slice(0, visibleGameCount);
   const safeGameIndex = Math.min(currentGameIndex, Math.max(visibleGames.length - 1, 0));
   const activeGame = visibleGames[safeGameIndex];
   const canGoBackGame = safeGameIndex > 0;
   const canGoForwardGame = safeGameIndex < visibleGames.length - 1 && !seriesResult;
+  const shouldShowForwardGame = canGoForwardGame && Boolean(activeGame?.winner);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -378,10 +378,12 @@ export default function GameResultsDialog({
                 team1={match.team1}
                 team2={match.team2}
                 killLimit={killLimit}
+                seriesCompleted={Boolean(seriesResult)}
                 onAdjustSlayerKills={updateSlayerKills}
                 onAdjustObjectiveScore={updateObjectiveScore}
                 onAdjustOddballScore={updateOddballScore}
                 onConfirmResult={confirmGameResult}
+                onSubmitSeries={handleSubmit}
                 gameIndex={safeGameIndex}
               />
 
@@ -402,15 +404,16 @@ export default function GameResultsDialog({
                     : `Servono ancora ${requiredWins - Math.max(team1Wins, team2Wins)} vittorie per chiudere la serie.`}
                 </div>
 
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setCurrentGameIndex((current) => Math.min(current + 1, visibleGames.length - 1))}
-                  disabled={!canGoForwardGame}
-                  className="w-full text-slate-700 hover:bg-amber-100/70 hover:text-slate-950 sm:w-auto"
-                >
-                  Avanti
-                </Button>
+                {shouldShowForwardGame && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setCurrentGameIndex((current) => Math.min(current + 1, visibleGames.length - 1))}
+                    className="w-full text-slate-700 hover:bg-amber-100/70 hover:text-slate-950 sm:w-auto"
+                  >
+                    Avanti
+                  </Button>
+                )}
               </div>
             </div>
           )}
@@ -441,14 +444,6 @@ export default function GameResultsDialog({
         <DialogFooter className="mt-2 flex-col gap-3 sm:flex-row sm:justify-between">
           <Button variant="ghost" onClick={onClose} className="text-slate-700 hover:bg-slate-900/6 hover:text-slate-950">
             Annulla
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={!seriesResult}
-            size="lg"
-            className="w-full shadow-[0_0_28px_rgba(245,180,76,0.24)] hover:shadow-[0_0_34px_rgba(245,180,76,0.34)] sm:w-auto"
-          >
-            Conferma risultati serie
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -491,6 +486,7 @@ interface GameSectionProps {
   team1: Team;
   team2: Team;
   killLimit: number;
+  seriesCompleted: boolean;
   onAdjustSlayerKills: (
     gameIndex: number,
     teamKey: 'team1PlayerKills' | 'team2PlayerKills',
@@ -504,6 +500,7 @@ interface GameSectionProps {
     value: number
   ) => void;
   onConfirmResult: (gameIndex: number) => void;
+  onSubmitSeries: () => void;
 }
 
 function GameSection({
@@ -512,10 +509,12 @@ function GameSection({
   team1,
   team2,
   killLimit,
+  seriesCompleted,
   onAdjustSlayerKills,
   onAdjustObjectiveScore,
   onAdjustOddballScore,
   onConfirmResult,
+  onSubmitSeries,
 }: GameSectionProps) {
   const slayerScore = game.mode === 'slayer' ? (game.score as SlayerGameScore | undefined) : undefined;
   const objectiveScore =
@@ -656,11 +655,17 @@ function GameSection({
 
       <div className="mt-7 flex justify-center">
         <Button
-          onClick={() => onConfirmResult(gameIndex)}
+          onClick={() => {
+            if (seriesCompleted) {
+              onSubmitSeries();
+              return;
+            }
+            onConfirmResult(gameIndex);
+          }}
           size="lg"
           className="w-full justify-center text-[clamp(0.9rem,0.86rem+0.2vw,1rem)] shadow-[0_0_30px_rgba(245,180,76,0.26)] hover:shadow-[0_0_38px_rgba(245,180,76,0.36)] sm:min-w-[300px] sm:w-auto"
         >
-          Conferma risultato
+          {seriesCompleted ? 'Conferma risultati serie' : 'Conferma risultato'}
         </Button>
       </div>
     </section>

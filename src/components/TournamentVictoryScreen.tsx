@@ -39,30 +39,147 @@ export default function TournamentVictoryScreen({
 
   const completedMatches = tournament.rounds.flatMap((round) => round.matches).filter((match) => match.winner);
   const winnerStats = getWinnerStats(tournament.winner, completedMatches);
-  const heroSubtitle = getHeroSubtitle(tournament.winner.name, winnerStats);
+  const celebrationBursts = [
+    { left: '8%', top: '14%', delay: '0s', size: '0.5rem' },
+    { left: '18%', top: '70%', delay: '0.9s', size: '0.4rem' },
+    { left: '32%', top: '18%', delay: '1.4s', size: '0.7rem' },
+    { left: '67%', top: '16%', delay: '0.5s', size: '0.55rem' },
+    { left: '81%', top: '68%', delay: '1.1s', size: '0.45rem' },
+    { left: '92%', top: '24%', delay: '1.8s', size: '0.65rem' },
+  ];
+  const celebrationLines = [
+    { left: '14%', top: '32%', width: '4.5rem', delay: '0.2s', rotate: '-8deg' },
+    { left: '77%', top: '28%', width: '3.6rem', delay: '1.3s', rotate: '11deg' },
+    { left: '72%', top: '72%', width: '5.2rem', delay: '0.8s', rotate: '-18deg' },
+    { left: '27%', top: '78%', width: '3.2rem', delay: '1.7s', rotate: '14deg' },
+  ];
 
   return (
     <div className="w-full space-y-6 sm:space-y-8">
-      <section className="relative overflow-hidden rounded-[28px] border border-amber-300/30 bg-[radial-gradient(circle_at_top,rgba(245,180,76,0.28),transparent_36%),linear-gradient(180deg,rgba(36,20,0,0.96)_0%,rgba(14,10,24,0.98)_100%)] px-4 py-8 shadow-[0_0_80px_rgba(245,180,76,0.22)] sm:px-6 sm:py-12 md:rounded-[40px] md:px-12 md:py-16">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_55%)]" />
+      <style>{`
+        @keyframes haloVictoryFloat {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-10px) scale(1.03); }
+        }
+        @keyframes haloVictoryPulse {
+          0%, 100% { opacity: 0.5; transform: scale(0.92); }
+          50% { opacity: 1; transform: scale(1.06); }
+        }
+        @keyframes haloVictorySpin {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        @keyframes haloVictorySpark {
+          0%, 100% { opacity: 0; transform: translateY(10px) scale(0.7); }
+          30% { opacity: 1; }
+          60% { opacity: 0.75; transform: translateY(-10px) scale(1); }
+        }
+        @keyframes haloVictoryShimmer {
+          0% { transform: translateX(-140%) skewX(-18deg); opacity: 0; }
+          35% { opacity: 0.75; }
+          100% { transform: translateX(190%) skewX(-18deg); opacity: 0; }
+        }
+        @keyframes haloVictorySweep {
+          0%, 100% { opacity: 0.18; transform: rotate(0deg) scale(0.98); }
+          50% { opacity: 0.45; transform: rotate(8deg) scale(1.04); }
+        }
+        @keyframes haloVictoryLine {
+          0%, 100% { opacity: 0; transform: translateY(8px) rotate(var(--line-rotate)) scaleX(0.8); }
+          35% { opacity: 0.9; }
+          65% { opacity: 0.35; transform: translateY(-6px) rotate(var(--line-rotate)) scaleX(1); }
+        }
+      `}</style>
+
+      <section className="relative overflow-hidden rounded-[28px] border border-amber-300/38 bg-[radial-gradient(circle_at_top,rgba(255,215,120,0.34),transparent_30%),radial-gradient(circle_at_bottom,rgba(74,33,0,0.34),transparent_42%),linear-gradient(180deg,rgba(42,24,0,0.98)_0%,rgba(14,10,24,0.99)_54%,rgba(8,11,28,1)_100%)] px-4 py-8 shadow-[0_0_90px_rgba(245,180,76,0.24)] sm:px-6 sm:py-12 md:rounded-[40px] md:px-12 md:py-16">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.14),transparent_52%)]" />
+        <div className="pointer-events-none absolute inset-x-[-10%] top-[-12%] h-[58%] bg-[radial-gradient(circle_at_top,rgba(255,232,174,0.24),transparent_60%)]" />
+        <div
+          className="pointer-events-none absolute left-1/2 top-[-18%] h-[24rem] w-[140%] -translate-x-1/2 bg-[conic-gradient(from_180deg_at_50%_0%,rgba(255,222,145,0.22),rgba(255,222,145,0.04),rgba(255,222,145,0.22))] opacity-70 blur-2xl"
+          style={{ animation: 'haloVictorySweep 8s ease-in-out infinite' }}
+        />
+        <div className="pointer-events-none absolute left-1/2 top-[6%] h-[18rem] w-[18rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,228,152,0.24),transparent_65%)] blur-3xl" />
+        <div className="pointer-events-none absolute left-1/2 top-[30%] h-[24rem] w-[24rem] -translate-x-1/2 rounded-full border border-amber-200/12 bg-[radial-gradient(circle,rgba(255,215,106,0.12),transparent_62%)] blur-2xl" />
+        <div
+          className="pointer-events-none absolute left-1/2 top-[37%] h-[17rem] w-[17rem] rounded-full border border-amber-200/20"
+          style={{ animation: 'haloVictoryPulse 4.6s ease-in-out infinite' }}
+        />
+        <div
+          className="pointer-events-none absolute left-1/2 top-[37%] h-[22rem] w-[22rem] rounded-full border border-amber-200/10"
+          style={{ animation: 'haloVictoryPulse 5.6s ease-in-out infinite 0.6s' }}
+        />
+        <div
+          className="pointer-events-none absolute left-1/2 top-[37%] h-[21rem] w-[21rem] opacity-50"
+          style={{ animation: 'haloVictorySpin 18s linear infinite' }}
+        >
+          <div className="absolute left-1/2 top-0 h-10 w-[2px] -translate-x-1/2 rounded-full bg-gradient-to-b from-amber-100/80 to-transparent" />
+          <div className="absolute bottom-0 left-1/2 h-10 w-[2px] -translate-x-1/2 rounded-full bg-gradient-to-t from-amber-100/60 to-transparent" />
+          <div className="absolute left-0 top-1/2 h-[2px] w-10 -translate-y-1/2 rounded-full bg-gradient-to-r from-amber-100/70 to-transparent" />
+          <div className="absolute right-0 top-1/2 h-[2px] w-10 -translate-y-1/2 rounded-full bg-gradient-to-l from-amber-100/70 to-transparent" />
+        </div>
+        {celebrationBursts.map((burst, index) => (
+          <span
+            key={`${burst.left}-${burst.top}-${index}`}
+            className="pointer-events-none absolute rounded-full bg-[radial-gradient(circle,rgba(255,233,173,0.95)_0%,rgba(255,196,84,0.78)_42%,transparent_72%)]"
+            style={{
+              left: burst.left,
+              top: burst.top,
+              width: burst.size,
+              height: burst.size,
+              animation: `haloVictorySpark 3.8s ease-in-out infinite ${burst.delay}`,
+              boxShadow: '0 0 18px rgba(255,210,110,0.34)',
+            }}
+          />
+        ))}
+        {celebrationLines.map((line, index) => (
+          <span
+            key={`${line.left}-${line.top}-${index}`}
+            className="pointer-events-none absolute h-[2px] rounded-full bg-gradient-to-r from-transparent via-amber-100/95 to-transparent"
+            style={{
+              left: line.left,
+              top: line.top,
+              width: line.width,
+              ['--line-rotate' as string]: line.rotate,
+              animation: `haloVictoryLine 4.2s ease-in-out infinite ${line.delay}`,
+              boxShadow: '0 0 12px rgba(255,220,135,0.35)',
+            }}
+          />
+        ))}
         <div className="relative flex flex-col items-center text-center">
-          <div className="mb-5 flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full border border-amber-300/45 bg-amber-300/10 shadow-[0_0_44px_rgba(245,180,76,0.3)] motion-safe:animate-pulse sm:h-28 sm:w-28">
-            <img
-              src="/halo-cup.svg"
-              alt="Coppa Halo"
-              className="h-10 w-10 object-contain drop-shadow-[0_0_26px_rgba(245,180,76,0.34)] sm:h-16 sm:w-16"
+          <div className="relative mb-6 flex h-[6.4rem] w-[6.4rem] items-center justify-center sm:h-[9.5rem] sm:w-[9.5rem]">
+            <div className="absolute inset-0 rounded-full border border-amber-200/28 bg-[radial-gradient(circle,rgba(255,231,166,0.22)_0%,rgba(245,180,76,0.08)_48%,transparent_72%)] blur-[2px]" />
+            <div
+              className="absolute inset-[8%] rounded-full border border-amber-200/32"
+              style={{ animation: 'haloVictoryPulse 4.5s ease-in-out infinite' }}
             />
+            <div
+              className="absolute inset-[18%] rounded-full border border-amber-100/36"
+              style={{ animation: 'haloVictoryPulse 3.6s ease-in-out infinite 0.4s' }}
+            />
+            <div
+              className="relative flex h-full w-full items-center justify-center rounded-full border border-amber-300/55 bg-[radial-gradient(circle_at_top,rgba(255,238,194,0.26),rgba(245,180,76,0.12)_38%,rgba(26,16,6,0.86)_100%)] shadow-[0_0_60px_rgba(245,180,76,0.42),inset_0_1px_0_rgba(255,249,224,0.26)]"
+              style={{ animation: 'haloVictoryFloat 4.6s ease-in-out infinite' }}
+            >
+              <div className="absolute inset-x-[18%] top-[8%] h-[18%] rounded-full bg-white/20 blur-md" />
+              <img
+                src="/halo-cup.svg"
+                alt="Coppa Halo"
+                className="relative h-[3.2rem] w-[3.2rem] object-contain drop-shadow-[0_0_34px_rgba(255,221,132,0.56)] sm:h-[4.8rem] sm:w-[4.8rem]"
+              />
+            </div>
           </div>
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-300/35 bg-amber-300/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-100 sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.22em]">
-            <Sparkles className="h-4 w-4" />
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-amber-300/45 bg-[linear-gradient(180deg,rgba(255,232,173,0.18)_0%,rgba(245,180,76,0.08)_100%)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-50 shadow-[0_0_22px_rgba(245,180,76,0.18)] sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.22em]">
+            <Sparkles className="h-4 w-4 text-[#ffd76a]" />
             <span>Campione del torneo</span>
           </div>
-          <h1 className="text-[clamp(2rem,1.45rem+3vw,4.6rem)] font-bold font-heading text-white drop-shadow-[0_0_26px_rgba(245,180,76,0.16)] md:text-7xl">
-            {tournament.winner.name}
-          </h1>
-          <p className="mt-4 max-w-3xl text-[clamp(0.95rem,0.9rem+0.3vw,1.2rem)] font-medium text-amber-50/88 md:text-xl">
-            {heroSubtitle}
-          </p>
+          <div className="relative overflow-hidden">
+            <div
+              className="pointer-events-none absolute inset-y-0 left-0 w-28 bg-gradient-to-r from-transparent via-amber-100/28 to-transparent blur-sm"
+              style={{ animation: 'haloVictoryShimmer 5.2s ease-in-out infinite' }}
+            />
+            <h1 className="relative text-[clamp(2rem,1.45rem+3vw,4.6rem)] font-bold font-heading text-white drop-shadow-[0_0_30px_rgba(245,180,76,0.22)] md:text-7xl">
+              {tournament.winner.name}
+            </h1>
+          </div>
           <div className="mt-6 flex flex-wrap justify-center gap-2 text-white/80 sm:mt-7 sm:gap-3">
             <HeroChip icon={<Trophy className="h-4 w-4 text-amber-200" />} text={`${winnerStats.seriesWins} match vinti`} />
             <HeroChip icon={<Swords className="h-4 w-4 text-amber-200" />} text={`${winnerStats.gameWins} game vinti`} />
@@ -84,22 +201,22 @@ export default function TournamentVictoryScreen({
             <StatTile label="Giocatori" value={String(tournament.winner.players.length)} />
           </div>
 
-          <div className="mt-5 rounded-[22px] border border-amber-300/32 bg-[linear-gradient(180deg,rgba(245,180,76,0.2)_0%,rgba(245,180,76,0.08)_100%)] p-4 shadow-[0_0_36px_rgba(245,180,76,0.16)] sm:mt-6 sm:rounded-[30px] sm:p-6">
-            <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-amber-100/90 sm:mb-4 sm:text-sm sm:tracking-[0.18em]">
-              <Medal className="h-5 w-5 text-amber-200 motion-safe:animate-pulse" />
+          <div className="mt-5 rounded-[22px] border border-amber-300/55 bg-[radial-gradient(circle_at_right,rgba(255,214,102,0.24),transparent_30%),radial-gradient(circle_at_left_top,rgba(255,244,200,0.14),transparent_26%),linear-gradient(180deg,rgba(255,205,96,0.28)_0%,rgba(245,180,76,0.16)_42%,rgba(245,180,76,0.07)_100%)] p-4 shadow-[0_0_50px_rgba(245,180,76,0.24),inset_0_1px_0_rgba(255,245,214,0.2)] sm:mt-6 sm:rounded-[30px] sm:p-6">
+            <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-amber-50 sm:mb-4 sm:text-sm sm:tracking-[0.18em]">
+              <Medal className="h-5 w-5 text-[#ffd76a] drop-shadow-[0_0_10px_rgba(255,215,106,0.5)] motion-safe:animate-pulse" />
               <span>MVP</span>
             </div>
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-amber-300/36 bg-black/18 shadow-[0_0_20px_rgba(245,180,76,0.16)] sm:h-16 sm:w-16">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-amber-300/60 bg-[radial-gradient(circle_at_top,rgba(255,224,138,0.34),rgba(36,18,0,0.3)_72%)] shadow-[0_0_30px_rgba(245,180,76,0.3),inset_0_1px_0_rgba(255,245,214,0.2)] sm:h-16 sm:w-16">
                 <RankIcon rank={winnerStats.mvp.player.rank} className="h-8 w-8 sm:h-10 sm:w-10" />
               </div>
               <div className="min-w-0">
-                <div className="truncate text-xl font-bold text-white sm:text-3xl">{winnerStats.mvp.player.name}</div>
-                <div className="mt-1 text-xs text-white/72 sm:text-sm">
+                <div className="truncate text-xl font-bold text-white drop-shadow-[0_0_14px_rgba(255,218,125,0.16)] sm:text-3xl">{winnerStats.mvp.player.name}</div>
+                <div className="mt-1 text-xs text-amber-50/82 sm:text-sm">
                   {winnerStats.mvp.kills} kill • {winnerStats.mvp.gameWins} game vinti
                 </div>
               </div>
-              <div className="ml-auto rounded-full border border-amber-300/45 bg-amber-300/18 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-50 shadow-[0_0_18px_rgba(245,180,76,0.22)] sm:px-4 sm:py-1.5 sm:text-sm sm:tracking-[0.18em]">
+              <div className="ml-auto rounded-full border border-amber-300/72 bg-[linear-gradient(180deg,rgba(255,225,132,0.34)_0%,rgba(245,180,76,0.2)_100%)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#fff3c7] shadow-[0_0_24px_rgba(245,180,76,0.34),inset_0_1px_0_rgba(255,245,214,0.24)] sm:px-4 sm:py-1.5 sm:text-sm sm:tracking-[0.18em]">
                 MVP
               </div>
             </div>
@@ -202,12 +319,6 @@ export default function TournamentVictoryScreen({
       </div>
     </div>
   );
-}
-
-function getHeroSubtitle(teamName: string, winnerStats: WinnerStats): string {
-  if (winnerStats.seriesWins >= 3) return `${teamName} ha dominato il torneo`;
-  if (winnerStats.gameWins >= 3) return 'Abbiamo un vincitore';
-  return 'Campioni del torneo';
 }
 
 function getWinnerStats(winner: Team, matches: Match[]): WinnerStats {
