@@ -81,14 +81,14 @@ export default function TournamentBracket({
   }
 
   return (
-    <div className="w-full space-y-6">
+    <div className="app-section flex w-full flex-col">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-3xl">
-          <h2 className="mb-2 flex items-center gap-3 text-2xl font-bold font-heading">
-            <Trophy className="h-7 w-7 text-primary" />
+          <h2 className="app-title mb-2 flex items-center gap-2.5 font-bold font-heading sm:gap-3">
+            <Trophy className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
             <span>Bracket torneo</span>
           </h2>
-          <p className="text-muted-foreground">
+          <p className="app-subtitle text-muted-foreground">
             Segui il tabellone, registra i risultati disponibili e completa il torneo senza perdere il
             filo del round successivo.
           </p>
@@ -108,7 +108,7 @@ export default function TournamentBracket({
       <Card className="p-3 sm:p-6 md:p-7">
         <div className="grid gap-4 md:grid-cols-[1.35fr_1fr]">
           <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-2.5 text-sm sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-2.5 text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
               <InfoStat
                 label="Tipo"
                 value={tournament.config.type === 'slayer' ? 'Slayer' : 'Ranked'}
@@ -124,9 +124,9 @@ export default function TournamentBracket({
             </div>
 
             <div className="rounded-[20px] border border-white/10 bg-black/10 p-3 sm:rounded-[24px] sm:p-4">
-              <div className="mb-2 flex items-center justify-between gap-3 text-sm">
-                <span className="text-xs font-semibold text-white sm:text-sm">Avanzamento torneo</span>
-                <span className="text-xs text-white/72 sm:text-sm">{completedMatches}/{totalMatches} match</span>
+              <div className="mb-2 flex items-center justify-between gap-3 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)]">
+                <span className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] font-semibold text-white sm:text-sm">Avanzamento torneo</span>
+                <span className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-white/72 sm:text-sm">{completedMatches}/{totalMatches} match</span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-white/10">
                 <div
@@ -134,7 +134,7 @@ export default function TournamentBracket({
                   style={{ width: `${completionPercent}%` }}
                 />
               </div>
-              <div className="mt-2 text-xs text-white/68 sm:text-sm">{completionPercent}% completato</div>
+              <div className="mt-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-white/68 sm:text-sm">{completionPercent}% completato</div>
             </div>
           </div>
 
@@ -146,7 +146,7 @@ export default function TournamentBracket({
 
             {nextPlayableMatch ? (
               <>
-                <div className="text-base font-semibold text-white sm:text-lg">
+                <div className="text-[clamp(1rem,0.94rem+0.38vw,1.12rem)] font-semibold text-white sm:text-lg">
                   {nextPlayableMatch.team1?.name} vs {nextPlayableMatch.team2?.name}
                 </div>
                 <div className="mt-2 flex flex-wrap gap-2 text-xs text-white/72">
@@ -168,7 +168,7 @@ export default function TournamentBracket({
                 <div className="text-base font-semibold text-white">
                   {tournament.winner ? 'Torneo completato' : 'Nessun match pronto'}
                 </div>
-                <p className="text-sm text-white/68">
+                <p className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/68">
                   {tournament.winner
                     ? 'Hai gia un vincitore finale. Puoi tornare indietro o iniziare un nuovo torneo.'
                     : 'Completa i match gia aperti per sbloccare i round successivi.'}
@@ -200,8 +200,8 @@ export default function TournamentBracket({
       <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="text-sm font-semibold text-white">Tabellone attivo</div>
-            <p className="text-sm text-white/68">
+            <div className="text-[clamp(0.86rem,0.82rem+0.2vw,1rem)] font-semibold text-white">Tabellone attivo</div>
+            <p className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/68">
               I match evidenziati sono pronti. Quelli in attesa restano secondari finche il round non si sblocca.
             </p>
           </div>
@@ -222,8 +222,8 @@ export default function TournamentBracket({
                 >
                   <div className="mb-4 rounded-[20px] border border-white/8 bg-slate-950/36 px-4 py-4">
                     <div className="mb-2 flex items-center justify-between gap-3">
-                      <h3 className="text-lg font-bold text-white">{round.name}</h3>
-                      <div className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-xs text-white/72">
+                      <h3 className="text-[clamp(1rem,0.94rem+0.38vw,1.15rem)] font-bold text-white">{round.name}</h3>
+                      <div className="rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[clamp(0.68rem,0.65rem+0.12vw,0.78rem)] text-white/72">
                         {roundCompletedMatches}/{round.matches.length}
                       </div>
                     </div>
@@ -292,7 +292,7 @@ function InfoStat({
         {iconNode}
         <span>{label}</span>
       </div>
-      <div className="text-sm font-semibold text-white sm:text-base">{value}</div>
+      <div className="text-[clamp(0.84rem,0.8rem+0.18vw,1rem)] font-semibold text-white sm:text-base">{value}</div>
     </div>
   );
 }
@@ -355,11 +355,11 @@ function MatchCard({ match, onClick }: MatchCardProps) {
 
       {isBye ? (
         <div className="rounded-[22px] border border-primary/20 bg-primary/10 px-4 py-4 text-center">
-          <div className="text-base font-semibold text-white">{match.team1?.name}</div>
-          <div className="mt-1 text-sm text-white/65">Avanza automaticamente al round successivo</div>
+          <div className="text-[clamp(1rem,0.94rem+0.38vw,1.1rem)] font-semibold text-white">{match.team1?.name}</div>
+          <div className="mt-1 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/65">Avanza automaticamente al round successivo</div>
         </div>
       ) : isWaiting && !match.team1 && !match.team2 ? (
-        <div className="rounded-[22px] border border-white/10 bg-black/8 px-4 py-6 text-center text-sm text-white/60">
+        <div className="rounded-[22px] border border-white/10 bg-black/8 px-4 py-6 text-center text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/60">
           In attesa dei risultati del round precedente
         </div>
       ) : (
@@ -397,7 +397,7 @@ interface TeamDisplayProps {
 function TeamDisplay({ team, isWinner, isLoser, score }: TeamDisplayProps) {
   if (!team) {
     return (
-      <div className="rounded-[20px] border border-dashed border-white/14 bg-black/8 px-4 py-4 text-center text-sm text-white/50">
+      <div className="rounded-[20px] border border-dashed border-white/14 bg-black/8 px-4 py-4 text-center text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/50">
         TBD
       </div>
     );
@@ -419,7 +419,7 @@ function TeamDisplay({ team, isWinner, isLoser, score }: TeamDisplayProps) {
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {score !== undefined && <span className="text-lg font-bold text-white">{score}</span>}
+          {score !== undefined && <span className="text-[clamp(1rem,0.94rem+0.38vw,1.2rem)] font-bold text-white">{score}</span>}
           {isWinner && <Trophy className="h-4 w-4 text-primary" />}
         </div>
       </div>

@@ -239,13 +239,13 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
       currentPlayerAlreadyStored.rank.level !== currentPlayer.rank.level);
 
   return (
-    <div className="w-full space-y-6">
+    <div className="app-section flex w-full flex-col">
       <div>
-        <h2 className="mb-4 flex items-center gap-3 text-2xl font-bold font-heading">
-          <Users className="h-7 w-7 text-primary" />
+        <h2 className="app-title mb-3 flex items-center gap-2.5 font-bold font-heading sm:gap-3">
+          <Users className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
           <span>Configurazione Giocatori</span>
         </h2>
-        <p className="mb-6 text-muted-foreground">
+        <p className="app-subtitle mb-5 text-muted-foreground sm:mb-6">
           Inserisci il numero di giocatori e i loro dati. Usa ENTER per passare al successivo.
         </p>
       </div>
@@ -253,7 +253,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
       <div className="mb-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           <div>
-            <Label htmlFor="player-count" className="mb-2 block text-base font-semibold">
+            <Label htmlFor="player-count" className="mb-2 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">
               Numero di giocatori
             </Label>
             <Input
@@ -278,7 +278,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
           </Button>
         </div>
         {bundledPlayers.length < playerCount && (
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-muted-foreground">
             Giocatori disponibili in `players.txt`: {bundledPlayers.length}. Aumentali per usare il caricamento casuale.
           </p>
         )}
@@ -286,7 +286,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-4">
         <Card className="h-fit max-h-[420px] overflow-y-auto rounded-[18px] p-3 sm:max-h-[600px] sm:rounded-[24px] sm:p-6 md:col-span-1">
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground sm:mb-3 sm:text-sm sm:tracking-normal">
+          <h3 className="app-eyebrow mb-2 font-semibold uppercase text-muted-foreground sm:mb-3 sm:text-sm sm:tracking-normal">
             Giocatori ({players.filter(isPlayerComplete).length}/{players.length})
           </h3>
           <div className="space-y-1">
@@ -294,7 +294,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
               <button
                 key={player.id}
                 onClick={() => selectPlayer(index)}
-                className={`w-full rounded-[14px] px-3 py-2 text-left text-sm transition-all ${
+                className={`w-full rounded-[14px] px-3 py-2 text-left text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] transition-all ${
                   selectedPlayerIndex === index
                     ? 'bg-primary font-semibold text-primary-foreground'
                     : isPlayerComplete(player)
@@ -303,14 +303,14 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="truncate text-sm">
+                  <span className="truncate text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)]">
                     {player.name || `Giocatore ${index + 1}`}
                   </span>
                   <div className="ml-2 flex flex-shrink-0 items-center gap-1">
                     {isPlayerComplete(player) ? (
-                      <CircleCheckBig className="h-3.5 w-3.5 text-primary" />
+                      <CircleCheckBig className="h-[15px] w-[15px] text-primary sm:h-4 sm:w-4" />
                     ) : (
-                      <Circle className="h-3.5 w-3.5 opacity-40" />
+                      <Circle className="h-[15px] w-[15px] opacity-40 sm:h-4 sm:w-4" />
                     )}
                   </div>
                 </div>
@@ -321,7 +321,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
 
         <Card className="rounded-[18px] p-4 sm:rounded-[24px] sm:p-6 xl:col-span-3">
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h3 className="text-xl font-bold">Giocatore {selectedPlayerIndex + 1}</h3>
+            <h3 className="text-[clamp(1.1rem,1rem+0.7vw,1.4rem)] font-bold">Giocatore {selectedPlayerIndex + 1}</h3>
             <div className="flex flex-col gap-2 sm:flex-row">
               <Button onClick={handlePrevious} disabled={selectedPlayerIndex === 0} variant="outline" size="sm" className="w-full sm:w-auto">
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -336,7 +336,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
 
           <div className="space-y-6">
             <div>
-              <Label className="mb-2 block text-base font-semibold">
+              <Label className="mb-2 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">
                 Nome giocatore *
               </Label>
 
@@ -404,7 +404,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
                     setTimeout(() => setShowSuggestions(false), 200);
                   }}
                   placeholder="oppure inserisci manualmente (premi ENTER per continuare)"
-                  className="text-base sm:text-lg"
+                  className="text-[clamp(0.95rem,0.88rem+0.3vw,1.08rem)] sm:text-lg"
                   autoComplete="off"
                 />
 
@@ -422,10 +422,10 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
                           className="flex w-full items-center justify-between rounded-[16px] px-3 py-2 text-left transition-colors hover:bg-black/8"
                         >
                           <div className="min-w-0">
-                            <div className="truncate text-sm font-semibold text-black">
+                            <div className="truncate text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] font-semibold text-black">
                               {stored.name}
                             </div>
-                            <div className="inline-flex items-center gap-2 text-xs text-black/60">
+                            <div className="inline-flex items-center gap-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-black/60">
                               <RankIcon rank={stored.rank} className="h-4 w-4" />
                               <span>{getRankDisplay(stored.rank)}</span>
                             </div>
@@ -442,8 +442,8 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
                 {currentPlayerAlreadyStored && !currentPlayerHasStoredChanges ? (
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <div className="text-sm font-semibold text-white">Giocatore già salvato</div>
-                      <div className={`text-xs text-white/65 ${currentPlayerHasStoredChanges ? 'hidden' : ''}`}>
+                      <div className="text-[clamp(0.82rem,0.78rem+0.18vw,0.95rem)] font-semibold text-white">Giocatore già salvato</div>
+                      <div className={`text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-white/65 ${currentPlayerHasStoredChanges ? 'hidden' : ''}`}>
                         Questo nome è già presente nell'archivio locale e resterà disponibile anche al prossimo avvio.
                       </div>
                     </div>
@@ -464,15 +464,15 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
                       className="mt-0.5 h-4 w-4 rounded border-white/20 bg-transparent accent-cyan-400"
                     />
                     <div>
-                      <div className="text-sm font-semibold text-white">
+                      <div className="text-[clamp(0.82rem,0.78rem+0.18vw,0.95rem)] font-semibold text-white">
                         {currentPlayerHasStoredChanges ? 'Salva modifiche' : 'Salva questo giocatore'}
                       </div>
                       {currentPlayerHasStoredChanges && (
-                        <div className="mb-1 text-xs text-white/65">
+                        <div className="mb-1 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-white/65">
                           Se non selezioni questa opzione, il nuovo grado verrà usato solo in questo torneo e il giocatore salvato resterà invariato.
                         </div>
                       )}
-                      <div className="text-xs text-white/65">
+                      <div className="text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-white/65">
                         Se non selezioni questa opzione, il nome sarà usato per il torneo corrente ma non comparirà tra i giocatori salvati al prossimo avvio.
                       </div>
                     </div>
@@ -482,9 +482,9 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
             </div>
 
             <div>
-              <Label className="mb-2 block text-base font-semibold">Rank</Label>
+              <Label className="mb-2 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">Rank</Label>
               <Select value={currentPlayer.rank.tier} onValueChange={(value) => updateRank(selectedPlayerIndex, 'tier', value)}>
-                <SelectTrigger className="text-lg">
+                <SelectTrigger className="text-[clamp(0.95rem,0.88rem+0.3vw,1.08rem)] sm:text-lg">
                   <SelectValue>
                     <span className="inline-flex items-center gap-2">
                       <RankIcon rank={currentPlayer.rank} className="h-5 w-5" />
@@ -506,7 +506,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
             </div>
 
             <div>
-              <Label htmlFor="player-level" className="mb-2 block text-base font-semibold">
+              <Label htmlFor="player-level" className="mb-2 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">
                 {currentPlayer.rank.tier === 'onyx' ? 'Punteggio Onice' : 'Livello'}
               </Label>
               {currentPlayer.rank.tier === 'onyx' ? (
@@ -517,15 +517,15 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
                     min="1500"
                     value={currentPlayer.rank.level}
                     onChange={(e) => updateRank(selectedPlayerIndex, 'level', Math.max(1500, parseInt(e.target.value) || 1500))}
-                    className="text-lg"
+                    className="text-[clamp(0.95rem,0.88rem+0.3vw,1.08rem)] sm:text-lg"
                   />
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-muted-foreground">
                     Il punteggio Onice parte da 1500 e puo aumentare liberamente
                   </p>
                 </div>
               ) : (
                 <Select value={currentPlayer.rank.level.toString()} onValueChange={(value) => updateRank(selectedPlayerIndex, 'level', value)}>
-                  <SelectTrigger className="text-lg">
+                  <SelectTrigger className="text-[clamp(0.95rem,0.88rem+0.3vw,1.08rem)] sm:text-lg">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -540,11 +540,11 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
             </div>
 
             <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
-              <h4 className="mb-2 flex items-center gap-2 text-sm font-semibold sm:text-base">
+              <h4 className="mb-2 flex items-center gap-2 text-[clamp(0.82rem,0.78rem+0.18vw,1rem)] font-semibold sm:text-base">
                 <Info className="h-4 w-4 text-primary" />
                 <span>Informazioni giocatore</span>
               </h4>
-              <div className="space-y-1 text-xs sm:text-sm">
+              <div className="space-y-1 text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] sm:text-sm">
                 <div className="flex items-start justify-between gap-3">
                   <span className="text-muted-foreground">Rank completo:</span>
                   <span className="inline-flex items-center gap-2 font-semibold">
@@ -563,7 +563,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
               <button
                 type="button"
                 onClick={handleProgressCta}
-                className="group w-full rounded-[20px] border border-cyan-200/45 bg-primary px-5 py-3.5 text-center text-sm font-semibold text-primary-foreground shadow-[0_0_28px_rgba(100,180,255,0.28)] transition hover:shadow-[0_0_36px_rgba(100,180,255,0.38)] sm:rounded-[24px] sm:py-4 sm:text-base"
+                className="group w-full rounded-[20px] border border-cyan-200/45 bg-primary px-5 py-3.5 text-center text-[clamp(0.86rem,0.82rem+0.2vw,1rem)] font-semibold text-primary-foreground shadow-[0_0_28px_rgba(100,180,255,0.28)] transition hover:shadow-[0_0_36px_rgba(100,180,255,0.38)] sm:rounded-[24px] sm:py-4 sm:text-base"
               >
                 <span className="inline-flex items-center gap-2">
                   <span>{selectedPlayerIndex < players.length - 1 ? 'Prosegui' : 'Continua'}</span>
@@ -578,7 +578,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
       <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-[0.14em] sm:text-sm sm:tracking-normal">
+            <div className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] font-semibold uppercase tracking-[0.14em] sm:text-sm sm:tracking-normal">
               Progresso: {players.filter(isPlayerComplete).length} / {players.length} giocatori completati
             </div>
             <div className="mt-2 h-2 w-full max-w-[300px] rounded-full bg-muted">
@@ -591,7 +591,7 @@ export default function PlayerSetup({ onComplete, initialPlayers }: PlayerSetupP
             </div>
           </div>
           {players.filter(isPlayerComplete).length === players.length && (
-            <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+            <div className="flex items-center gap-2 text-[clamp(0.82rem,0.78rem+0.18vw,0.95rem)] font-semibold text-primary">
               <CircleCheckBig className="h-4 w-4" />
               <span>Tutti i giocatori pronti!</span>
             </div>

@@ -212,16 +212,16 @@ export default function TournamentApp() {
       />
       <div className="absolute inset-0 z-0 bg-slate-950/18" />
 
-      <div className="relative z-10 container mx-auto max-w-7xl px-3 py-5 sm:px-4 sm:py-8">
-        <div className="mb-8 text-center">
-          <h1 className="mb-2 flex flex-col items-center justify-center gap-2 text-center text-3xl font-bold font-heading sm:flex-row sm:gap-3 sm:text-4xl">
-            <Gamepad2 className="h-8 w-8 text-primary sm:h-9 sm:w-9" />
+      <div className="relative z-10 container mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-8">
+        <div className="mb-6 text-center sm:mb-8">
+          <h1 className="mb-2 flex flex-col items-center justify-center gap-2 text-center text-[clamp(1.65rem,1.25rem+1.9vw,2.35rem)] font-bold font-heading sm:flex-row sm:gap-3">
+            <Gamepad2 className="h-[clamp(1.6rem,1.35rem+1vw,2.2rem)] w-[clamp(1.6rem,1.35rem+1vw,2.2rem)] text-primary" />
             <span className="text-balance">Halo Tournament Generator</span>
           </h1>
-          <p className="text-sm text-muted-foreground sm:text-base">Crea tornei competitivi di Halo Infinite</p>
+          <p className="text-[clamp(0.82rem,0.78rem+0.18vw,1rem)] text-muted-foreground">Crea tornei competitivi di Halo Infinite</p>
         </div>
 
-        <div className="mb-8 flex items-center justify-center gap-1.5 sm:gap-2">
+        <div className="mb-6 flex items-center justify-center gap-1.5 sm:mb-8 sm:gap-2">
           <StepIndicator active={step === 'players'} completed={['config', 'teams', 'bracket'].includes(step)} label="1" />
           <div className={`h-1 w-7 sm:w-12 ${['config', 'teams', 'bracket'].includes(step) ? 'bg-primary' : 'bg-muted'}`} />
           <StepIndicator active={step === 'config'} completed={['teams', 'bracket'].includes(step)} label="2" />
@@ -304,13 +304,13 @@ export default function TournamentApp() {
 function StepIndicator({ active, completed, label }: { active: boolean; completed: boolean; label: string }) {
   return (
     <div
-      className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold sm:h-10 sm:w-10
+      className={`flex h-8 w-8 items-center justify-center rounded-full text-[13px] font-bold sm:h-10 sm:w-10 sm:text-sm
         ${completed ? 'bg-primary text-primary-foreground' : ''}
         ${active && !completed ? 'bg-primary text-primary-foreground ring-4 ring-primary/20' : ''}
         ${!active && !completed ? 'bg-muted text-muted-foreground' : ''}
       `}
     >
-      {completed ? <Check className="h-5 w-5" /> : label}
+      {completed ? <Check className="h-4 w-4 sm:h-5 sm:w-5" /> : label}
     </div>
   );
 }

@@ -154,29 +154,29 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
   const isAutoMode = config.teamCreationMode === 'automatic' || config.teamCreationMode === 'random';
 
   return (
-    <div className="w-full space-y-6">
+    <div className="app-section flex w-full flex-col">
       <div>
-        <h2 className="mb-4 text-2xl font-bold font-heading">
+        <h2 className="app-title mb-3 font-bold font-heading">
           {config.teamCreationMode === 'automatic' && (
             <span className="flex items-center gap-3">
-              <Users2 className="h-7 w-7 text-primary" />
+              <Users2 className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
               <span>Squadre Bilanciate</span>
             </span>
           )}
           {config.teamCreationMode === 'random' && (
             <span className="flex items-center gap-3">
-              <Dice3 className="h-7 w-7 text-primary" />
+              <Dice3 className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
               <span>Squadre Casuali</span>
             </span>
           )}
           {config.teamCreationMode === 'manual' && (
             <span className="flex items-center gap-3">
-              <Shield className="h-7 w-7 text-primary" />
+              <Shield className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
               <span>Crea le Squadre</span>
             </span>
           )}
         </h2>
-        <p className="mb-6 text-muted-foreground">
+        <p className="app-subtitle mb-5 text-muted-foreground sm:mb-6">
           {config.teamCreationMode === 'automatic' && 'Le squadre sono state generate automaticamente. Puoi modificare i nomi e i giocatori.'}
           {config.teamCreationMode === 'random' && 'Le squadre sono state generate casualmente. Puoi modificare i nomi e i giocatori.'}
           {config.teamCreationMode === 'manual' && 'Assegna i giocatori alle squadre manualmente.'}
@@ -209,7 +209,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
 
       {isManualMode && availablePlayers.length > 0 && (
         <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
-          <h3 className="mb-3 text-sm font-semibold sm:text-base">Assegna giocatori alle squadre ({availablePlayers.length} rimanenti)</h3>
+          <h3 className="mb-3 text-[clamp(0.84rem,0.8rem+0.18vw,1rem)] font-semibold sm:text-base">Assegna giocatori alle squadre ({availablePlayers.length} rimanenti)</h3>
           <div className="grid gap-3">
             {availablePlayers.map((player) => (
               <div
@@ -217,8 +217,8 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                 className="glass-card flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
-                  <div className="truncate text-sm font-medium sm:text-base">{player.name}</div>
-                  <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+                  <div className="truncate text-[clamp(0.84rem,0.8rem+0.18vw,1rem)] font-medium sm:text-base">{player.name}</div>
+                  <div className="inline-flex items-center gap-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-muted-foreground">
                     <RankIcon rank={player.rank} className="h-4 w-4" />
                     <span>{getRankDisplay(player.rank)} - Forza: {player.strengthValue}</span>
                   </div>
@@ -253,15 +253,15 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
 
       {!isManualMode && editMode && availablePlayers.length > 0 && (
         <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
-          <h3 className="mb-3 text-sm font-semibold sm:text-base">Giocatori disponibili ({availablePlayers.length})</h3>
+          <h3 className="mb-3 text-[clamp(0.84rem,0.8rem+0.18vw,1rem)] font-semibold sm:text-base">Giocatori disponibili ({availablePlayers.length})</h3>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
             {availablePlayers.map((player) => (
               <div
                 key={player.id}
-                className="glass-card rounded-[16px] p-2 text-xs sm:text-sm"
+                className="glass-card rounded-[16px] p-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] sm:text-sm"
               >
                 <div className="font-medium">{player.name}</div>
-                <div className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="inline-flex items-center gap-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-muted-foreground">
                   <RankIcon rank={player.rank} className="h-4 w-4" />
                   <span>{getRankDisplay(player.rank)}</span>
                 </div>
@@ -269,7 +269,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
             ))}
           </div>
           {selectedTeam !== null && (
-            <p className="mt-3 text-sm font-medium text-primary">
+            <p className="mt-3 text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] font-medium text-primary">
               Seleziona un giocatore per aggiungerlo a {teams[selectedTeam].name}
             </p>
           )}
@@ -280,7 +280,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
         {teams.map((team, teamIndex) => (
           <Card key={team.id} className="space-y-3 rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
             <div>
-              <Label className="mb-1 text-sm">Nome squadra</Label>
+              <Label className="mb-1 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)]">Nome squadra</Label>
               <Input
                 value={team.name}
                 onChange={(e) => updateTeamName(teamIndex, e.target.value)}
@@ -290,10 +290,10 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
 
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <Label className="text-sm">
+                <Label className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)]">
                   Giocatori ({team.players.length}/{teamSize})
                 </Label>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-muted-foreground">
                   Forza: {team.totalStrength}
                 </span>
               </div>
@@ -316,7 +316,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                         size="sm"
                         variant="ghost"
                         onClick={() => removePlayerFromTeam(teamIndex, playerIndex)}
-                        className="h-8 w-8 flex-shrink-0 p-0"
+                        className="h-9 w-9 flex-shrink-0 p-0 sm:h-8 sm:w-8"
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -341,7 +341,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                       <button
                         key={player.id}
                         onClick={() => addPlayerToTeam(teamIndex, player)}
-                        className="w-full rounded-[16px] border border-white/8 bg-white/5 px-4 py-3 text-left text-sm transition-colors hover:bg-white/10"
+                        className="w-full rounded-[16px] border border-white/8 bg-white/5 px-4 py-3 text-left text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] transition-colors hover:bg-white/10"
                       >
                         <div className="text-[15px] font-semibold leading-tight text-white">{player.name}</div>
                         <div className="mt-1 inline-flex items-center gap-2 text-[11px] leading-tight text-white/65">
@@ -360,13 +360,13 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
 
       <div className="glass-card space-y-4 rounded-[18px] p-4 sm:rounded-[24px] sm:p-5 md:p-6">
         <div className="space-y-1">
-          <div className="text-xs font-semibold uppercase tracking-[0.14em] text-white sm:text-sm sm:tracking-normal">Conferma squadre</div>
-          <p className="text-xs text-white/70 sm:text-sm">
+          <div className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] font-semibold uppercase tracking-[0.14em] text-white sm:text-sm sm:tracking-normal">Conferma squadre</div>
+          <p className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-white/70 sm:text-sm">
             Controlla nomi, composizione e forza dei team. Quando sei pronto puoi generare il torneo.
           </p>
         </div>
         <div className="flex justify-stretch sm:justify-end">
-          <Button onClick={handleSubmit} size="lg" className="w-full text-base shadow-[0_0_24px_rgba(100,180,255,0.25)] sm:min-w-48 sm:w-auto">
+          <Button onClick={handleSubmit} size="lg" className="w-full text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] shadow-[0_0_24px_rgba(100,180,255,0.25)] sm:min-w-48 sm:w-auto">
             Genera Torneo
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

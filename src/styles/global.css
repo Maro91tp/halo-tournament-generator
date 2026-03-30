@@ -98,6 +98,16 @@
 
   /* Kbd text color */
   --kbd-text: #000000;
+
+  --app-text-xs: clamp(0.68rem, 0.64rem + 0.18vw, 0.78rem);
+  --app-text-sm: clamp(0.78rem, 0.74rem + 0.22vw, 0.9rem);
+  --app-text-base: clamp(0.9rem, 0.84rem + 0.28vw, 1rem);
+  --app-text-lg: clamp(1rem, 0.94rem + 0.46vw, 1.18rem);
+  --app-text-xl: clamp(1.18rem, 1.02rem + 0.9vw, 1.6rem);
+  --app-text-2xl: clamp(1.45rem, 1.15rem + 1.6vw, 2.3rem);
+  --app-text-3xl: clamp(1.85rem, 1.45rem + 2.6vw, 3.4rem);
+  --app-icon-lg: clamp(1.15rem, 0.98rem + 0.9vw, 1.7rem);
+  --app-space-section: clamp(1.25rem, 0.9rem + 1.2vw, 2rem);
 }
 
 .dark {
@@ -206,6 +216,25 @@
       padding: 3rem;
     }
   }
+
+  .app-section {
+    gap: var(--app-space-section);
+  }
+
+  .app-title {
+    font-size: var(--app-text-2xl);
+    line-height: 1.05;
+  }
+
+  .app-subtitle {
+    font-size: var(--app-text-base);
+    line-height: 1.6;
+  }
+
+  .app-eyebrow {
+    font-size: var(--app-text-xs);
+    letter-spacing: 0.14em;
+  }
 }
 
 @layer base {
@@ -217,6 +246,7 @@
     @apply bg-background text-foreground;
     font-family: var(--body-font, 'Oxanium', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
     letter-spacing: 0.09em;
+    font-size: var(--app-text-base);
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
@@ -286,6 +316,7 @@ svg,
 video,
 canvas {
   max-width: 100%;
+  height: auto;
 }
 
 /* Enhanced card visibility on dark background */

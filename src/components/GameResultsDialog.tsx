@@ -325,7 +325,7 @@ export default function GameResultsDialog({
       <DialogContent className="!top-4 !w-[calc(100vw-1rem)] sm:!w-full sm:!max-w-[calc(100vw-1.5rem)] !translate-y-0 max-h-[calc(100vh-2rem)] overflow-y-auto border-cyan-300/55 bg-[linear-gradient(180deg,rgba(235,248,255,0.98)_0%,rgba(220,240,252,0.96)_100%)] p-4 sm:p-6 shadow-[0_20px_70px_rgba(20,140,220,0.22)]">
         <DialogHeader className="gap-3 pb-1">
           <DialogTitle className="flex items-center gap-2 text-slate-950">
-            <ModeIcon mode={match.mode ?? 'slayer'} className="h-5 w-5" />
+            <ModeIcon mode={match.mode ?? 'slayer'} className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
             <span>Risultati match</span>
           </DialogTitle>
           <DialogDescription className="text-slate-600">
@@ -339,7 +339,7 @@ export default function GameResultsDialog({
               <TeamSideSummary team={match.team1} wins={team1Wins} align="right" />
               <div className="text-center">
                 <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Serie</div>
-                <div className="mt-2 text-3xl font-bold tracking-tight text-slate-950 drop-shadow-[0_3px_10px_rgba(255,255,255,0.45)] sm:text-5xl md:text-7xl">
+                <div className="mt-2 text-[clamp(2rem,1.5rem+3vw,4.5rem)] font-bold tracking-tight text-slate-950 drop-shadow-[0_3px_10px_rgba(255,255,255,0.45)] md:text-7xl">
                   {team1Wins} <span className="text-slate-400">-</span> {team2Wins}
                 </div>
               </div>
@@ -396,7 +396,7 @@ export default function GameResultsDialog({
                   Indietro
                 </Button>
 
-                <div className="text-center text-sm text-slate-600 sm:text-left">
+                <div className="text-center text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] text-slate-600 sm:text-left">
                   {seriesResult
                     ? 'Serie completata, puoi confermare il risultato finale.'
                     : `Servono ancora ${requiredWins - Math.max(team1Wins, team2Wins)} vittorie per chiudere la serie.`}
@@ -416,8 +416,8 @@ export default function GameResultsDialog({
           )}
 
           {error && (
-            <div className="mt-6 flex items-start gap-3 rounded-[18px] border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-sm">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+            <div className="mt-6 flex items-start gap-3 rounded-[18px] border border-red-300 bg-red-50 px-4 py-3 text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] text-red-700 shadow-sm">
+              <AlertTriangle className="mt-0.5 h-[15px] w-[15px] shrink-0 sm:h-4 sm:w-4" />
               <span>{error}</span>
             </div>
           )}
@@ -428,7 +428,7 @@ export default function GameResultsDialog({
                 <Crown className="h-4 w-4 text-primary" />
                 <span>Vincitore serie</span>
               </div>
-              <div className="text-lg font-bold text-slate-950 sm:text-xl">
+              <div className="text-[clamp(1rem,0.94rem+0.38vw,1.2rem)] font-bold text-slate-950 sm:text-xl">
                 {seriesResult.winnerId === match.team1.id ? match.team1.name : match.team2.name}
               </div>
               <div className="mt-1 text-xs text-slate-600 sm:text-sm">

@@ -33,7 +33,7 @@ export default function WelcomeScreen({
 
   return (
     <div
-      className="relative flex min-h-screen items-center justify-center overflow-hidden px-3 py-6 text-white sm:px-4 sm:py-10 md:px-8"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden px-3 py-5 text-white sm:px-4 sm:py-10 md:px-8"
       style={{ background: '#020B1F' }}
     >
       <div
@@ -52,7 +52,7 @@ export default function WelcomeScreen({
           <img
             src="/Halo-infinite-header.svg"
             alt="Halo Infinite"
-            className="mx-auto mb-4 w-full max-w-[440px] px-2 sm:mb-6 sm:max-w-[480px] sm:px-0"
+            className="mx-auto mb-4 w-full max-w-[340px] px-1 sm:mb-6 sm:max-w-[480px] sm:px-0"
             style={{
               height: 'auto',
               filter: 'drop-shadow(0 0 20px rgba(100, 180, 255, 0.30))',
@@ -60,13 +60,13 @@ export default function WelcomeScreen({
           />
 
           <h1
-            className="text-2xl uppercase sm:text-3xl"
+            className="text-[clamp(1.45rem,1.1rem+1.8vw,2.1rem)] uppercase sm:text-[clamp(1.8rem,1.25rem+1.8vw,2.4rem)]"
             style={{
               fontFamily: "'Oxanium', sans-serif",
               fontWeight: 700,
               letterSpacing: '0.16em',
               color: '#FFFFFF',
-              marginBottom: '10px',
+              marginBottom: '8px',
             }}
           >
             Tournament Generator
@@ -75,7 +75,7 @@ export default function WelcomeScreen({
           <p
             style={{
               fontFamily: "'Oxanium', sans-serif",
-              fontSize: 'clamp(12px, 3.5vw, 14px)',
+              fontSize: 'clamp(11px, 3vw, 14px)',
               fontWeight: 400,
               letterSpacing: '0.06em',
               color: 'rgba(200, 220, 255, 0.85)',
@@ -87,14 +87,14 @@ export default function WelcomeScreen({
         </div>
 
         {savedTournament && (
-          <div className="mt-8 rounded-[20px] border border-cyan-200/25 bg-black/14 p-4 shadow-[0_0_14px_rgba(100,180,255,0.08)] sm:mt-10 sm:rounded-[24px] sm:p-5">
+          <div className="mt-7 rounded-[18px] border border-cyan-200/25 bg-black/14 p-3.5 shadow-[0_0_14px_rgba(100,180,255,0.08)] sm:mt-10 sm:rounded-[24px] sm:p-5">
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="m-0 text-base font-bold text-white sm:text-lg">Torneo salvato</h2>
-                <p className="mt-2 text-xs text-white/75 sm:text-sm">
+                <h2 className="m-0 text-[clamp(0.98rem,0.9rem+0.45vw,1.15rem)] font-bold text-white">Torneo salvato</h2>
+                <p className="mt-2 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/75 sm:text-sm">
                   Ultimo salvataggio: {formatDate(savedTournament.savedAt)}
                 </p>
-                <p className="mt-1 text-xs text-white/60 sm:text-sm">
+                <p className="mt-1 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/60 sm:text-sm">
                   {savedTournament.players.length} giocatori • {savedTournament.teams.length} squadre
                 </p>
               </div>
@@ -106,7 +106,7 @@ export default function WelcomeScreen({
           </div>
         )}
 
-        <div className="mt-8 flex justify-center text-center sm:mt-10">
+        <div className="mt-7 flex justify-center text-center sm:mt-10">
           <Button
             onClick={onNewTournament}
             size="lg"
@@ -114,20 +114,20 @@ export default function WelcomeScreen({
             className="w-full"
             style={{
               height: 'auto',
-              borderRadius: '20px',
+              borderRadius: '18px',
               background:
                 'linear-gradient(180deg, rgba(255, 255, 255, 0.33) 0%, rgba(255, 255, 255, 0.33) 100%), linear-gradient(180deg, rgba(50, 110, 180, 0.40) 0%, rgba(30, 90, 160, 0.60) 100%)',
               border: '1px solid rgba(136, 255, 249, 0.67)',
               boxShadow: '0 9px 10px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.10)',
               color: 'rgb(255, 255, 255)',
-              fontSize: 'clamp(22px, 7vw, 36px)',
+              fontSize: 'clamp(19px, 6.4vw, 36px)',
               fontFamily: "'Oxanium', sans-serif",
               fontWeight: 500,
               letterSpacing: '0.09em',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               backdropFilter: 'blur(12px)',
-              padding: '16px 20px',
+              padding: '14px 18px',
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.boxShadow =
@@ -146,7 +146,7 @@ export default function WelcomeScreen({
           <p
             style={{
               fontFamily: "'Oxanium', sans-serif",
-              fontSize: 'clamp(12px, 3.2vw, 14px)',
+              fontSize: 'clamp(11px, 2.9vw, 14px)',
               fontWeight: 400,
               letterSpacing: '0.05em',
               color: 'rgba(200, 220, 255, 0.76)',
@@ -158,7 +158,7 @@ export default function WelcomeScreen({
         </div>
 
         <div
-          className="mt-7 rounded-[20px] border border-cyan-200/20 px-3 py-3 sm:mt-8 sm:rounded-[24px] sm:px-5 sm:py-5"
+          className="mt-6 rounded-[18px] border border-cyan-200/20 px-3 py-3 sm:mt-8 sm:rounded-[24px] sm:px-5 sm:py-5"
           style={{
             background: 'linear-gradient(180deg, rgba(28, 78, 150, 0.34) 0%, rgba(15, 48, 104, 0.52) 100%)',
             backdropFilter: 'blur(12px)',
@@ -171,7 +171,7 @@ export default function WelcomeScreen({
               style={{
                 fontFamily: "'Oxanium', sans-serif",
                 letterSpacing: '0.12em',
-                fontSize: '11px',
+                fontSize: 'clamp(10px, 2.6vw, 11px)',
                 fontWeight: 600,
                 color: 'rgba(200, 220, 255, 0.68)',
                 textTransform: 'uppercase',
@@ -186,17 +186,17 @@ export default function WelcomeScreen({
             {featureItems.map((item) => (
               <div
                 key={item.title}
-                className="flex items-center gap-3 rounded-[16px] border border-cyan-200/18 bg-[linear-gradient(180deg,rgba(255,255,255,0.09)_0%,rgba(255,255,255,0.04)_100%)] px-3 py-2.5 text-left shadow-[0_0_14px_rgba(100,180,255,0.08)] sm:rounded-[18px] sm:px-4 sm:py-3"
+                className="flex items-center gap-2.5 rounded-[16px] border border-cyan-200/18 bg-[linear-gradient(180deg,rgba(255,255,255,0.09)_0%,rgba(255,255,255,0.04)_100%)] px-3 py-2.5 text-left shadow-[0_0_14px_rgba(100,180,255,0.08)] sm:gap-3 sm:rounded-[18px] sm:px-4 sm:py-3"
               >
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-300/28 bg-cyan-300/14 sm:h-9 sm:w-9">
-                  <item.Icon className="h-4 w-4 text-[#64B4FF] sm:h-5 sm:w-5" />
+                  <item.Icon className="h-[15px] w-[15px] text-[#64B4FF] sm:h-5 sm:w-5" />
                 </div>
                 <div className="min-w-0">
                   <div
                     style={{
                       fontFamily: "'Oxanium', sans-serif",
                       fontWeight: 700,
-                      fontSize: '12px',
+                      fontSize: 'clamp(11px, 2.8vw, 12px)',
                       color: '#FFFFFF',
                       letterSpacing: '0.05em',
                       margin: 0,
@@ -207,7 +207,7 @@ export default function WelcomeScreen({
                   <div
                     style={{
                       fontFamily: "'Oxanium', sans-serif",
-                      fontSize: '10px',
+                      fontSize: 'clamp(10px, 2.5vw, 11px)',
                       fontWeight: 400,
                       color: 'rgba(216, 232, 255, 0.84)',
                       marginTop: '2px',
@@ -220,7 +220,7 @@ export default function WelcomeScreen({
             ))}
           </div>
 
-          <div className="mt-4 text-center text-[10px] text-white/58 sm:mt-5 sm:text-[11px]">
+          <div className="mt-4 text-center text-[clamp(9px,2.3vw,11px)] text-white/58 sm:mt-5">
             Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.
           </div>
         </div>
@@ -228,7 +228,7 @@ export default function WelcomeScreen({
         <div className="mt-5 text-center sm:mt-6">
           <span
             style={{
-              fontSize: 12,
+              fontSize: 11,
               fontFamily: "'Oxanium', sans-serif",
               fontWeight: 600,
               letterSpacing: '0.1em',

@@ -50,19 +50,19 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="app-section flex w-full flex-col">
       <div>
-        <h2 className="mb-4 flex items-center gap-3 text-2xl font-bold font-heading">
-          <Settings2 className="h-7 w-7 text-primary" />
+        <h2 className="app-title mb-3 flex items-center gap-2.5 font-bold font-heading sm:gap-3">
+          <Settings2 className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
           <span>Configurazione Torneo</span>
         </h2>
-        <p className="mb-6 text-muted-foreground">
+        <p className="app-subtitle mb-5 text-muted-foreground sm:mb-6">
           Scegli il tipo di torneo e le modalita di gioco
         </p>
       </div>
 
       <div>
-        <Label className="mb-3 block text-base font-semibold">Tipo di torneo</Label>
+        <Label className="mb-3 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">Tipo di torneo</Label>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <OptionCard
             selected={config.type === 'slayer'}
@@ -82,7 +82,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
       </div>
 
       <div>
-        <Label className="mb-3 block text-base font-semibold">Modalita squadra</Label>
+        <Label className="mb-3 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">Modalita squadra</Label>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {(['1v1', '2v2', '3v3', '4v4'] as TeamMode[]).map((mode) => (
             <OptionCard
@@ -97,7 +97,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
       </div>
 
       <div>
-        <Label className="mb-3 block text-base font-semibold">Durata match</Label>
+        <Label className="mb-3 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">Durata match</Label>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <OptionCard
             selected={config.matchDuration === 'single'}
@@ -121,15 +121,15 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
       </div>
 
       <div>
-        <Label className="mb-3 block text-base font-semibold">Limite kill Slayer</Label>
+        <Label className="mb-3 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">Limite kill Slayer</Label>
         <div className="glass-card p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 text-base font-semibold">
+              <div className="flex items-center gap-2 text-[clamp(0.95rem,0.9rem+0.25vw,1.05rem)] font-semibold">
                 <Target className="h-4 w-4 text-primary" />
                 <span>{config.killLimit} kill</span>
               </div>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="mt-1 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-muted-foreground">
                 Valido per tutti i game Slayer, anche dentro i tornei Ranked.
               </p>
             </div>
@@ -151,8 +151,8 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
       </div>
 
       <div>
-        <Label className="mb-3 block text-base font-semibold">Modalita creazione squadre</Label>
-        <p className="mb-4 max-w-2xl text-sm text-muted-foreground">
+        <Label className="mb-3 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">Modalita creazione squadre</Label>
+        <p className="mb-4 max-w-2xl text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-muted-foreground">
           Decidi quanto controllo vuoi avere sulla composizione delle squadre prima di generare il torneo.
         </p>
         <RadioGroup
@@ -192,7 +192,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
 
       {error && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4">
-          <p className="flex items-center gap-2 text-sm font-medium text-destructive">
+          <p className="flex items-center gap-2 text-[clamp(0.8rem,0.76rem+0.2vw,0.94rem)] font-medium text-destructive">
             <TriangleAlert className="h-4 w-4" />
             <span>{error}</span>
           </p>
@@ -204,7 +204,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
           <FileText className="h-4 w-4 text-primary" />
           <span>Riepilogo</span>
         </h3>
-        <ul className="space-y-1 text-sm text-muted-foreground">
+        <ul className="space-y-1 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-muted-foreground">
           <li>{playerCount} giocatori totali</li>
           <li>Modalita: {config.type === 'slayer' ? 'Slayer' : 'Ranked'}</li>
           <li>Squadre: {config.teamMode}</li>
@@ -246,11 +246,11 @@ function OptionCard({ selected, onClick, title, description, compact, icon }: Op
           : 'border-border hover:border-primary/50'
       } ${compact ? 'text-center' : ''}`}
     >
-      <h3 className={`font-semibold ${compact ? 'text-sm sm:text-base' : 'mb-1 text-base sm:text-lg'} ${icon ? 'flex items-center gap-2' : ''}`}>
+      <h3 className={`font-semibold ${compact ? 'text-[clamp(0.82rem,0.78rem+0.18vw,1rem)] sm:text-base' : 'mb-1 text-[clamp(0.95rem,0.9rem+0.25vw,1.1rem)] sm:text-lg'} ${icon ? 'flex items-center gap-2' : ''}`}>
         {icon}
         <span>{title}</span>
       </h3>
-      {description && <p className="text-xs text-muted-foreground sm:text-sm">{description}</p>}
+      {description && <p className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-muted-foreground sm:text-sm">{description}</p>}
     </Card>
   );
 }
@@ -283,9 +283,9 @@ function TeamCreationCard({ id, value, selected, title, description, detail, ico
             }`}>
               <Icon className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
             </div>
-            <div className="text-base font-semibold sm:text-lg">{title}</div>
+            <div className="text-[clamp(0.95rem,0.9rem+0.25vw,1.1rem)] font-semibold sm:text-lg">{title}</div>
           </div>
-          <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">{description}</p>
+          <p className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] leading-relaxed text-muted-foreground sm:text-sm">{description}</p>
         </div>
         <RadioGroupItem value={value} id={id} className="mt-1" />
       </div>

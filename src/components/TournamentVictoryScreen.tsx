@@ -44,21 +44,21 @@ export default function TournamentVictoryScreen({
       <section className="relative overflow-hidden rounded-[28px] border border-cyan-300/30 bg-[radial-gradient(circle_at_top,rgba(80,220,255,0.34),transparent_36%),linear-gradient(180deg,rgba(6,24,54,0.96)_0%,rgba(6,14,40,0.98)_100%)] px-4 py-8 shadow-[0_0_80px_rgba(34,211,238,0.24)] sm:px-6 sm:py-12 md:rounded-[40px] md:px-12 md:py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12),transparent_55%)]" />
         <div className="relative flex flex-col items-center text-center">
-          <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full border border-cyan-300/45 bg-cyan-300/10 shadow-[0_0_44px_rgba(34,211,238,0.32)] motion-safe:animate-pulse sm:h-28 sm:w-28">
+          <div className="mb-5 flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full border border-cyan-300/45 bg-cyan-300/10 shadow-[0_0_44px_rgba(34,211,238,0.32)] motion-safe:animate-pulse sm:h-28 sm:w-28">
             <img
               src="/halo-cup.svg"
               alt="Coppa Halo"
-              className="h-12 w-12 object-contain drop-shadow-[0_0_26px_rgba(34,211,238,0.38)] sm:h-16 sm:w-16"
+              className="h-10 w-10 object-contain drop-shadow-[0_0_26px_rgba(34,211,238,0.38)] sm:h-16 sm:w-16"
             />
           </div>
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-cyan-300/35 bg-cyan-300/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-100 sm:px-4 sm:py-2 sm:text-xs sm:tracking-[0.22em]">
             <Sparkles className="h-4 w-4" />
             <span>Campione del torneo</span>
           </div>
-          <h1 className="text-3xl font-bold font-heading text-white drop-shadow-[0_0_26px_rgba(34,211,238,0.16)] sm:text-5xl md:text-7xl">
+          <h1 className="text-[clamp(2rem,1.45rem+3vw,4.6rem)] font-bold font-heading text-white drop-shadow-[0_0_26px_rgba(34,211,238,0.16)] md:text-7xl">
             {tournament.winner.name}
           </h1>
-          <p className="mt-4 max-w-3xl text-base font-medium text-cyan-50/88 sm:text-lg md:text-xl">
+          <p className="mt-4 max-w-3xl text-[clamp(0.95rem,0.9rem+0.3vw,1.2rem)] font-medium text-cyan-50/88 md:text-xl">
             {heroSubtitle}
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-2 text-white/80 sm:mt-7 sm:gap-3">
