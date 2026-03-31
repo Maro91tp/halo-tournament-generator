@@ -1,4 +1,4 @@
-import { createElement, isValidElement, useEffect, useMemo, useState, type ComponentType, type ReactNode } from 'react';
+import { createElement, isValidElement, useEffect, useMemo, useState, type ComponentType, type CSSProperties, type ReactNode } from 'react';
 import {
   ArrowLeft,
   ChevronRight,
@@ -196,7 +196,6 @@ export default function TournamentBracket({
   const completedMatches = allMatches.filter((match) => !!match.winner).length;
   const totalMatches = allMatches.length;
   const playableMatches = allMatches.filter((match) => match.team1 && match.team2 && !match.winner);
-  const nextPlayableMatch = playableMatches[0];
   const completionPercent = totalMatches > 0 ? Math.round((completedMatches / totalMatches) * 100) : 0;
   const previewGamesByRound = useMemo(() => {
     const gamesToCreate =
@@ -211,6 +210,10 @@ export default function TournamentBracket({
       return accumulator;
     }, {});
   }, [tournament.config, tournament.rounds]);
+  const nextPlayableMatch = playableMatches[0];
+  const nextPlayableGame = nextPlayableMatch
+    ? getNextPlayableGame(nextPlayableMatch, tournament.config, previewGamesByRound)
+    : undefined;
 
   const handleMatchClick = (match: Match) => {
     if (match.team1 && match.team2 && !match.winner) {
@@ -257,10 +260,10 @@ export default function TournamentBracket({
           </p>
       </div>
 
-      <Card className="p-5 sm:p-6 md:p-7">
-        <div className="space-y-5">
-          <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-            <div className="grid grid-cols-1 gap-4 text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] sm:grid-cols-2 xl:grid-cols-4">
+      <Card className="p-4 sm:p-5 md:p-6">
+        <div className="space-y-4">
+          <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+            <div className="grid grid-cols-1 gap-3 text-[clamp(0.78rem,0.75rem+0.16vw,0.9rem)] sm:grid-cols-2 xl:grid-cols-4">
               <InfoStat
                 label={copy.type}
                 value={tournament.config.type === 'slayer' ? copy.slayer : copy.ranked}
@@ -275,15 +278,15 @@ export default function TournamentBracket({
               <InfoStat label={copy.teams} value={String(tournament.teams.length)} icon={Swords} />
             </div>
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/55 sm:text-xs">
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/55 sm:text-[11px]">
                   {copy.currentSave}
                 </div>
-                <div className="text-[clamp(1.02rem,0.96rem+0.42vw,1.22rem)] font-bold text-white">
+                <div className="text-[clamp(0.94rem,0.9rem+0.34vw,1.12rem)] font-bold text-white">
                   {currentSavedTournamentName ?? copy.noNamedSave}
                 </div>
-                <div className="flex flex-wrap gap-x-4 gap-y-2 text-[clamp(0.78rem,0.74rem+0.18vw,0.9rem)] text-white/76">
+                <div className="flex flex-wrap gap-x-3 gap-y-1.5 text-[clamp(0.72rem,0.69rem+0.16vw,0.84rem)] leading-relaxed text-white/76">
                   {currentSavedTournamentName ? (
                     <>
                       <span><span className="font-semibold text-white/88">{copy.savedOn}:</span> {formatSavedAt(currentSavedTournamentSavedAt) ?? '-'}</span>
@@ -300,8 +303,8 @@ export default function TournamentBracket({
               <Button
                 onClick={handleOpenSaveDialog}
                 className={currentSavedTournamentName
-                  ? 'min-h-11 w-full border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_28px_rgba(245,180,76,0.28)] hover:shadow-[0_0_38px_rgba(245,180,76,0.36)]'
-                  : 'min-h-11 w-full border-white/18 bg-white/6 text-white hover:bg-white/10'}
+                  ? 'min-h-10 w-full border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_28px_rgba(245,180,76,0.28)] hover:shadow-[0_0_38px_rgba(245,180,76,0.36)]'
+                  : 'min-h-10 w-full border-white/18 bg-white/6 text-white hover:bg-white/10'}
                 variant={currentSavedTournamentName ? 'default' : 'outline'}
               >
                 <Save className="h-4 w-4" />
@@ -355,17 +358,22 @@ export default function TournamentBracket({
         </div>
       </Card>
 
-      <Card className="p-5 sm:p-6 md:p-7">
-        <div className="space-y-4">
+      <Card
+        className="relative overflow-hidden p-5 sm:p-6 md:p-7"
+        style={getMapCardBackgroundStyle(nextPlayableGame?.map)}
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(18,168,209,0.30)_0%,rgba(7,16,43,0.60)_44%,rgba(8,11,36,0.88)_100%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_34%)]" />
+        <div className="relative space-y-4">
           {nextPlayableMatch ? (
             <div className="space-y-5 text-center">
               <div className="text-[clamp(1.65rem,1.4rem+1vw,2.5rem)] font-black leading-tight text-white">
-                {getNextPlayableGame(nextPlayableMatch, tournament.config, previewGamesByRound)?.map ?? nextPlayableMatch.map}
+                {nextPlayableGame?.map ?? nextPlayableMatch.map}
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-white/72">
-                {getNextPlayableGame(nextPlayableMatch, tournament.config, previewGamesByRound)?.mode
-                  ? <Pill icon={<ModeIcon mode={getNextPlayableGame(nextPlayableMatch, tournament.config, previewGamesByRound)!.mode} className="h-3.5 w-3.5" />} text={getGameModeDisplay(getNextPlayableGame(nextPlayableMatch, tournament.config, previewGamesByRound)!.mode, language)} />
+                {nextPlayableGame?.mode
+                  ? <Pill icon={<ModeIcon mode={nextPlayableGame.mode} className="h-3.5 w-3.5" />} text={getGameModeDisplay(nextPlayableGame.mode, language)} />
                   : nextPlayableMatch.mode
                     ? <Pill icon={<ModeIcon mode={nextPlayableMatch.mode} className="h-3.5 w-3.5" />} text={getGameModeDisplay(nextPlayableMatch.mode, language)} />
                     : null}
@@ -483,6 +491,32 @@ export default function TournamentBracket({
   );
 }
 
+function getMapCardBackgroundStyle(mapName?: string): CSSProperties | undefined {
+  if (!mapName) return undefined;
+
+  const mapImageByName: Record<string, string> = {
+    Aquarius: '/Maps/Aquarius.png',
+    Empyrean: '/Maps/Empyrean.png',
+    Lattice: '/Maps/Lattice.png',
+    'Live Fire': '/Maps/LiveFire.png',
+    Origin: '/Maps/Origin.jpg',
+    Recharge: '/Maps/Recharge.jpg',
+    Solitude: '/Maps/Solitude.jpg',
+    Streets: '/Maps/Streets.png',
+    Vacancy: '/Maps/Vacancy.jpg',
+  };
+
+  const imageUrl = mapImageByName[mapName];
+  if (!imageUrl) return undefined;
+
+  return {
+    backgroundImage: `url("${imageUrl}")`,
+    backgroundPosition: '50% 50%',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+  };
+}
+
 function InfoStat({
   label,
   value,
@@ -497,12 +531,12 @@ function InfoStat({
     : createElement(Icon as ComponentType<{ className?: string }>, { className: 'h-3.5 w-3.5 text-primary' });
 
   return (
-    <div className="min-w-0 rounded-[18px] border border-white/10 bg-black/8 p-3 sm:rounded-[20px] sm:p-4">
-      <div className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.08em] text-white/50">
+    <div className="min-w-0 rounded-[18px] border border-white/10 bg-black/8 px-3 py-2.5 sm:rounded-[20px] sm:px-3.5 sm:py-3">
+      <div className="mb-1.5 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.08em] text-white/50 sm:text-[11px]">
         {iconNode}
         <span>{label}</span>
       </div>
-      <div className="text-[clamp(0.98rem,0.94rem+0.28vw,1.14rem)] font-bold text-white sm:text-[1.05rem]">{value}</div>
+      <div className="text-[clamp(0.9rem,0.87rem+0.22vw,1.02rem)] font-bold text-white sm:text-[0.98rem]">{value}</div>
     </div>
   );
 }

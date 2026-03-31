@@ -1,5 +1,6 @@
 import type { Player, Rank, RankTier } from '../types/tournament';
 import bundledPlayersText from '../../players.txt?raw';
+import { syncPlayerToSupabase, syncPlayersToSupabase } from './supabase-storage';
 
 const STORAGE_KEY = 'halo_tournament_players';
 
@@ -75,6 +76,7 @@ export async function syncBundledPlayers(): Promise<StoredPlayer[]> {
   try {
     const bundledPlayers = getBundledPlayers();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(bundledPlayers));
+    void syncPlayersToSupabase(bundledPlayers);
     return sortPlayersAlphabetically(bundledPlayers);
   } catch (error) {
     console.error('Error syncing bundled players:', error);
@@ -130,6 +132,7 @@ export function savePlayer(player: Player): void {
     }
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+    void syncPlayerToSupabase(player);
   } catch (error) {
     console.error('Error saving player:', error);
   }

@@ -1,4 +1,5 @@
 import type { Player, Team, Tournament, TournamentConfig } from '../types/tournament';
+import { saveTournamentRecordToSupabase } from './supabase-storage';
 
 export type SavedStep = 'players' | 'config' | 'teams' | 'bracket';
 export type SavedTournamentStatus = 'active' | 'completed';
@@ -218,6 +219,7 @@ export function saveNamedTournament(input: SaveNamedTournamentInput): SavedTourn
     : [nextRecord, ...currentRecords];
 
   persistSavedTournamentRecords(nextRecords);
+  void saveTournamentRecordToSupabase(nextRecord);
   return nextRecord;
 }
 
