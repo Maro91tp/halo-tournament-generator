@@ -1,14 +1,17 @@
 {
   "name": "astro",
   "type": "module",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "scripts": {
     "predev": "npx kill-port 3000 || true",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro build && wrangler dev",
     "astro": "astro",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "release:patch": "npm version patch --no-git-tag-version",
+    "release:minor": "npm version minor --no-git-tag-version",
+    "release:major": "npm version major --no-git-tag-version"
   },
   "dependencies": {
     "@astrojs/cloudflare": "12.6.7",

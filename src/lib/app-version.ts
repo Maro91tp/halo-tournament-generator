@@ -1,1 +1,4 @@
-export const APP_VERSION = '2.0.0';
+declare const __APP_VERSION__: string;
+
+export const APP_VERSION = __APP_VERSION__;
+export const APP_VERSION_LABEL = APP_VERSION;

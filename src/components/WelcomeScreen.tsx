@@ -2,7 +2,7 @@ import { Flag, Save, Scale, Share } from 'lucide-react';
 import { Button } from './ui/button';
 import type { SavedTournamentRecord } from '../lib/tournament-storage';
 import type { Language } from '../lib/language';
-import { APP_VERSION } from '../lib/app-version';
+import { APP_VERSION_LABEL } from '../lib/app-version';
 
 interface WelcomeScreenProps {
   language: Language;
@@ -334,7 +334,7 @@ export default function WelcomeScreen({
             Made by MrMarozzo
           </span>
           <div className="mt-1 text-[10px] font-medium tracking-[0.08em] text-white/44 sm:text-[11px]">
-            {copy.version} {APP_VERSION}
+            {copy.version} {APP_VERSION_LABEL}
           </div>
           <div className="mt-3">
             <a

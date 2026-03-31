@@ -1,6 +1,10 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
+import { readFileSync } from 'node:fs';
+
+const packageJson = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
+const appVersion = packageJson.version ?? '2.0.0';
 
 // Patches node_modules/vite/dist/client/client.mjs
 function patchViteErrorOverlay() {
@@ -32,6 +36,9 @@ export default defineConfig({
     react(),
   ],
   vite: {
+    define: {
+      __APP_VERSION__: JSON.stringify(appVersion),
+    },
     plugins: [tailwindcss(), patchViteErrorOverlay()],
     server: {
       watch: {
