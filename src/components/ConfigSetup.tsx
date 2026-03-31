@@ -4,6 +4,7 @@ import { SLAYER_MAPS, type TournamentConfig, type TeamMode, type TeamCreationMod
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Card } from './ui/card';
+import { Input } from './ui/input';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { validatePlayerCount } from '../lib/tournament-utils';
 import { ModeIcon } from './TournamentIcons';
@@ -30,7 +31,9 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
   const [config, setConfig] = useState<TournamentConfig>(
     initialConfig ? { ...defaultConfig, ...initialConfig } : defaultConfig
   );
-
+  const presetKillLimits = [25, 50, 75, 100];
+  const initialIsCustomKillLimit = !presetKillLimits.includes((initialConfig ? { ...defaultConfig, ...initialConfig } : defaultConfig).killLimit);
+  const [customKillLimitEnabled, setCustomKillLimitEnabled] = useState(initialIsCustomKillLimit);
   const [error, setError] = useState('');
   const copy = language === 'en'
     ? {
@@ -48,6 +51,8 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         killLimit: 'Slayer kill limit',
         killLabel: 'kills',
         killHelp: 'Used for every Slayer game, including Ranked tournaments.',
+        customKillLimit: 'Custom',
+        customKillLimitPlaceholder: 'Enter kill limit',
         slayerMaps: 'Slayer map pool',
         slayerMapsHelp: 'Choose the maps available for Slayer tournaments. If you leave more than one active, the app will rotate them from your selected pool.',
         mapsSelected: 'maps selected',
@@ -91,6 +96,8 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         killLimit: 'Limite kill Slayer',
         killLabel: 'kill',
         killHelp: 'Valido per tutti i game Slayer, anche dentro i tornei Ranked.',
+        customKillLimit: 'Personalizzato',
+        customKillLimitPlaceholder: 'Inserisci limite kill',
         slayerMaps: 'Pool mappe Slayer',
         slayerMapsHelp: 'Scegli le mappe disponibili per i tornei Massacro. Se ne lasci attiva piu di una, l app ruotera solo nella pool selezionata.',
         mapsSelected: 'mappe selezionate',
@@ -138,6 +145,21 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
   const updateConfig = <K extends keyof TournamentConfig>(key: K, value: TournamentConfig[K]) => {
     setConfig({ ...config, [key]: value });
     setError('');
+  };
+
+  const handlePresetKillLimit = (limit: number) => {
+    setCustomKillLimitEnabled(false);
+    updateConfig('killLimit', limit);
+  };
+
+  const handleCustomKillLimitChange = (value: string) => {
+    const digitsOnly = value.replace(/[^\d]/g, '');
+    if (!digitsOnly) {
+      updateConfig('killLimit', 0);
+      return;
+    }
+
+    updateConfig('killLimit', Number(digitsOnly));
   };
 
   const toggleSlayerMap = (mapName: string) => {
@@ -229,26 +251,48 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
             <div>
               <div className="flex items-center gap-2 text-[clamp(0.95rem,0.9rem+0.25vw,1.05rem)] font-semibold">
                 <Target className="h-4 w-4 text-primary" />
-                <span>{config.killLimit} {copy.killLabel}</span>
+                <span>{config.killLimit > 0 ? `${config.killLimit} ${copy.killLabel}` : `0 ${copy.killLabel}`}</span>
               </div>
               <p className="mt-1 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-muted-foreground">
                 {copy.killHelp}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {[25, 50, 75, 100].map((limit) => (
+              {presetKillLimits.map((limit) => (
                 <Button
                   key={limit}
                   type="button"
-                  variant={config.killLimit === limit ? 'default' : 'outline'}
+                  variant={!customKillLimitEnabled && config.killLimit === limit ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => updateConfig('killLimit', limit)}
+                  onClick={() => handlePresetKillLimit(limit)}
                 >
                   {limit}
                 </Button>
               ))}
+              <Button
+                type="button"
+                variant={customKillLimitEnabled ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setCustomKillLimitEnabled(true)}
+              >
+                {copy.customKillLimit}
+              </Button>
             </div>
           </div>
+          {customKillLimitEnabled && (
+            <div className="mt-4 flex max-w-xs flex-col gap-2">
+              <Input
+                type="number"
+                min="1"
+                step="1"
+                inputMode="numeric"
+                value={config.killLimit > 0 ? String(config.killLimit) : ''}
+                onChange={(event) => handleCustomKillLimitChange(event.target.value)}
+                placeholder={copy.customKillLimitPlaceholder}
+                className="h-11 rounded-[14px] border-white/18 bg-white/[0.04] text-white placeholder:text-white/34"
+              />
+            </div>
+          )}
         </div>
       </div>
 

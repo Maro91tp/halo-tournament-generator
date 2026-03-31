@@ -30,6 +30,7 @@ interface SaveNamedTournamentInput {
   config: TournamentConfig | null;
   teams: Team[];
   tournament: Tournament | null;
+  touchSavedAt?: boolean;
 }
 
 const STORAGE_KEY = 'halo_tournament_state';
@@ -198,10 +199,13 @@ export function loadSavedTournamentRecord(id: string): SavedTournamentRecord | n
 }
 
 export function saveNamedTournament(input: SaveNamedTournamentInput): SavedTournamentRecord {
-  const savedAt = new Date().toISOString();
   const isCompleted = Boolean(input.tournament?.winner);
   const currentRecords = listSavedTournamentRecords();
   const existingRecord = input.id ? currentRecords.find((record) => record.id === input.id) : undefined;
+  const touchSavedAt = input.touchSavedAt ?? true;
+  const savedAt = touchSavedAt
+    ? new Date().toISOString()
+    : existingRecord?.savedAt ?? new Date().toISOString();
   const completedAt = isCompleted ? existingRecord?.completedAt ?? savedAt : null;
 
   const nextRecord: SavedTournamentRecord = {

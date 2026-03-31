@@ -126,6 +126,7 @@ export default function TournamentApp() {
       config,
       teams,
       tournament,
+      touchSavedAt: false,
     });
 
     setSavedTournaments(listSavedTournamentRecords());
