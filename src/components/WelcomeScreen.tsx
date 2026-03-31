@@ -2,6 +2,7 @@ import { Flag, Save, Scale, Share } from 'lucide-react';
 import { Button } from './ui/button';
 import type { SavedTournamentRecord } from '../lib/tournament-storage';
 import type { Language } from '../lib/language';
+import { APP_VERSION } from '../lib/app-version';
 
 interface WelcomeScreenProps {
   language: Language;
@@ -23,6 +24,7 @@ export default function WelcomeScreen({
         featuresTitle: 'Caratteristiche principali',
         footer: 'Questo progetto e un fan project non ufficiale. Halo e un marchio registrato di Microsoft.',
         about: 'About',
+        version: 'Versione',
         libraryTitle: 'Carica torneo',
         activeTournaments: 'Tornei attivi',
         completedTournaments: 'Tornei completati',
@@ -47,6 +49,7 @@ export default function WelcomeScreen({
         featuresTitle: 'Main features',
         footer: 'This project is an unofficial fan project. Halo is a registered trademark of Microsoft.',
         about: 'About',
+        version: 'Version',
         libraryTitle: 'Load tournament',
         activeTournaments: 'Active tournaments',
         completedTournaments: 'Completed tournaments',
@@ -330,6 +333,9 @@ export default function WelcomeScreen({
           >
             Made by MrMarozzo
           </span>
+          <div className="mt-1 text-[10px] font-medium tracking-[0.08em] text-white/44 sm:text-[11px]">
+            {copy.version} {APP_VERSION}
+          </div>
           <div className="mt-3">
             <a
               href="/about"
