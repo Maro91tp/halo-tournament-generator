@@ -37,6 +37,7 @@ const STORAGE_KEY = 'halo_tournament_state';
 const SAVED_TOURNAMENTS_KEY = 'halo_tournament_library';
 const DEFAULT_KILL_LIMIT = 50;
 const COMPLETED_RETENTION_DAYS = 30;
+const STEP_ORDER: SavedStep[] = ['players', 'config', 'teams', 'bracket'];
 
 function isBrowser() {
   return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
@@ -60,9 +61,29 @@ function buildSavedTournament(
   };
 }
 
+function inferSavedStep(parsed: Partial<SavedTournament>): SavedStep {
+  if (parsed.tournament) return 'bracket';
+  if (parsed.teams?.length) return 'teams';
+  if (parsed.config) return 'config';
+  return 'players';
+}
+
+export function resolveSavedStep(parsed: Partial<SavedTournament>): SavedStep {
+  const inferredStep = inferSavedStep(parsed);
+  const declaredStep = parsed.step;
+
+  if (!declaredStep || !STEP_ORDER.includes(declaredStep)) {
+    return inferredStep;
+  }
+
+  return STEP_ORDER.indexOf(declaredStep) > STEP_ORDER.indexOf(inferredStep)
+    ? declaredStep
+    : inferredStep;
+}
+
 function normalizeSavedTournament(parsed: Partial<SavedTournament>): SavedTournament {
   return {
-    step: parsed.step ?? (parsed.tournament ? 'bracket' : parsed.teams?.length ? 'teams' : parsed.config ? 'config' : 'players'),
+    step: resolveSavedStep(parsed),
     players: parsed.players ?? [],
     config: parsed.config
       ? {

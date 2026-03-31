@@ -1,5 +1,6 @@
 import type { Player } from '../types/tournament';
 import type { SavedTournamentRecord } from './tournament-storage';
+import { resolveSavedStep } from './tournament-storage';
 import { isSupabaseConfigured, supabase } from './supabase';
 import type { StoredPlayer } from './player-storage';
 
@@ -101,7 +102,12 @@ function normalizeTournamentRecordFromSupabase(record: any): SavedTournamentReco
     id: record.id,
     name: record.name?.trim() || 'Tournament',
     status: record.status === 'completed' ? 'completed' : 'active',
-    step: (record.step ?? 'players') as SavedTournamentRecord['step'],
+    step: resolveSavedStep({
+      step: record.step,
+      config: record.config ?? null,
+      teams: Array.isArray(record.teams) ? record.teams : [],
+      tournament: record.tournament ?? null,
+    }),
     config: record.config ?? null,
     players: Array.isArray(record.players) ? record.players : [],
     teams: Array.isArray(record.teams) ? record.teams : [],
