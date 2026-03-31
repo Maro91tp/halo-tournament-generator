@@ -7,6 +7,7 @@ import { Card } from './ui/card';
 import { getGameModeDisplay, getMatchDurationDisplay, getRankDisplay } from '../lib/tournament-utils';
 import { RankIcon } from './TournamentIcons';
 import { useLanguage } from './LanguageContext';
+import { APP_VERSION_LABEL } from '../lib/app-version';
 
 interface TournamentVictoryScreenProps {
   tournament: Tournament;
@@ -76,6 +77,7 @@ export default function TournamentVictoryScreen({
         downloadPdfHelp: 'Download the full tournament recap directly as a PDF file.',
         exportingPdf: 'Generating PDF...',
         downloadPdfError: 'Unable to generate the PDF right now.',
+        version: 'Version',
       }
     : {
         champion: 'Campione del torneo',
@@ -112,6 +114,7 @@ export default function TournamentVictoryScreen({
         downloadPdfHelp: 'Scarica direttamente il riepilogo completo del torneo in PDF.',
         exportingPdf: 'Generazione PDF...',
         downloadPdfError: 'Impossibile generare il PDF in questo momento.',
+        version: 'Versione',
       };
 
   const completedMatches = tournament.rounds.flatMap((round) => round.matches).filter((match) => match.winner);
@@ -669,6 +672,9 @@ export default function TournamentVictoryScreen({
       </div>
       <div className="text-center text-xs font-semibold tracking-[0.08em] text-amber-100/80 sm:text-sm sm:tracking-[0.1em]">
         Made by MrMarozzo
+      </div>
+      <div className="text-center text-[10px] font-medium tracking-[0.08em] text-white/40 sm:text-[11px]">
+        {copy.version} {APP_VERSION_LABEL}
       </div>
     </div>
   );

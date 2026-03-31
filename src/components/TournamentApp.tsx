@@ -25,7 +25,6 @@ import {
 import { LANGUAGE_STORAGE_KEY, type Language } from '../lib/language';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { listTournamentRecordsFromSupabase, loadTournamentRecordFromSupabase } from '../lib/supabase-storage';
-import { APP_VERSION_LABEL } from '../lib/app-version';
 
 type Step = 'welcome' | 'players' | 'config' | 'teams' | 'bracket';
 
@@ -86,7 +85,6 @@ export default function TournamentApp() {
         missingResumeTournament: 'Nessun torneo da riprendere. Potrebbe essere stato cancellato o svuotato.',
         flowErrorTitle: 'Torneo non disponibile',
         flowErrorAction: 'Ho capito',
-        version: 'Versione',
       }
     : {
         title: 'Halo Tournament Generator',
@@ -100,7 +98,6 @@ export default function TournamentApp() {
         missingResumeTournament: 'No tournament to resume. It may have been deleted or cleared.',
         flowErrorTitle: 'Tournament unavailable',
         flowErrorAction: 'Got it',
-        version: 'Version',
       };
 
   useEffect(() => {
@@ -512,9 +509,6 @@ export default function TournamentApp() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        <div className="pointer-events-none fixed bottom-3 left-3 z-20 text-[10px] font-medium tracking-[0.08em] text-white/38 sm:bottom-4 sm:left-4 sm:text-[11px]">
-          {copy.version} {APP_VERSION_LABEL}
-        </div>
         </div>
     </LanguageProvider>
   );
