@@ -645,9 +645,9 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
             </div>
             <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
               <div>
-                <Label className="mb-2 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">{copy.rank}</Label>
+                <Label htmlFor="player-rank" className="mb-2 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">{copy.rank}</Label>
                 <Select value={currentPlayer.rank.tier} onValueChange={(value) => updateRank(selectedPlayerIndex, 'tier', value)}>
-                  <SelectTrigger className="text-[clamp(0.95rem,0.88rem+0.3vw,1.08rem)] sm:text-lg">
+                  <SelectTrigger id="player-rank" className="text-[clamp(0.95rem,0.88rem+0.3vw,1.08rem)] sm:text-lg">
                     <SelectValue>
                       <span className="inline-flex items-center gap-2">
                         <RankIcon rank={currentPlayer.rank} className="h-5 w-5" />
@@ -688,7 +688,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                   </div>
                 ) : (
                   <Select value={currentPlayer.rank.level.toString()} onValueChange={(value) => updateRank(selectedPlayerIndex, 'level', value)}>
-                    <SelectTrigger className="text-[clamp(0.95rem,0.88rem+0.3vw,1.08rem)] sm:text-lg">
+                    <SelectTrigger id="player-level" className="text-[clamp(0.95rem,0.88rem+0.3vw,1.08rem)] sm:text-lg">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
