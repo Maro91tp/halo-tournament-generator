@@ -155,11 +155,11 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
   const handleCustomKillLimitChange = (value: string) => {
     const digitsOnly = value.replace(/[^\d]/g, '');
     if (!digitsOnly) {
-      updateConfig('killLimit', 0);
+      updateConfig('killLimit', 2);
       return;
     }
 
-    updateConfig('killLimit', Number(digitsOnly));
+    updateConfig('killLimit', Math.max(2, Number(digitsOnly)));
   };
 
   const toggleSlayerMap = (mapName: string) => {
@@ -283,10 +283,10 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
             <div className="mt-4 flex max-w-xs flex-col gap-2">
               <Input
                 type="number"
-                min="1"
+                min="2"
                 step="1"
                 inputMode="numeric"
-                value={config.killLimit > 0 ? String(config.killLimit) : ''}
+                value={config.killLimit >= 2 ? String(config.killLimit) : '2'}
                 onChange={(event) => handleCustomKillLimitChange(event.target.value)}
                 placeholder={copy.customKillLimitPlaceholder}
                 className="h-11 rounded-[14px] border-white/18 bg-white/[0.04] text-white placeholder:text-white/34"

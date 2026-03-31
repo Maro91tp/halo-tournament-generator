@@ -1,14 +1,12 @@
-import { useRef, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { ArrowLeft, Crown, Download, Medal, RefreshCcw, Sparkles, Swords, Trophy } from 'lucide-react';
-import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import type { Game, Match, Player, Team, Tournament } from '../types/tournament';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
-import { getGameModeDisplay, getMatchDurationDisplay } from '../lib/tournament-utils';
+import { getGameModeDisplay, getMatchDurationDisplay, getRankDisplay } from '../lib/tournament-utils';
 import { RankIcon } from './TournamentIcons';
 import { useLanguage } from './LanguageContext';
-import { BracketPrintDocument } from './BraxkerPrintView';
 
 interface TournamentVictoryScreenProps {
   tournament: Tournament;
@@ -41,7 +39,6 @@ export default function TournamentVictoryScreen({
 }: TournamentVictoryScreenProps) {
   const language = useLanguage();
   const [isExportingPdf, setIsExportingPdf] = useState(false);
-  const exportDocumentRef = useRef<HTMLDivElement | null>(null);
   if (!tournament.winner) return null;
   const copy = language === 'en'
     ? {
@@ -49,6 +46,8 @@ export default function TournamentVictoryScreen({
         absoluteVictory: 'Absolute Victory',
         matchesWon: 'Matches won',
         gamesWon: 'Games won',
+        slayer: 'Slayer',
+        ranked: 'Ranked',
         finalStats: 'Final stats',
         totalKills: 'Total kills',
         players: 'Players',
@@ -83,6 +82,8 @@ export default function TournamentVictoryScreen({
         absoluteVictory: 'Vittoria Assoluta',
         matchesWon: 'Match vinti',
         gamesWon: 'Game vinti',
+        slayer: 'Massacro',
+        ranked: 'Classificata',
         finalStats: 'Statistiche finali',
         totalKills: 'Kill totali',
         players: 'Giocatori',
@@ -115,6 +116,7 @@ export default function TournamentVictoryScreen({
 
   const completedMatches = tournament.rounds.flatMap((round) => round.matches).filter((match) => match.winner);
   const winnerStats = getWinnerStats(tournament.winner, completedMatches);
+  const formatLabel = getMatchDurationDisplay(tournament.config.matchDuration, language);
   const celebrationBursts = [
     { left: '8%', top: '14%', delay: '0s', size: '0.5rem' },
     { left: '18%', top: '70%', delay: '0.9s', size: '0.4rem' },
@@ -137,92 +139,158 @@ export default function TournamentVictoryScreen({
   ];
 
   const handleDownloadPdf = async () => {
-    const exportNode = exportDocumentRef.current;
-    if (!exportNode || typeof window === 'undefined') {
+    if (typeof window === 'undefined') {
       alert(copy.downloadPdfError);
       return;
     }
 
     setIsExportingPdf(true);
     try {
-      await document.fonts?.ready;
-      await waitForExportImages(exportNode);
-      const restoreNormalizedStyles = normalizeExportColors(exportNode);
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'pt',
+        format: 'a4',
+        compress: true,
+      });
 
-      try {
-        const captureScale = window.innerWidth < 640 ? 1.2 : 1.6;
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 40;
+      const contentWidth = pageWidth - margin * 2;
+      let cursorY = margin;
 
-        const canvas = await html2canvas(exportNode, {
-          backgroundColor: '#ffffff',
-          scale: captureScale,
-          logging: false,
-          useCORS: true,
-          scrollX: 0,
-          scrollY: 0,
-          windowWidth: exportNode.scrollWidth,
-          windowHeight: exportNode.scrollHeight,
-        });
+      const ensureSpace = (height: number) => {
+        if (cursorY + height <= pageHeight - margin) return;
+        pdf.addPage();
+        cursorY = margin;
+      };
 
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'pt',
-          format: 'a4',
-          compress: true,
-        });
+      const addTextBlock = (
+        text: string,
+        {
+          size = 12,
+          weight = 'normal',
+          color = '#0f172a',
+          gap = 10,
+        }: {
+          size?: number;
+          weight?: 'normal' | 'bold';
+          color?: string;
+          gap?: number;
+        } = {},
+      ) => {
+        pdf.setFont('helvetica', weight);
+        pdf.setFontSize(size);
+        pdf.setTextColor(color);
+        const lines = pdf.splitTextToSize(text, contentWidth);
+        const lineHeight = size * 1.35;
+        ensureSpace(lines.length * lineHeight + gap);
+        pdf.text(lines, margin, cursorY);
+        cursorY += lines.length * lineHeight + gap;
+      };
 
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const margin = 20;
-        const usableWidth = pageWidth - margin * 2;
-        const usableHeight = pageHeight - margin * 2;
-        const pageCanvasHeight = Math.max(1, Math.floor((usableHeight * canvas.width) / usableWidth));
+      const addDivider = () => {
+        ensureSpace(20);
+        pdf.setDrawColor(226, 232, 240);
+        pdf.line(margin, cursorY, pageWidth - margin, cursorY);
+        cursorY += 16;
+      };
 
-        let renderedHeight = 0;
-        let pageIndex = 0;
+      pdf.setFillColor(15, 23, 42);
+      pdf.roundedRect(margin, cursorY, contentWidth, 98, 16, 16, 'F');
+      pdf.setTextColor('#f8fafc');
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(24);
+      pdf.text('HALO TOURNAMENT', margin + 20, cursorY + 30);
+      pdf.setFontSize(16);
+      pdf.text(tournament.winner.name, margin + 20, cursorY + 58);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(11);
+      pdf.text(
+        `${tournament.config.type === 'slayer' ? copy.slayer : copy.ranked} - ${tournament.config.teamMode} - ${formatLabel}`,
+        margin + 20,
+        cursorY + 80,
+      );
+      cursorY += 122;
 
-        while (renderedHeight < canvas.height) {
-          const sliceHeight = Math.min(pageCanvasHeight, canvas.height - renderedHeight);
-          const pageCanvas = document.createElement('canvas');
-          pageCanvas.width = canvas.width;
-          pageCanvas.height = sliceHeight;
+      addTextBlock(`${copy.champion}: ${tournament.winner.name}`, { size: 18, weight: 'bold', color: '#111827', gap: 8 });
+      addTextBlock(`${copy.matchesWon}: ${winnerStats.seriesWins}   |   ${copy.gamesWon}: ${winnerStats.gameWins}   |   ${copy.totalKills}: ${winnerStats.totalKills}`, {
+        size: 11,
+        color: '#475569',
+        gap: 14,
+      });
+      addTextBlock(`MVP: ${winnerStats.mvp.player.name} - ${winnerStats.mvp.kills} ${copy.kills} - ${winnerStats.mvp.gameWins} ${copy.gamesWon}`, {
+        size: 12,
+        weight: 'bold',
+        color: '#92400e',
+        gap: 16,
+      });
 
-          const pageContext = pageCanvas.getContext('2d');
-          if (!pageContext) {
-            throw new Error('Canvas context unavailable');
-          }
+      addTextBlock(copy.championRoster, { size: 14, weight: 'bold', color: '#0f172a', gap: 8 });
+      winnerStats.playerSummaries.forEach((summary) => {
+        addTextBlock(
+          `${summary.player.name} - ${getRankDisplay(summary.player.rank, language)} - ${summary.kills} ${copy.kills} - ${summary.gameWins} ${copy.gamesWon} - ${summary.appearances} ${copy.appearances}`,
+          { size: 11, color: '#334155', gap: 6 },
+        );
+      });
 
-          pageContext.fillStyle = '#ffffff';
-          pageContext.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-          pageContext.drawImage(
-            canvas,
-            0,
-            renderedHeight,
-            canvas.width,
-            sliceHeight,
-            0,
-            0,
-            canvas.width,
-            sliceHeight,
+      addDivider();
+      addTextBlock(copy.tournamentRun, { size: 16, weight: 'bold', color: '#0f172a', gap: 12 });
+
+      tournament.rounds.forEach((round) => {
+        addTextBlock(`${round.name} - ${round.map}`, { size: 13, weight: 'bold', color: '#111827', gap: 8 });
+
+        round.matches.forEach((match) => {
+          const { team1Score, team2Score } = getDisplaySeriesScore(match);
+          const winnerName = match.winner?.name ?? 'TBD';
+          const team1Name = match.team1?.name ?? 'TBD';
+          const team2Name = match.team2?.name ?? 'TBD';
+
+          addTextBlock(
+            `Match ${match.matchIndex + 1}: ${team1Name} ${team1Score} - ${team2Score} ${team2Name} | ${copy.winner}: ${winnerName}`,
+            { size: 11, weight: 'bold', color: '#1f2937', gap: 4 },
           );
 
-          const imageData = pageCanvas.toDataURL('image/png');
-          const renderedImageHeight = (sliceHeight * usableWidth) / canvas.width;
-
-          if (pageIndex > 0) {
-            pdf.addPage();
+          const team1Players = match.team1?.players.map((player) => player.name).join(', ');
+          const team2Players = match.team2?.players.map((player) => player.name).join(', ');
+          if (team1Players) {
+            addTextBlock(`${team1Name}: ${team1Players}`, { size: 10, color: '#64748b', gap: 3 });
+          }
+          if (team2Players) {
+            addTextBlock(`${team2Name}: ${team2Players}`, { size: 10, color: '#64748b', gap: 4 });
           }
 
-          pdf.addImage(imageData, 'PNG', margin, margin, usableWidth, renderedImageHeight, undefined, 'FAST');
+          match.games?.forEach((game) => {
+            const modeLabel = getGameModeDisplay(game.mode, language);
+            const scoreLabel = formatGameScore(game);
+            addTextBlock(`Game ${game.gameNumber} - ${modeLabel} - ${game.map} - ${scoreLabel}`, {
+              size: 10,
+              color: '#475569',
+              gap: 3,
+            });
+          });
 
-          renderedHeight += sliceHeight;
-          pageIndex += 1;
-        }
+          cursorY += 6;
+        });
 
-        const fileName = `${tournament.winner.name.replace(/\s+/g, '_')}_tournament_${Date.now()}.pdf`;
-        pdf.save(fileName);
-      } finally {
-        restoreNormalizedStyles();
-      }
+        cursorY += 8;
+      });
+
+      addDivider();
+      addTextBlock(
+        `${copy.footer} | Generated ${new Date().toLocaleDateString(language === 'en' ? 'en-US' : 'it-IT')}`,
+        { size: 9, color: '#64748b', gap: 0 },
+      );
+
+      const fileName = `${tournament.winner.name.replace(/\s+/g, '_')}_tournament_${Date.now()}.pdf`;
+      const dataUri = pdf.output('datauristring');
+      const downloadLink = document.createElement('a');
+      downloadLink.href = dataUri;
+      downloadLink.download = fileName;
+      downloadLink.rel = 'noopener';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     } catch (error) {
       console.error('Error generating tournament PDF:', error);
       alert(copy.downloadPdfError);
@@ -602,90 +670,8 @@ export default function TournamentVictoryScreen({
       <div className="text-center text-xs font-semibold tracking-[0.08em] text-amber-100/80 sm:text-sm sm:tracking-[0.1em]">
         Made by MrMarozzo
       </div>
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-0 -z-10 w-[1280px] overflow-hidden bg-white opacity-0"
-        ref={exportDocumentRef}
-      >
-        <BracketPrintDocument tournament={tournament} language={language} />
-      </div>
     </div>
   );
-}
-
-async function waitForExportImages(container: HTMLElement) {
-  const images = Array.from(container.querySelectorAll('img'));
-  await Promise.all(
-    images.map(async (image) => {
-      if (image.complete && image.naturalWidth > 0) {
-        try {
-          await image.decode?.();
-        } catch {
-          return;
-        }
-        return;
-      }
-
-      await new Promise<void>((resolve) => {
-        const done = () => resolve();
-        image.addEventListener('load', done, { once: true });
-        image.addEventListener('error', done, { once: true });
-      });
-    }),
-  );
-}
-
-function normalizeExportColors(container: HTMLElement) {
-  const elements = [container, ...Array.from(container.querySelectorAll<HTMLElement>('*'))];
-  const cleanupEntries: Array<{ element: HTMLElement; cssText: string }> = [];
-  const colorProperties = [
-    'color',
-    'backgroundColor',
-    'borderTopColor',
-    'borderRightColor',
-    'borderBottomColor',
-    'borderLeftColor',
-    'outlineColor',
-    'textDecorationColor',
-    'caretColor',
-    'fill',
-    'stroke',
-  ] as const;
-
-  elements.forEach((element) => {
-    const computed = window.getComputedStyle(element);
-    const hadOklch =
-      computed.color.includes('oklch') ||
-      computed.backgroundColor.includes('oklch') ||
-      computed.borderTopColor.includes('oklch') ||
-      computed.boxShadow.includes('oklch') ||
-      computed.textShadow.includes('oklch');
-
-    if (!hadOklch) return;
-
-    cleanupEntries.push({ element, cssText: element.style.cssText });
-
-    colorProperties.forEach((property) => {
-      const value = computed[property];
-      if (value) {
-        element.style[property] = value;
-      }
-    });
-
-    if (computed.boxShadow && computed.boxShadow !== 'none') {
-      element.style.boxShadow = computed.boxShadow;
-    }
-
-    if (computed.textShadow && computed.textShadow !== 'none') {
-      element.style.textShadow = computed.textShadow;
-    }
-  });
-
-  return () => {
-    cleanupEntries.forEach(({ element, cssText }) => {
-      element.style.cssText = cssText;
-    });
-  };
 }
 
 function getWinnerStats(winner: Team, matches: Match[]): WinnerStats {

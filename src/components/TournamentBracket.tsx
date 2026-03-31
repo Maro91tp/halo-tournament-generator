@@ -35,6 +35,7 @@ interface TournamentBracketProps {
   currentSavedTournamentSavedAt: string | null;
   currentSavedTournamentTeamMode: string | null;
   currentSavedTournamentType: 'slayer' | 'ranked' | null;
+  saveFeedbackToken: string | null;
 }
 
 export default function TournamentBracket({
@@ -49,14 +50,14 @@ export default function TournamentBracket({
   currentSavedTournamentSavedAt,
   currentSavedTournamentTeamMode,
   currentSavedTournamentType,
+  saveFeedbackToken,
 }: TournamentBracketProps) {
   const language = useLanguage();
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [tournamentName, setTournamentName] = useState(currentSavedTournamentName ?? '');
   const [saveFeedbackVisible, setSaveFeedbackVisible] = useState(false);
-  const [pendingSaveFeedback, setPendingSaveFeedback] = useState(false);
-  const lastHandledSavedAtRef = useRef<string | null>(currentSavedTournamentSavedAt);
+  const lastHandledFeedbackTokenRef = useRef<string | null>(saveFeedbackToken);
   const copy = language === 'en'
     ? {
         title: 'Tournament bracket',
@@ -177,22 +178,15 @@ export default function TournamentBracket({
   }, [currentSavedTournamentName]);
 
   useEffect(() => {
-    if (!pendingSaveFeedback || !currentSavedTournamentSavedAt) return;
-    if (currentSavedTournamentSavedAt === lastHandledSavedAtRef.current) return;
+    if (!saveFeedbackToken) return;
+    if (saveFeedbackToken === lastHandledFeedbackTokenRef.current) return;
 
-    lastHandledSavedAtRef.current = currentSavedTournamentSavedAt;
-    setPendingSaveFeedback(false);
+    lastHandledFeedbackTokenRef.current = saveFeedbackToken;
     setSaveFeedbackVisible(true);
 
     const timeout = window.setTimeout(() => setSaveFeedbackVisible(false), 4500);
     return () => window.clearTimeout(timeout);
-  }, [currentSavedTournamentSavedAt, pendingSaveFeedback]);
-
-  useEffect(() => {
-    if (!pendingSaveFeedback) {
-      lastHandledSavedAtRef.current = currentSavedTournamentSavedAt;
-    }
-  }, [currentSavedTournamentSavedAt, pendingSaveFeedback]);
+  }, [saveFeedbackToken]);
 
   const handleOpenSaveDialog = () => {
     setTournamentName(currentSavedTournamentName ?? '');
@@ -202,7 +196,6 @@ export default function TournamentBracket({
   const handleSaveTournament = () => {
     const trimmedName = tournamentName.trim();
     if (!trimmedName) return;
-    setPendingSaveFeedback(true);
     setSaveFeedbackVisible(false);
     onSaveTournament(trimmedName);
     setSaveDialogOpen(false);
@@ -322,7 +315,7 @@ export default function TournamentBracket({
               <Button
                 onClick={handleOpenSaveDialog}
                 className={saveFeedbackVisible && currentSavedTournamentName
-                  ? 'min-h-10 w-full border-lime-300/70 bg-lime-400 text-slate-950 shadow-[0_0_24px_rgba(163,230,53,0.34)] hover:bg-lime-400 hover:shadow-[0_0_34px_rgba(163,230,53,0.42)] md:w-[138px]'
+                  ? 'min-h-10 w-full border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_24px_rgba(245,180,76,0.28)] hover:bg-primary hover:shadow-[0_0_34px_rgba(245,180,76,0.38)] md:w-[138px]'
                   : currentSavedTournamentName
                     ? 'min-h-10 w-full border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_28px_rgba(245,180,76,0.28)] hover:shadow-[0_0_38px_rgba(245,180,76,0.36)]'
                   : 'min-h-10 w-full border-white/18 bg-white/6 text-white hover:bg-white/10'}

@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Check, Gamepad2 } from 'lucide-react';
+import { Gamepad2 } from 'lucide-react';
 import type { Player, Team, Tournament, TournamentConfig, SeriesScore, Game } from '../types/tournament';
 import PlayerSetup from './PlayerSetup';
 import ConfigSetup from './ConfigSetup';
 import TeamSetup from './TeamSetup';
 import TournamentBracket from './TournamentBracket';
 import WelcomeScreen from './WelcomeScreen';
-import AutoSaveIndicator from './AutoSaveIndicator';
 import LanguageToggle from './LanguageToggle';
 import { LanguageProvider } from './LanguageContext';
 import { generateTournament, updateMatchResult } from '../lib/tournament-utils';
@@ -66,7 +65,7 @@ export default function TournamentApp() {
   const [savedTournament, setSavedTournament] = useState<ReturnType<typeof loadTournamentState>>(null);
   const [savedTournaments, setSavedTournaments] = useState<SavedTournamentRecord[]>([]);
   const [currentSavedTournamentId, setCurrentSavedTournamentId] = useState<string | null>(null);
-  const [lastSaved, setLastSaved] = useState<Date | undefined>();
+  const [manualSaveFeedbackToken, setManualSaveFeedbackToken] = useState<string | null>(null);
   const copy = language === 'it'
     ? {
         title: 'Halo Tournament Generator',
@@ -105,7 +104,6 @@ export default function TournamentApp() {
   useEffect(() => {
     if (step !== 'welcome') {
       saveTournamentState(step, players, config, teams, tournament);
-      setLastSaved(new Date());
     }
   }, [tournament, step, config, players, teams]);
 
@@ -145,6 +143,7 @@ export default function TournamentApp() {
     clearTournamentState();
     setSavedTournament(null);
     setCurrentSavedTournamentId(null);
+    setManualSaveFeedbackToken(null);
     setStep('players');
     setPlayers([]);
     setConfig(null);
@@ -155,6 +154,7 @@ export default function TournamentApp() {
   const handleResumeTournament = () => {
     const saved = loadTournamentState();
     if (saved) {
+      setManualSaveFeedbackToken(null);
       setPlayers(saved.players);
       setConfig(saved.config);
       setTeams(saved.teams);
@@ -167,6 +167,7 @@ export default function TournamentApp() {
     const saved = loadSavedTournamentRecord(id);
     if (!saved) return;
 
+    setManualSaveFeedbackToken(null);
     setPlayers(saved.players);
     setConfig(saved.config);
     setTeams(saved.teams);
@@ -176,16 +177,19 @@ export default function TournamentApp() {
   };
 
   const handlePlayersComplete = (completedPlayers: Player[]) => {
+    setManualSaveFeedbackToken(null);
     setPlayers(completedPlayers);
     setStep('config');
   };
 
   const handleConfigComplete = (completedConfig: TournamentConfig) => {
+    setManualSaveFeedbackToken(null);
     setConfig(completedConfig);
     setStep('teams');
   };
 
   const handleTeamsComplete = (completedTeams: Team[]) => {
+    setManualSaveFeedbackToken(null);
     setTeams(completedTeams);
 
     if (config) {
@@ -206,6 +210,7 @@ export default function TournamentApp() {
     clearTournamentState();
     setSavedTournament(null);
     setCurrentSavedTournamentId(null);
+    setManualSaveFeedbackToken(null);
     setSavedTournaments(listSavedTournamentRecords());
     setStep('welcome');
     setPlayers([]);
@@ -217,12 +222,14 @@ export default function TournamentApp() {
   const handleReplayTournament = () => {
     if (!config || teams.length === 0) return;
 
+    setManualSaveFeedbackToken(null);
     const replayTournament = generateTournament(teams, config, language);
     setTournament(replayTournament);
     setStep('bracket');
   };
 
   const handleBack = () => {
+    setManualSaveFeedbackToken(null);
     if (step === 'players') setStep('welcome');
     else if (step === 'config') setStep('players');
     else if (step === 'teams') setStep('config');
@@ -280,6 +287,7 @@ export default function TournamentApp() {
 
     setCurrentSavedTournamentId(savedRecord.id);
     setSavedTournaments(listSavedTournamentRecords());
+    setManualSaveFeedbackToken(`${savedRecord.id}:${savedRecord.savedAt}`);
   };
 
   const currentSavedTournament = currentSavedTournamentId
@@ -381,12 +389,11 @@ export default function TournamentApp() {
               currentSavedTournamentSavedAt={currentSavedTournament?.savedAt ?? null}
               currentSavedTournamentTeamMode={currentSavedTournament?.config?.teamMode ?? null}
               currentSavedTournamentType={currentSavedTournament?.config?.type ?? null}
+              saveFeedbackToken={manualSaveFeedbackToken}
             />
           )}
         </div>
         </div>
-
-        <AutoSaveIndicator lastSaved={lastSaved} />
         {import.meta.env.DEV && DEV_PREVIEW_ENABLED && (
           <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2 rounded-2xl border border-cyan-200/30 bg-black/35 p-3 backdrop-blur-md">
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">{copy.devPreview}</div>

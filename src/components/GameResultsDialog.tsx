@@ -37,7 +37,7 @@ export default function GameResultsDialog({
   const [games, setGames] = useState<Game[]>([]);
   const [error, setError] = useState('');
   const [currentGameIndex, setCurrentGameIndex] = useState(0);
-  const killLimit = config.killLimit ?? 50;
+  const killLimit = Math.max(2, config.killLimit ?? 50);
   const copy = language === 'en'
     ? {
         matchResults: 'Match results',
