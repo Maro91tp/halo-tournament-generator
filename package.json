@@ -2,7 +2,7 @@
   "name": "astro",
   "type": "module",
   "version": "2.0.0",
-  "versionBaseCommit": 33,
+  "versionBaseSha": "e9b8903e4571c2679b951699cc9f9eaee9a34b5c",
   "scripts": {
     "predev": "npx kill-port 3000 || true",
     "dev": "astro dev",

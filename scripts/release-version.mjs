@@ -19,15 +19,13 @@ const nextVersion =
     ? `${major + 1}.0.0`
     : `${major}.${minor + 1}.0`;
 
-const currentCommitCount = Number(
-  execSync('git rev-list --count HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
-    .toString()
-    .trim()
-);
+const currentHeadSha = execSync('git rev-parse HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
+  .toString()
+  .trim();
 
 packageJson.version = nextVersion;
-packageJson.versionBaseCommit = currentCommitCount;
+packageJson.versionBaseSha = currentHeadSha;
 
 writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
 
-console.log(`Updated version to ${nextVersion} with base commit ${currentCommitCount}`);
+console.log(`Updated version to ${nextVersion} with base sha ${currentHeadSha}`);

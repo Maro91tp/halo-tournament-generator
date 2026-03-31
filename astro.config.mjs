@@ -6,27 +6,58 @@ import { readFileSync } from 'node:fs';
 
 const packageJson = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 const baseVersion = packageJson.version ?? '2.0.0';
-const versionBaseCommit = Number(packageJson.versionBaseCommit ?? 0);
+const versionBaseSha = packageJson.versionBaseSha ?? '';
 
-function getGitCommitCount() {
+function getLocalPatchCount() {
+  if (!versionBaseSha) return 0;
+
   try {
     return Number(
-      execSync('git rev-list --count HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
+      execSync(`git rev-list ${versionBaseSha}..HEAD --count`, { stdio: ['ignore', 'pipe', 'ignore'] })
         .toString()
         .trim()
     );
   } catch {
-    return versionBaseCommit;
+    return 0;
   }
 }
 
-function buildAppVersion(version, currentCommitCount) {
+async function getRemotePatchCount() {
+  const owner = process.env.VERCEL_GIT_REPO_OWNER;
+  const repo = process.env.VERCEL_GIT_REPO_SLUG;
+  const headSha = process.env.VERCEL_GIT_COMMIT_SHA;
+
+  if (!owner || !repo || !headSha || !versionBaseSha) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/compare/${versionBaseSha}...${headSha}`, {
+      headers: {
+        Accept: 'application/vnd.github+json',
+        'User-Agent': `${owner}-${repo}-version-check`,
+      },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    return typeof data.total_commits === 'number' ? data.total_commits : null;
+  } catch {
+    return null;
+  }
+}
+
+function buildAppVersion(version, patchCount) {
   const [major = '2', minor = '0'] = String(version).split('.');
-  const patch = Math.max(0, currentCommitCount - versionBaseCommit);
+  const patch = Math.max(0, patchCount);
   return `${major}.${minor}.${patch}`;
 }
 
-const appVersion = buildAppVersion(baseVersion, getGitCommitCount());
+const remotePatchCount = await getRemotePatchCount();
+const appVersion = buildAppVersion(baseVersion, remotePatchCount ?? getLocalPatchCount());
 
 // Patches node_modules/vite/dist/client/client.mjs
 function patchViteErrorOverlay() {
