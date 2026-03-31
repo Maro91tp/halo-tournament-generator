@@ -24,6 +24,7 @@ export async function syncPlayerToSupabase(player: Player | StoredPlayer): Promi
 
   if (error) {
     console.error('Error syncing player to Supabase:', error);
+    throw error;
   }
 }
 

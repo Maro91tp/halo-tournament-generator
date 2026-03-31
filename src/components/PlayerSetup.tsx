@@ -21,6 +21,7 @@ interface PlayerSetupProps {
 }
 
 export default function PlayerSetup({ onComplete, onBack, initialPlayers }: PlayerSetupProps) {
+  type PlayerSaveState = 'idle' | 'saving' | 'saved' | 'error';
   const language = useLanguage();
   const [playerCount, setPlayerCount] = useState<number>(initialPlayers.length || 4);
   const [players, setPlayers] = useState<Player[]>(
@@ -34,10 +35,10 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
   const [comboboxOpen, setComboboxOpen] = useState<boolean>(false);
   const [allStoredPlayers, setAllStoredPlayers] = useState<StoredPlayer[]>([]);
   const [bundledPlayers, setBundledPlayers] = useState<StoredPlayer[]>([]);
-  const [saveSelections, setSaveSelections] = useState<boolean[]>(
+  const [playerSaveStates, setPlayerSaveStates] = useState<PlayerSaveState[]>(
     initialPlayers.length > 0
-      ? initialPlayers.map(() => false)
-      : Array.from({ length: 4 }, () => false)
+      ? initialPlayers.map(() => 'idle')
+      : Array.from({ length: 4 }, () => 'idle')
   );
   const nameInputRef = useRef<HTMLInputElement>(null);
 
@@ -70,13 +71,15 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         onyxHelp: 'Onyx score starts at 1500 and can increase freely.',
         playerAlreadySaved: 'Player already saved',
         localArchive: 'Local archive',
+        playerSaved: 'Player saved',
+        savingPlayer: 'Saving player...',
+        saveError: 'Save error',
+        saveErrorHelp: 'The local save worked, but Supabase did not confirm the sync. Check the browser console and your env/policies.',
         playerAlreadySavedHelp: 'This player is already stored in the browser local archive and will remain available next time too.',
         unsavedChanges: 'Unsaved changes',
         savePlayer: 'Save player',
         saveThisPlayer: 'Save this player',
         saveChanges: 'Save changes',
-        pendingPlayerSave: 'Player ready to save',
-        pendingChangesSave: 'Changes ready to save',
         saveNewPlayerHelp: 'If you want to find this player again on the next launch, save them in the browser local archive.',
         saveChangedPlayerHelp: 'You changed this player rank. Click the CTA to update the saved player too, otherwise the change will apply only to this tournament.',
         playerInfo: 'Player info',
@@ -117,13 +120,15 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         onyxHelp: 'Il punteggio Onice parte da 1500 e puo aumentare liberamente',
         playerAlreadySaved: 'Giocatore gia salvato',
         localArchive: 'Archivio locale',
+        playerSaved: 'Player salvato',
+        savingPlayer: 'Salvataggio...',
+        saveError: 'Errore salvataggio',
+        saveErrorHelp: 'Il salvataggio locale e andato a buon fine, ma Supabase non ha confermato la sincronizzazione. Controlla console del browser, env e policy.',
         playerAlreadySavedHelp: 'Questo player e gia presente nell archivio locale del browser e restera disponibile anche al prossimo avvio.',
         unsavedChanges: 'Modifiche non salvate',
         savePlayer: 'Salva player',
         saveThisPlayer: 'Salva questo giocatore',
         saveChanges: 'Salva modifiche',
-        pendingPlayerSave: 'Player pronto da salvare',
-        pendingChangesSave: 'Modifiche da salvare',
         saveNewPlayerHelp: 'Se vuoi ritrovare questo player anche al prossimo avvio, salvalo nell archivio locale del browser.',
         saveChangedPlayerHelp: 'Hai cambiato il rank di questo player. Clicca la CTA per aggiornare anche il player salvato, altrimenti la modifica varra solo per questo torneo.',
         playerInfo: 'Informazioni giocatore',
@@ -178,8 +183,8 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
       return createEmptyPlayer(i);
     });
     setPlayers(newPlayers);
-    setSaveSelections((current) =>
-      Array.from({ length: count }, (_, i) => current[i] ?? false)
+    setPlayerSaveStates((current) =>
+      Array.from({ length: count }, (_, i) => current[i] ?? 'idle')
     );
 
     if (selectedPlayerIndex >= count) {
@@ -196,6 +201,11 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     }
 
     setPlayers(newPlayers);
+    setPlayerSaveStates((current) => {
+      const next = [...current];
+      next[index] = 'idle';
+      return next;
+    });
   };
 
   const updateRank = (index: number, field: 'tier' | 'level', value: string | number) => {
@@ -212,6 +222,11 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     newPlayers[index].rank = currentRank;
     newPlayers[index].strengthValue = calculateStrengthValue(currentRank);
     setPlayers(newPlayers);
+    setPlayerSaveStates((current) => {
+      const next = [...current];
+      next[index] = 'idle';
+      return next;
+    });
   };
 
   const handleNameChange = (index: number, name: string) => {
@@ -245,7 +260,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     }));
 
     setPlayers(randomizedPlayers);
-    setSaveSelections(Array.from({ length: playerCount }, () => false));
+    setPlayerSaveStates(Array.from({ length: playerCount }, () => 'idle'));
     setSelectedPlayerIndex(0);
     setSuggestions([]);
     setShowSuggestions(false);
@@ -306,11 +321,32 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         !!alreadyStored &&
         (alreadyStored.rank.tier !== player.rank.tier || alreadyStored.rank.level !== player.rank.level);
 
-      if (saveSelections[index] || (alreadyStored && !hasStoredChanges)) {
-        savePlayer(player);
+      if (alreadyStored && !hasStoredChanges) {
+        void savePlayer(player);
       }
     });
     onComplete(players);
+  };
+
+  const handleSaveCurrentPlayer = async () => {
+    if (!currentPlayer.name.trim()) {
+      alert(copy.missingNames);
+      return;
+    }
+
+    setPlayerSaveStates((current) => {
+      const next = [...current];
+      next[selectedPlayerIndex] = 'saving';
+      return next;
+    });
+
+    const saved = await savePlayer(currentPlayer);
+    setAllStoredPlayers(getStoredPlayers());
+    setPlayerSaveStates((current) => {
+      const next = [...current];
+      next[selectedPlayerIndex] = saved ? 'saved' : 'error';
+      return next;
+    });
   };
 
   const handleOpenHaloDataHive = () => {
@@ -353,6 +389,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     !!currentPlayerAlreadyStored &&
     (currentPlayerAlreadyStored.rank.tier !== currentPlayer.rank.tier ||
       currentPlayerAlreadyStored.rank.level !== currentPlayer.rank.level);
+  const currentPlayerSaveState = playerSaveStates[selectedPlayerIndex] ?? 'idle';
   const completedPlayersCount = players.filter(isPlayerComplete).length;
   const allPlayersComplete = completedPlayersCount === players.length;
 
@@ -666,8 +703,8 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                     </div>
                   </div>
                   <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/6 px-3 py-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] font-semibold text-white/82">
-                    <CircleCheckBig className="h-4 w-4 flex-shrink-0 text-primary" />
-                    <span>{copy.localArchive}</span>
+                    <CircleCheckBig className="h-4 w-4 flex-shrink-0 text-emerald-300" />
+                    <span>{copy.playerSaved}</span>
                   </div>
                 </div>
               ) : (
@@ -684,35 +721,41 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                   </div>
                   <Button
                     type="button"
-                    variant={saveSelections[selectedPlayerIndex] ? 'default' : 'outline'}
-                    onClick={() =>
-                      setSaveSelections((current) => {
-                        const next = [...current];
-                        next[selectedPlayerIndex] = !next[selectedPlayerIndex];
-                        return next;
-                      })
-                    }
+                    variant={currentPlayerSaveState === 'saved' ? 'default' : 'outline'}
+                    onClick={() => void handleSaveCurrentPlayer()}
+                    disabled={currentPlayerSaveState === 'saving' || !currentPlayer.name.trim()}
                     className={
-                      currentPlayerHasStoredChanges
-                        ? saveSelections[selectedPlayerIndex]
-                          ? 'min-h-11 w-full border-amber-200/70 bg-primary text-primary-foreground shadow-[0_0_28px_rgba(245,180,76,0.32)] hover:shadow-[0_0_36px_rgba(245,180,76,0.42)] sm:w-auto sm:self-end'
-                          : 'min-h-11 w-full border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_24px_rgba(245,180,76,0.28)] hover:shadow-[0_0_34px_rgba(245,180,76,0.4)] sm:w-auto sm:self-end'
-                        : saveSelections[selectedPlayerIndex]
-                          ? 'min-h-11 w-full sm:w-auto sm:self-end'
-                          : 'min-h-11 w-full border-white/18 bg-white/6 text-white hover:bg-white/10 sm:w-auto sm:self-end'
+                      currentPlayerSaveState === 'saved'
+                        ? 'min-h-11 w-full border-emerald-300/55 bg-emerald-500 text-white shadow-[0_0_28px_rgba(16,185,129,0.28)] hover:bg-emerald-500 hover:shadow-[0_0_36px_rgba(16,185,129,0.38)] sm:w-auto sm:self-end'
+                        : currentPlayerSaveState === 'error'
+                          ? 'min-h-11 w-full border-red-300/55 bg-red-500/18 text-red-50 hover:bg-red-500/24 sm:w-auto sm:self-end'
+                          : currentPlayerHasStoredChanges
+                            ? 'min-h-11 w-full border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_24px_rgba(245,180,76,0.28)] hover:shadow-[0_0_34px_rgba(245,180,76,0.4)] sm:w-auto sm:self-end'
+                            : 'min-h-11 w-full border-white/18 bg-white/6 text-white hover:bg-white/10 sm:w-auto sm:self-end'
                     }
                   >
-                    {saveSelections[selectedPlayerIndex]
-                      ? currentPlayerHasStoredChanges
-                        ? copy.pendingChangesSave
-                        : copy.pendingPlayerSave
-                      : currentPlayerHasStoredChanges
+                    {currentPlayerSaveState === 'saved' ? (
+                      <>
+                        <CircleCheckBig className="h-4 w-4 text-white" />
+                        {copy.playerSaved}
+                      </>
+                    ) : currentPlayerSaveState === 'saving' ? (
+                      copy.savingPlayer
+                    ) : currentPlayerSaveState === 'error' ? (
+                      copy.saveError
+                    ) : currentPlayerHasStoredChanges
                         ? copy.saveChanges
                         : copy.savePlayer}
                   </Button>
                 </div>
               )}
             </div>
+
+            {currentPlayerSaveState === 'error' && (
+              <div className="rounded-[16px] border border-red-300/30 bg-red-500/10 px-3 py-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-red-50/90">
+                {copy.saveErrorHelp}
+              </div>
+            )}
 
             <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
               <h4 className="mb-2 flex items-center gap-2 text-[clamp(0.82rem,0.78rem+0.18vw,1rem)] font-semibold sm:text-base">

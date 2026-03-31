@@ -2,6 +2,7 @@ import { createElement, isValidElement, useEffect, useMemo, useState, type Compo
 import {
   ArrowLeft,
   ChevronRight,
+  CircleCheckBig,
   RefreshCcw,
   Save,
   Swords,
@@ -152,7 +153,11 @@ export default function TournamentBracket({
 
   const saveStatusLabel = currentSavedTournamentStatus === 'completed' ? copy.completedSave : copy.activeSave;
   const typeLabel = currentSavedTournamentType === 'slayer' ? copy.slayer : copy.ranked;
-  const saveButtonLabel = currentSavedTournamentName ? copy.updateTournament : copy.saveTournament;
+  const saveButtonLabel = saveFeedbackVisible && currentSavedTournamentName
+    ? copy.saveUpdated
+    : currentSavedTournamentName
+      ? copy.updateTournament
+      : copy.saveTournament;
   const formatLabel = getMatchDurationDisplay(tournament.config.matchDuration, language);
   const formatSavedAt = (value: string | null) =>
     value
@@ -302,12 +307,18 @@ export default function TournamentBracket({
 
               <Button
                 onClick={handleOpenSaveDialog}
-                className={currentSavedTournamentName
-                  ? 'min-h-10 w-full border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_28px_rgba(245,180,76,0.28)] hover:shadow-[0_0_38px_rgba(245,180,76,0.36)]'
+                className={saveFeedbackVisible && currentSavedTournamentName
+                  ? 'min-h-10 w-full border-emerald-300/55 bg-emerald-500 text-white shadow-[0_0_28px_rgba(16,185,129,0.28)] hover:bg-emerald-500 hover:shadow-[0_0_38px_rgba(16,185,129,0.36)]'
+                  : currentSavedTournamentName
+                    ? 'min-h-10 w-full border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_28px_rgba(245,180,76,0.28)] hover:shadow-[0_0_38px_rgba(245,180,76,0.36)]'
                   : 'min-h-10 w-full border-white/18 bg-white/6 text-white hover:bg-white/10'}
-                variant={currentSavedTournamentName ? 'default' : 'outline'}
+                variant={saveFeedbackVisible || currentSavedTournamentName ? 'default' : 'outline'}
               >
-                <Save className="h-4 w-4" />
+                {saveFeedbackVisible && currentSavedTournamentName ? (
+                  <CircleCheckBig className="h-4 w-4" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
                 {saveButtonLabel}
               </Button>
             </div>

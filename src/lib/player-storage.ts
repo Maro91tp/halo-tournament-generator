@@ -105,8 +105,8 @@ export function getStoredPlayers(): StoredPlayer[] {
 /**
  * Save or update a player in localStorage
  */
-export function savePlayer(player: Player): void {
-  if (typeof window === 'undefined') return;
+export async function savePlayer(player: Player): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
   
   try {
     const stored = getStoredPlayers();
@@ -132,9 +132,11 @@ export function savePlayer(player: Player): void {
     }
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
-    void syncPlayerToSupabase(player);
+    await syncPlayerToSupabase(player);
+    return true;
   } catch (error) {
     console.error('Error saving player:', error);
+    return false;
   }
 }
 
