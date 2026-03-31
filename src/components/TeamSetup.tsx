@@ -272,7 +272,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
             {availablePlayers.map((player) => (
               <div
                 key={player.id}
-                className="glass-card flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between"
+                className="glass-card flex flex-col gap-2.5 p-2.5 sm:flex-row sm:items-center sm:justify-between sm:p-3"
               >
                 <div className="min-w-0">
                   <div className="truncate text-[clamp(0.84rem,0.8rem+0.18vw,1rem)] font-medium sm:text-base">{player.name}</div>
@@ -316,7 +316,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
             {availablePlayers.map((player) => (
               <div
                 key={player.id}
-                className="glass-card rounded-[16px] p-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] sm:text-sm"
+                className="glass-card rounded-[16px] p-2 text-[clamp(0.7rem,0.68rem+0.15vw,0.84rem)] sm:text-sm"
               >
                 <div className="font-medium">{player.name}</div>
                 <div className="inline-flex items-center gap-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-muted-foreground">
@@ -360,7 +360,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                 {team.players.map((player, playerIndex) => (
                   <div
                     key={player.id}
-                    className="flex items-start justify-between gap-3 rounded-[18px] border border-amber-200/20 bg-white/6 px-3 py-3 backdrop-blur-md sm:items-center sm:rounded-[22px] sm:px-4"
+                    className="flex items-start justify-between gap-3 rounded-[16px] border border-amber-200/20 bg-white/6 px-3 py-2.5 backdrop-blur-md sm:items-center sm:rounded-[22px] sm:px-4 sm:py-3"
                   >
                     <div className="min-w-0 flex-1 pr-2">
                       <div className="truncate text-[15px] font-semibold leading-tight text-white">{player.name}</div>
@@ -399,7 +399,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
                       <button
                         key={player.id}
                         onClick={() => addPlayerToTeam(teamIndex, player)}
-                        className="w-full rounded-[16px] border border-white/8 bg-white/5 px-4 py-3 text-left text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] transition-colors hover:bg-white/10"
+                        className="w-full rounded-[16px] border border-white/8 bg-white/5 px-3 py-2.5 text-left text-[clamp(0.78rem,0.74rem+0.18vw,0.9rem)] transition-colors hover:bg-white/10 sm:px-4 sm:py-3"
                       >
                         <div className="text-[15px] font-semibold leading-tight text-white">{player.name}</div>
                         <div className="mt-1 inline-flex items-center gap-2 text-[11px] leading-tight text-white/65">

@@ -100,7 +100,7 @@ export default function WelcomeScreen({
           backgroundAttachment: 'fixed',
         }}
       />
-      <div className="absolute inset-0 z-0 bg-slate-950/18" />
+      <div className="absolute inset-0 z-0 bg-slate-950/28" />
 
       <div className="glass-card relative z-10 w-full max-w-5xl">
         <div className="text-center">
@@ -193,7 +193,7 @@ export default function WelcomeScreen({
           </p>
         </div>
 
-        <div className="mt-6 rounded-[18px] border border-white/10 bg-black/10 p-3.5 sm:mt-8 sm:rounded-[24px] sm:p-5">
+        <div className="mt-6 rounded-[18px] border border-white/12 bg-[linear-gradient(180deg,rgba(7,18,52,0.68)_0%,rgba(8,15,42,0.8)_100%)] p-3.5 shadow-[0_0_22px_rgba(8,18,52,0.18)] sm:mt-8 sm:rounded-[24px] sm:p-5">
           <div className="mb-4 flex flex-col gap-1 sm:mb-5">
             <h2 className="m-0 text-[clamp(0.98rem,0.9rem+0.45vw,1.15rem)] font-bold text-white">{copy.libraryTitle}</h2>
             <p className="text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/65 sm:text-sm">
@@ -202,7 +202,7 @@ export default function WelcomeScreen({
           </div>
 
           {savedTournaments.length === 0 ? (
-            <div className="rounded-[16px] border border-dashed border-white/12 bg-white/[0.03] px-4 py-5 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/60 sm:text-sm">
+            <div className="rounded-[16px] border border-dashed border-white/14 bg-[rgba(255,255,255,0.05)] px-4 py-5 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/60 sm:text-sm">
               {copy.noSavedTournaments}
             </div>
           ) : (
@@ -253,10 +253,10 @@ export default function WelcomeScreen({
         <div
           className="mt-6 rounded-[18px] border border-amber-200/20 px-3 py-3 sm:mt-8 sm:rounded-[24px] sm:px-5 sm:py-5"
           style={{
-            background: 'linear-gradient(180deg, rgba(28, 78, 150, 0.34) 0%, rgba(15, 48, 104, 0.52) 100%)',
+            background: 'linear-gradient(180deg, rgba(28, 78, 150, 0.56) 0%, rgba(15, 48, 104, 0.76) 100%)',
             backdropFilter: 'blur(12px)',
             WebkitBackdropFilter: 'blur(12px)',
-            boxShadow: '0 0 22px rgba(100, 180, 255, 0.14), inset 0 0.5px 0 rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 0 22px rgba(100, 180, 255, 0.16), inset 0 0.5px 0 rgba(255, 255, 255, 0.1)',
           }}
         >
           <div className="mb-3 text-center sm:mb-4">
@@ -279,7 +279,7 @@ export default function WelcomeScreen({
             {featureItems.map((item) => (
               <div
                 key={item.title}
-                className="flex items-center gap-2.5 rounded-[16px] border border-cyan-200/18 bg-[linear-gradient(180deg,rgba(255,255,255,0.09)_0%,rgba(255,255,255,0.04)_100%)] px-3 py-2.5 text-left shadow-[0_0_14px_rgba(100,180,255,0.08)] sm:gap-3 sm:rounded-[18px] sm:px-4 sm:py-3"
+                className="flex items-center gap-2.5 rounded-[16px] border border-cyan-200/24 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.08)_100%)] px-3 py-2.5 text-left shadow-[0_0_14px_rgba(100,180,255,0.1)] sm:gap-3 sm:rounded-[18px] sm:px-4 sm:py-3"
               >
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-300/28 bg-cyan-300/14 sm:h-9 sm:w-9">
                   <item.Icon className="h-[15px] w-[15px] text-[#64B4FF] sm:h-5 sm:w-5" />
@@ -363,14 +363,14 @@ function SavedTournamentRow({
     : 'Ranked';
 
   return (
-    <div className="rounded-[18px] border border-white/10 bg-white/[0.03] p-3.5 sm:rounded-[20px] sm:p-4">
+    <div className="rounded-[16px] border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.04)_100%)] p-3 shadow-[0_0_14px_rgba(6,16,42,0.12)] sm:rounded-[20px] sm:p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <div className="truncate text-[clamp(0.9rem,0.84rem+0.24vw,1.02rem)] font-semibold text-white">
               {tournament.name}
             </div>
-            <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${
+            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] sm:px-2.5 sm:py-1 sm:text-[10px] ${
               tournament.status === 'completed'
                 ? 'border border-amber-200/25 bg-amber-200/10 text-amber-50'
                 : 'border border-cyan-200/25 bg-cyan-300/10 text-cyan-100'
@@ -378,7 +378,7 @@ function SavedTournamentRow({
               {statusLabel as string}
             </span>
           </div>
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/62 sm:text-sm">
+          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[clamp(0.7rem,0.68rem+0.15vw,0.84rem)] text-white/62 sm:text-sm">
             <span>{copy.tournamentType as string}: {typeLabel} - {tournament.config?.teamMode ?? '-'}</span>
             <span>{copy.savedOn as string}: {formatDate(tournament.savedAt)}</span>
             {tournament.status === 'completed' && tournament.expiresAt && (

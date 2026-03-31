@@ -1,4 +1,4 @@
-import { createElement, isValidElement, useEffect, useMemo, useState, type ComponentType, type CSSProperties, type ReactNode } from 'react';
+import { createElement, isValidElement, useEffect, useMemo, useRef, useState, type ComponentType, type CSSProperties, type ReactNode } from 'react';
 import {
   ArrowLeft,
   Check,
@@ -55,7 +55,8 @@ export default function TournamentBracket({
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [tournamentName, setTournamentName] = useState(currentSavedTournamentName ?? '');
   const [saveFeedbackVisible, setSaveFeedbackVisible] = useState(false);
-  const [hasSaveInteraction, setHasSaveInteraction] = useState(false);
+  const [pendingSaveFeedback, setPendingSaveFeedback] = useState(false);
+  const lastHandledSavedAtRef = useRef<string | null>(currentSavedTournamentSavedAt);
   const copy = language === 'en'
     ? {
         title: 'Tournament bracket',
@@ -101,7 +102,7 @@ export default function TournamentBracket({
         tournamentType: 'Type',
         updateTournament: 'Update tournament status',
         saveInfo: 'Name, date, format and tournament type',
-        noNamedSave: 'No named save yet',
+        noNamedSave: 'Not saved',
         noNamedSaveHelp: 'Save this bracket with a clear name so you can load it again from the home screen.',
       }
     : {
@@ -148,7 +149,7 @@ export default function TournamentBracket({
         tournamentType: 'Tipo',
         updateTournament: 'Aggiorna stato torneo',
         saveInfo: 'Nome, data, formato e tipo torneo',
-        noNamedSave: 'Nessun salvataggio nominato',
+        noNamedSave: 'Non salvato',
         noNamedSaveHelp: 'Salva questo bracket con un nome chiaro cosi lo puoi ricaricare facilmente dalla home.',
       };
 
@@ -176,11 +177,22 @@ export default function TournamentBracket({
   }, [currentSavedTournamentName]);
 
   useEffect(() => {
-    if (!hasSaveInteraction || !currentSavedTournamentSavedAt) return;
+    if (!pendingSaveFeedback || !currentSavedTournamentSavedAt) return;
+    if (currentSavedTournamentSavedAt === lastHandledSavedAtRef.current) return;
+
+    lastHandledSavedAtRef.current = currentSavedTournamentSavedAt;
+    setPendingSaveFeedback(false);
     setSaveFeedbackVisible(true);
+
     const timeout = window.setTimeout(() => setSaveFeedbackVisible(false), 4500);
     return () => window.clearTimeout(timeout);
-  }, [currentSavedTournamentSavedAt, hasSaveInteraction]);
+  }, [currentSavedTournamentSavedAt, pendingSaveFeedback]);
+
+  useEffect(() => {
+    if (!pendingSaveFeedback) {
+      lastHandledSavedAtRef.current = currentSavedTournamentSavedAt;
+    }
+  }, [currentSavedTournamentSavedAt, pendingSaveFeedback]);
 
   const handleOpenSaveDialog = () => {
     setTournamentName(currentSavedTournamentName ?? '');
@@ -190,7 +202,8 @@ export default function TournamentBracket({
   const handleSaveTournament = () => {
     const trimmedName = tournamentName.trim();
     if (!trimmedName) return;
-    setHasSaveInteraction(true);
+    setPendingSaveFeedback(true);
+    setSaveFeedbackVisible(false);
     onSaveTournament(trimmedName);
     setSaveDialogOpen(false);
   };
@@ -309,7 +322,7 @@ export default function TournamentBracket({
               <Button
                 onClick={handleOpenSaveDialog}
                 className={saveFeedbackVisible && currentSavedTournamentName
-                  ? 'min-h-10 w-full border-lime-300/70 bg-lime-400 text-slate-950 shadow-[0_0_24px_rgba(163,230,53,0.34)] hover:bg-lime-400 hover:shadow-[0_0_34px_rgba(163,230,53,0.42)] sm:w-[138px]'
+                  ? 'min-h-10 w-full border-lime-300/70 bg-lime-400 text-slate-950 shadow-[0_0_24px_rgba(163,230,53,0.34)] hover:bg-lime-400 hover:shadow-[0_0_34px_rgba(163,230,53,0.42)] md:w-[138px]'
                   : currentSavedTournamentName
                     ? 'min-h-10 w-full border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_28px_rgba(245,180,76,0.28)] hover:shadow-[0_0_38px_rgba(245,180,76,0.36)]'
                   : 'min-h-10 w-full border-white/18 bg-white/6 text-white hover:bg-white/10'}
@@ -424,7 +437,7 @@ export default function TournamentBracket({
               {copy.activeBracketHelp}
             </p>
           </div>
-          <div className="rounded-full border border-white/12 bg-white/6 px-3 py-1.5 text-xs text-white/78 sm:px-4 sm:py-2 sm:text-sm">
+          <div className="rounded-full border border-white/12 bg-white/6 px-2.5 py-1 text-[11px] text-white/78 sm:px-4 sm:py-2 sm:text-sm">
             {playableMatches.length > 0 ? `${playableMatches.length} ${copy.availableMatches}` : copy.waitingResults}
           </div>
         </div>
@@ -565,7 +578,7 @@ function Pill({
     : createElement(icon as ComponentType<{ className?: string }>, { className: 'h-3.5 w-3.5 text-primary' });
 
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-black/10 px-2.5 py-1 text-[11px] font-medium text-white/86 sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-xs">
+    <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-black/10 px-2 py-0.5 text-[10px] font-medium text-white/86 sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-xs">
       {iconNode}
       <span>{text}</span>
     </span>
@@ -700,7 +713,7 @@ function SeriesPreview({
         <div
           key={`${game.gameNumber}-${game.map}-${game.mode}`}
           className={cn(
-            'min-w-[108px] rounded-[14px] border border-white/8 bg-black/8 px-3 py-2.5 text-center',
+            'min-w-[94px] rounded-[14px] border border-white/8 bg-black/8 px-2.5 py-2 text-center sm:min-w-[108px] sm:px-3 sm:py-2.5',
             compact ? 'shrink-0' : ''
           )}
         >

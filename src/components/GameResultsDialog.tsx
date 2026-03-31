@@ -354,7 +354,7 @@ export default function GameResultsDialog({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className="!top-1.5 !w-[calc(100vw-0.5rem)] !max-w-[calc(100vw-0.5rem)] !translate-y-0 overflow-y-auto overscroll-contain border-amber-300/55 bg-[linear-gradient(180deg,rgba(255,249,238,0.98)_0%,rgba(248,238,218,0.96)_100%)] p-2.5 sm:!top-4 sm:!w-full sm:!max-w-[calc(100vw-1.5rem)] sm:p-6 shadow-[0_20px_70px_rgba(176,120,20,0.18)]"
+        className="!top-1.5 !w-[calc(100vw-0.5rem)] !max-w-[calc(100vw-0.5rem)] !translate-y-0 overflow-y-auto overscroll-contain rounded-[28px] border-amber-300/55 bg-[linear-gradient(180deg,rgba(255,249,238,0.98)_0%,rgba(248,238,218,0.96)_100%)] p-2 sm:!top-4 sm:!w-full sm:!max-w-[calc(100vw-1.5rem)] sm:rounded-[32px] sm:p-6 shadow-[0_20px_70px_rgba(176,120,20,0.18)]"
         style={{
           maxHeight: 'calc(100dvh - 0.75rem)',
         }}
@@ -369,7 +369,7 @@ export default function GameResultsDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="rounded-[22px] border border-amber-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(255,248,236,0.78)_100%)] p-3 sm:rounded-[30px] sm:p-6 md:p-8 shadow-[0_16px_44px_rgba(176,120,20,0.12)] backdrop-blur-sm">
+        <div className="rounded-[24px] border border-amber-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(255,248,236,0.78)_100%)] p-2.5 sm:rounded-[30px] sm:p-6 md:p-8 shadow-[0_16px_44px_rgba(176,120,20,0.12)] backdrop-blur-sm">
           <div className="mb-5 sm:mb-8">
             <div className="grid items-center gap-3 sm:gap-4 md:grid-cols-[1fr_auto_1fr]">
               <TeamSideSummary team={match.team1} wins={team1Wins} align="right" gamesWonLabel={copy.gamesWon} />
@@ -588,7 +588,7 @@ function GameSection({
   const team2Progress = game.mode === 'slayer' ? Math.min(100, Math.round((team2Current / killLimit) * 100)) : undefined;
 
   return (
-    <section className="rounded-[20px] border border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(239,247,255,0.76)_100%)] p-3 sm:rounded-[28px] sm:p-5 md:p-6 shadow-[0_10px_32px_rgba(90,150,220,0.08)]">
+    <section className="rounded-[20px] border border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(239,247,255,0.76)_100%)] p-2.5 sm:rounded-[28px] sm:p-5 md:p-6 shadow-[0_10px_32px_rgba(90,150,220,0.08)]">
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3 sm:mb-6">
         <div className="space-y-3">
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 sm:text-sm sm:tracking-[0.18em]">Game {game.gameNumber}</div>
@@ -634,7 +634,7 @@ function GameSection({
       </div>
 
       {game.mode === 'slayer' && slayerScore && (
-        <div className="grid gap-4 sm:gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)_30px_minmax(0,1fr)] items-start gap-2.5 sm:gap-5 md:grid-cols-[minmax(0,1fr)_40px_minmax(0,1fr)]">
           <TeamEditor
             team={team1}
             values={slayerScore.team1PlayerKills}
@@ -646,6 +646,9 @@ function GameSection({
               onAdjustSlayerKills(gameIndex, 'team1PlayerKills', playerId, nextValue)
             }
           />
+          <div className="flex h-full items-start justify-center pt-8 sm:pt-10">
+            <div className="text-center text-[10px] font-black uppercase leading-none text-slate-600 sm:text-xs">VS</div>
+          </div>
           <TeamEditor
             team={team2}
             values={slayerScore.team2PlayerKills}
@@ -661,7 +664,7 @@ function GameSection({
       )}
 
       {(game.mode === 'ctf' || game.mode === 'koth') && (
-        <div className="grid gap-4 sm:gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)_30px_minmax(0,1fr)] items-start gap-2.5 sm:gap-5 md:grid-cols-[minmax(0,1fr)_40px_minmax(0,1fr)]">
           <ObjectiveEditor
             team={team1}
             value={objectiveScore?.team1Score ?? 0}
@@ -669,6 +672,9 @@ function GameSection({
             isLeading={leader === 1}
             onChange={(nextValue) => onAdjustObjectiveScore(gameIndex, 'team1Score', nextValue)}
           />
+          <div className="flex h-full items-start justify-center pt-8 sm:pt-10">
+            <div className="text-center text-[10px] font-black uppercase leading-none text-slate-600 sm:text-xs">VS</div>
+          </div>
           <ObjectiveEditor
             team={team2}
             value={objectiveScore?.team2Score ?? 0}
@@ -680,7 +686,7 @@ function GameSection({
       )}
 
       {game.mode === 'oddball' && (
-        <div className="grid gap-4 sm:gap-5 md:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)_30px_minmax(0,1fr)] items-start gap-2.5 sm:gap-5 md:grid-cols-[minmax(0,1fr)_40px_minmax(0,1fr)]">
           <ObjectiveEditor
             team={team1}
             value={oddballRounds?.team1Rounds ?? 0}
@@ -689,6 +695,9 @@ function GameSection({
             max={2}
             onChange={(nextValue) => onAdjustOddballScore(gameIndex, 'team1Rounds', nextValue)}
           />
+          <div className="flex h-full items-start justify-center pt-8 sm:pt-10">
+            <div className="text-center text-[10px] font-black uppercase leading-none text-slate-600 sm:text-xs">VS</div>
+          </div>
           <ObjectiveEditor
             team={team2}
             value={oddballRounds?.team2Rounds ?? 0}
@@ -741,7 +750,7 @@ function TeamEditor({
 
   return (
     <div
-      className={`rounded-[18px] border p-3 sm:rounded-[22px] sm:p-4 ${
+      className={`min-w-0 rounded-[20px] border p-2 sm:rounded-[22px] sm:p-4 ${
         isLeading
           ? 'border-amber-400/55 bg-[linear-gradient(180deg,rgba(245,180,76,0.18)_0%,rgba(245,180,76,0.08)_100%)]'
           : 'border-amber-100/80 bg-white/72'
@@ -769,16 +778,16 @@ function TeamEditor({
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2.5 sm:space-y-3">
         {team.players.map((player) => (
           <div
             key={player.id}
-            className="grid gap-3 rounded-[18px] border border-amber-100/80 bg-white px-3 py-3 shadow-sm transition hover:border-amber-300/80 hover:shadow-[0_8px_18px_rgba(245,180,76,0.14)] sm:grid-cols-[minmax(160px,1fr)_auto] sm:items-center sm:px-4 sm:py-3.5"
+            className="flex flex-col items-start gap-2 rounded-[16px] border border-amber-100/80 bg-white px-2.5 py-2.5 shadow-sm transition hover:border-amber-300/80 hover:shadow-[0_8px_18px_rgba(245,180,76,0.14)] sm:grid sm:grid-cols-[minmax(160px,1fr)_auto] sm:items-center sm:gap-3 sm:rounded-[18px] sm:px-4 sm:py-3.5"
           >
             <div className="min-w-0 pr-2">
-              <div className="text-[clamp(0.84rem,0.8rem+0.18vw,1rem)] font-semibold leading-tight text-slate-950 sm:text-base">{player.name}</div>
+              <div className="truncate text-[0.88rem] font-semibold leading-tight text-slate-950 sm:text-base">{player.name}</div>
             </div>
-            <div className="flex justify-start sm:justify-end">
+            <div className="flex w-full justify-start sm:w-auto sm:justify-end">
               <Stepper
                 value={values[player.id] ?? 0}
                 max={Math.max(0, target - (total - (values[player.id] ?? 0)))}
@@ -810,7 +819,7 @@ function ObjectiveEditor({
 }) {
   return (
     <div
-      className={`rounded-[18px] border p-3.5 sm:rounded-[22px] sm:p-5 ${
+      className={`min-w-0 rounded-[18px] border p-2.5 sm:rounded-[22px] sm:p-5 ${
         isLeading
           ? 'border-amber-400/55 bg-[linear-gradient(180deg,rgba(245,180,76,0.18)_0%,rgba(245,180,76,0.08)_100%)]'
           : 'border-amber-100/80 bg-white/72'

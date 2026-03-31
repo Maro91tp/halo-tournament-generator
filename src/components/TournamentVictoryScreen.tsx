@@ -1,12 +1,14 @@
-import { useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, Crown, Download, Medal, RefreshCcw, Sparkles, Swords, Trophy } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import type { Game, Match, Player, Team, Tournament } from '../types/tournament';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { getGameModeDisplay, getMatchDurationDisplay } from '../lib/tournament-utils';
 import { RankIcon } from './TournamentIcons';
 import { useLanguage } from './LanguageContext';
-import BracketPrintView from './BraxkerPrintView';
+import { BracketPrintDocument } from './BraxkerPrintView';
 
 interface TournamentVictoryScreenProps {
   tournament: Tournament;
@@ -38,7 +40,8 @@ export default function TournamentVictoryScreen({
   onReset,
 }: TournamentVictoryScreenProps) {
   const language = useLanguage();
-  const [printViewOpen, setPrintViewOpen] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const exportDocumentRef = useRef<HTMLDivElement | null>(null);
   if (!tournament.winner) return null;
   const copy = language === 'en'
     ? {
@@ -71,7 +74,9 @@ export default function TournamentVictoryScreen({
         gameDetails: 'Game details',
         playerResults: 'Player results',
         downloadPdf: 'Download tournament PDF',
-        downloadPdfHelp: 'Open the print view to save the full tournament recap as PDF.',
+        downloadPdfHelp: 'Download the full tournament recap directly as a PDF file.',
+        exportingPdf: 'Generating PDF...',
+        downloadPdfError: 'Unable to generate the PDF right now.',
       }
     : {
         champion: 'Campione del torneo',
@@ -103,7 +108,9 @@ export default function TournamentVictoryScreen({
         gameDetails: 'Dettaglio game',
         playerResults: 'Risultati giocatori',
         downloadPdf: 'Scarica PDF risultati',
-        downloadPdfHelp: 'Apri la vista stampa per salvare in PDF il riepilogo completo del torneo.',
+        downloadPdfHelp: 'Scarica direttamente il riepilogo completo del torneo in PDF.',
+        exportingPdf: 'Generazione PDF...',
+        downloadPdfError: 'Impossibile generare il PDF in questo momento.',
       };
 
   const completedMatches = tournament.rounds.flatMap((round) => round.matches).filter((match) => match.winner);
@@ -128,6 +135,91 @@ export default function TournamentVictoryScreen({
     { left: '50%', top: '-6%', rotate: '8deg', delay: '0.7s', height: '24rem' },
     { left: '50%', top: '-4%', rotate: '24deg', delay: '1.05s', height: '22rem' },
   ];
+
+  const handleDownloadPdf = async () => {
+    const exportNode = exportDocumentRef.current;
+    if (!exportNode || typeof window === 'undefined') {
+      alert(copy.downloadPdfError);
+      return;
+    }
+
+    setIsExportingPdf(true);
+    try {
+      await document.fonts?.ready;
+
+      const canvas = await html2canvas(exportNode, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        windowWidth: exportNode.scrollWidth,
+        windowHeight: exportNode.scrollHeight,
+      });
+
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'pt',
+        format: 'a4',
+        compress: true,
+      });
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 20;
+      const usableWidth = pageWidth - margin * 2;
+      const usableHeight = pageHeight - margin * 2;
+      const pageCanvasHeight = Math.max(1, Math.floor((usableHeight * canvas.width) / usableWidth));
+
+      let renderedHeight = 0;
+      let pageIndex = 0;
+
+      while (renderedHeight < canvas.height) {
+        const sliceHeight = Math.min(pageCanvasHeight, canvas.height - renderedHeight);
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sliceHeight;
+
+        const pageContext = pageCanvas.getContext('2d');
+        if (!pageContext) {
+          throw new Error('Canvas context unavailable');
+        }
+
+        pageContext.fillStyle = '#ffffff';
+        pageContext.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+        pageContext.drawImage(
+          canvas,
+          0,
+          renderedHeight,
+          canvas.width,
+          sliceHeight,
+          0,
+          0,
+          canvas.width,
+          sliceHeight,
+        );
+
+        const imageData = pageCanvas.toDataURL('image/png');
+        const renderedImageHeight = (sliceHeight * usableWidth) / canvas.width;
+
+        if (pageIndex > 0) {
+          pdf.addPage();
+        }
+
+        pdf.addImage(imageData, 'PNG', margin, margin, usableWidth, renderedImageHeight, undefined, 'FAST');
+
+        renderedHeight += sliceHeight;
+        pageIndex += 1;
+      }
+
+      const fileName = `${tournament.winner.name.replace(/\s+/g, '_')}_tournament_${Date.now()}.pdf`;
+      pdf.save(fileName);
+    } catch (error) {
+      console.error('Error generating tournament PDF:', error);
+      alert(copy.downloadPdfError);
+    } finally {
+      setIsExportingPdf(false);
+    }
+  };
 
   return (
     <div className="w-full space-y-6 sm:space-y-8">
@@ -440,12 +532,13 @@ export default function TournamentVictoryScreen({
             </p>
           </div>
           <Button
-            onClick={() => setPrintViewOpen(true)}
+            onClick={handleDownloadPdf}
+            disabled={isExportingPdf}
             size="lg"
             className="min-h-12 w-full shadow-[0_0_34px_rgba(245,180,76,0.28)] hover:shadow-[0_0_44px_rgba(245,180,76,0.38)] lg:min-w-[260px] lg:w-auto"
           >
             <Download className="h-4 w-4" />
-            {copy.downloadPdf}
+            {isExportingPdf ? copy.exportingPdf : copy.downloadPdf}
           </Button>
         </div>
       </Card>
@@ -499,12 +592,13 @@ export default function TournamentVictoryScreen({
       <div className="text-center text-xs font-semibold tracking-[0.08em] text-amber-100/80 sm:text-sm sm:tracking-[0.1em]">
         Made by MrMarozzo
       </div>
-
-      <BracketPrintView
-        open={printViewOpen}
-        onClose={() => setPrintViewOpen(false)}
-        tournament={tournament}
-      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed left-[-10000px] top-0 w-[1280px] overflow-hidden bg-white"
+        ref={exportDocumentRef}
+      >
+        <BracketPrintDocument tournament={tournament} language={language} />
+      </div>
     </div>
   );
 }

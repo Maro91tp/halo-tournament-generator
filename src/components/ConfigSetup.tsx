@@ -277,7 +277,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
                     type="button"
                     variant={selected ? 'default' : 'outline'}
                     onClick={() => toggleSlayerMap(mapName)}
-                    className={`min-h-11 rounded-full px-4 text-[0.88rem] sm:text-[0.94rem] ${
+                    className={`min-h-10 rounded-full px-3 text-[0.8rem] sm:min-h-11 sm:px-4 sm:text-[0.94rem] ${
                       selected
                         ? 'shadow-[0_0_24px_rgba(245,180,76,0.22)]'
                         : 'border-white/18 bg-white/5 text-white/80 hover:bg-white/10'

@@ -49,8 +49,8 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         playerCount: 'Number of players',
         loadRandom: 'Load random players',
         gamertag: 'Halo gamertag',
-        openDataHive: 'Open Data Hive',
-        openTracker: 'Open Tracker',
+        openDataHive: 'Data Hive',
+        openTracker: 'Halo Tracker',
         availableInFile: 'Available players in `players.txt`',
         increaseFile: 'Add more to use random loading.',
         players: 'Players',
@@ -97,8 +97,8 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         playerCount: 'Numero di giocatori',
         loadRandom: 'Carica player casualmente',
         gamertag: 'Gamertag Halo',
-        openDataHive: 'Apri Data Hive',
-        openTracker: 'Apri Tracker',
+        openDataHive: 'Data Hive',
+        openTracker: 'Halo Tracker',
         availableInFile: 'Giocatori disponibili in `players.txt`',
         increaseFile: 'Aumentali per usare il caricamento casuale.',
         players: 'Giocatori',
@@ -491,18 +491,8 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         </Card>
 
         <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6 xl:col-span-3">
-          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mb-6">
             <h3 className="text-[clamp(1.1rem,1rem+0.7vw,1.4rem)] font-bold">{copy.player} {selectedPlayerIndex + 1}</h3>
-            <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-row">
-              <Button onClick={handlePrevious} disabled={selectedPlayerIndex === 0} variant="ghost" size="sm" className="min-h-11 w-full text-white/65 hover:text-white sm:w-auto">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                {copy.previousPlayer}
-              </Button>
-              <Button onClick={handleNext} disabled={selectedPlayerIndex === players.length - 1} size="sm" className="min-h-11 w-full shadow-[0_0_20px_rgba(245,180,76,0.22)] hover:shadow-[0_0_28px_rgba(245,180,76,0.34)] sm:w-auto">
-                {copy.nextPlayer}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
           </div>
 
           <div className="space-y-6">
@@ -553,7 +543,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                 </Popover>
               </div>
 
-              <div className="mt-2 flex flex-col gap-3 xl:flex-row xl:items-start">
+              <div className="mt-2 flex flex-col gap-2.5 lg:flex-row lg:items-start">
                 <div className="relative min-w-0 flex-1">
                   <Input
                     ref={nameInputRef}
@@ -611,7 +601,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                   variant="outline"
                   onClick={handleOpenHaloDataHive}
                   disabled={!currentPlayerKey}
-                  className="h-11 w-full border-white/18 bg-white/6 text-white shadow-[0_0_18px_rgba(100,180,255,0.12)] hover:bg-white/10 hover:shadow-[0_0_26px_rgba(100,180,255,0.18)] xl:w-auto xl:self-stretch"
+                  className="h-10 w-full border-white/18 bg-white/6 px-3 text-[0.82rem] text-white shadow-[0_0_18px_rgba(100,180,255,0.12)] hover:bg-white/10 hover:shadow-[0_0_26px_rgba(100,180,255,0.18)] sm:h-11 sm:text-[0.9rem] lg:w-auto lg:self-stretch"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   {copy.openDataHive}
@@ -621,10 +611,34 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                   variant="outline"
                   onClick={handleOpenHaloTracker}
                   disabled={!currentPlayerKey}
-                  className="h-11 w-full border-white/18 bg-white/6 text-white shadow-[0_0_18px_rgba(100,180,255,0.12)] hover:bg-white/10 hover:shadow-[0_0_26px_rgba(100,180,255,0.18)] xl:w-auto xl:self-stretch"
+                  className="h-10 w-full border-white/18 bg-white/6 px-3 text-[0.82rem] text-white shadow-[0_0_18px_rgba(100,180,255,0.12)] hover:bg-white/10 hover:shadow-[0_0_26px_rgba(100,180,255,0.18)] sm:h-11 sm:text-[0.9rem] lg:w-auto lg:self-stretch"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   {copy.openTracker}
+                </Button>
+              </div>
+
+              <div className="mt-2 flex justify-end gap-2">
+                <Button
+                  onClick={handlePrevious}
+                  disabled={selectedPlayerIndex === 0}
+                  variant="ghost"
+                  size="sm"
+                  className="h-10 w-10 rounded-[14px] border border-white/12 bg-white/5 p-0 text-white/72 hover:bg-white/10 hover:text-white sm:h-11 sm:w-11"
+                  aria-label={copy.previousPlayer}
+                  title={copy.previousPlayer}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  onClick={handleNext}
+                  disabled={selectedPlayerIndex === players.length - 1}
+                  size="sm"
+                  className="h-10 w-10 rounded-[14px] border border-amber-200/55 bg-primary p-0 text-primary-foreground shadow-[0_0_20px_rgba(245,180,76,0.22)] hover:shadow-[0_0_28px_rgba(245,180,76,0.34)] sm:h-11 sm:w-11"
+                  aria-label={copy.nextPlayer}
+                  title={copy.nextPlayer}
+                >
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
 
@@ -689,7 +703,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
               </div>
             </div>
 
-            <div className={`rounded-[18px] border px-3 py-3 sm:rounded-[20px] sm:px-4 ${
+            <div className={`rounded-[16px] border px-3 py-2.5 sm:rounded-[20px] sm:px-4 sm:py-3 ${
               currentPlayerHasStoredChanges
                 ? 'border-amber-200/45 bg-amber-200/10 shadow-[0_0_28px_rgba(245,180,76,0.16)]'
                 : 'border-white/10 bg-black/10'
