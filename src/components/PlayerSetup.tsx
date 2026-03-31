@@ -57,8 +57,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         player: 'Player',
         previousPlayer: 'Previous player',
         nextPlayer: 'Next player',
-        missingNames: 'All players must have a name!',
-        playerName: 'Player name *',
+        missingNames: 'All players must have a Halo gamertag!',
         selectSavedPlayer: 'Select saved player',
         searchPlayer: 'Search player...',
         noPlayerFound: 'No player found.',
@@ -106,8 +105,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         player: 'Giocatore',
         previousPlayer: 'Player precedente',
         nextPlayer: 'Player successivo',
-        missingNames: 'Tutti i giocatori devono avere un nome!',
-        playerName: 'Nome giocatore *',
+        missingNames: 'Tutti i giocatori devono avere un gamertag Halo!',
         selectSavedPlayer: 'Seleziona giocatore salvato',
         searchPlayer: 'Cerca giocatore...',
         noPlayerFound: 'Nessun giocatore trovato.',
@@ -229,12 +227,15 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     });
   };
 
-  const handleNameChange = (index: number, name: string) => {
-    const currentGamertag = players[index]?.gamertag?.trim() ?? '';
-    updatePlayer(index, { name, gamertag: currentGamertag || name });
+  const handleGamertagChange = (index: number, gamertag: string) => {
+    const normalizedGamertag = gamertag.trim();
+    updatePlayer(index, {
+      gamertag,
+      name: normalizedGamertag || '',
+    });
 
-    if (name.length >= 2) {
-      const results = searchPlayers(name);
+    if (gamertag.length >= 2) {
+      const results = searchPlayers(gamertag);
       setSuggestions(results);
       setShowSuggestions(results.length > 0);
     } else {
@@ -254,7 +255,8 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     const shuffledPlayers = [...bundledPlayers].sort(() => Math.random() - 0.5).slice(0, playerCount);
     const randomizedPlayers = shuffledPlayers.map((storedPlayer, index) => ({
       id: players[index]?.id ?? `player-${Date.now()}-${index}`,
-      name: storedPlayer.name,
+      name: storedPlayer.gamertag || storedPlayer.name,
+      gamertag: storedPlayer.gamertag || storedPlayer.name,
       rank: storedPlayer.rank,
       strengthValue: calculateStrengthValue(storedPlayer.rank),
     }));
@@ -267,9 +269,10 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
   };
 
   const selectSuggestion = (index: number, storedPlayer: StoredPlayer) => {
+    const playerKey = storedPlayer.gamertag || storedPlayer.name;
     updatePlayer(index, {
-      name: storedPlayer.name,
-      gamertag: storedPlayer.gamertag || storedPlayer.name,
+      name: playerKey,
+      gamertag: playerKey,
       rank: storedPlayer.rank,
       strengthValue: calculateStrengthValue(storedPlayer.rank),
     });
@@ -278,9 +281,10 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
   };
 
   const selectFromCombobox = (storedPlayer: StoredPlayer) => {
+    const playerKey = storedPlayer.gamertag || storedPlayer.name;
     updatePlayer(selectedPlayerIndex, {
-      name: storedPlayer.name,
-      gamertag: storedPlayer.gamertag || storedPlayer.name,
+      name: playerKey,
+      gamertag: playerKey,
       rank: storedPlayer.rank,
       strengthValue: calculateStrengthValue(storedPlayer.rank),
     });
@@ -308,7 +312,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
   };
 
   const handleSubmit = () => {
-    const allValid = players.every((p) => p.name.trim() !== '');
+    const allValid = players.every((p) => (p.gamertag || p.name).trim() !== '');
 
     if (!allValid) {
       alert(copy.missingNames);
@@ -316,20 +320,27 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     }
 
     players.forEach((player, index) => {
-      const alreadyStored = getPlayerByName(player.name);
+      const playerKey = (player.gamertag || player.name).trim();
+      const alreadyStored = getPlayerByName(playerKey);
       const hasStoredChanges =
         !!alreadyStored &&
         (alreadyStored.rank.tier !== player.rank.tier || alreadyStored.rank.level !== player.rank.level);
 
       if (alreadyStored && !hasStoredChanges) {
-        void savePlayer(player);
+        void savePlayer({
+          ...player,
+          name: playerKey,
+          gamertag: playerKey,
+        });
       }
     });
     onComplete(players);
   };
 
   const handleSaveCurrentPlayer = async () => {
-    if (!currentPlayer.name.trim()) {
+    const playerKey = (currentPlayer.gamertag || currentPlayer.name).trim();
+
+    if (!playerKey) {
       alert(copy.missingNames);
       return;
     }
@@ -340,7 +351,11 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
       return next;
     });
 
-    const saved = await savePlayer(currentPlayer);
+    const saved = await savePlayer({
+      ...currentPlayer,
+      name: playerKey,
+      gamertag: playerKey,
+    });
     setAllStoredPlayers(getStoredPlayers());
     setPlayerSaveStates((current) => {
       const next = [...current];
@@ -382,9 +397,10 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     setShowSuggestions(false);
   };
 
-  const isPlayerComplete = (player: Player) => player.name.trim() !== '';
+  const isPlayerComplete = (player: Player) => (player.gamertag || player.name).trim() !== '';
   const currentPlayer = players[selectedPlayerIndex];
-  const currentPlayerAlreadyStored = currentPlayer.name.trim() !== '' ? getPlayerByName(currentPlayer.name) : undefined;
+  const currentPlayerKey = (currentPlayer.gamertag || currentPlayer.name).trim();
+  const currentPlayerAlreadyStored = currentPlayerKey !== '' ? getPlayerByName(currentPlayerKey) : undefined;
   const currentPlayerHasStoredChanges =
     !!currentPlayerAlreadyStored &&
     (currentPlayerAlreadyStored.rank.tier !== currentPlayer.rank.tier ||
@@ -459,7 +475,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
               >
                 <div className="flex items-center justify-between">
                   <span className="truncate text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)]">
-                    {player.name || `${copy.player} ${index + 1}`}
+                    {player.gamertag || player.name || `${copy.player} ${index + 1}`}
                   </span>
                   <div className="ml-2 flex flex-shrink-0 items-center gap-1">
                     {isPlayerComplete(player) ? (
@@ -491,10 +507,6 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
 
           <div className="space-y-6">
             <div>
-              <Label className="mb-2 block text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] font-semibold">
-                {copy.playerName}
-              </Label>
-
               <div className="flex gap-2">
                 <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
                   <PopoverTrigger asChild>
@@ -541,77 +553,65 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                 </Popover>
               </div>
 
-              <div className="relative mt-2">
-                <Input
-                  ref={nameInputRef}
-                  id="player-name"
-                  value={currentPlayer.name}
-                  onChange={(e) => handleNameChange(selectedPlayerIndex, e.target.value)}
-                  onKeyDown={handleNameKeyDown}
-                  onFocus={() => {
-                    if (currentPlayer.name.length >= 2) {
-                      const results = searchPlayers(currentPlayer.name);
-                      setSuggestions(results);
-                      setShowSuggestions(results.length > 0);
-                    }
-                  }}
-                  onBlur={() => {
-                    setTimeout(() => setShowSuggestions(false), 200);
-                  }}
-                  placeholder={copy.typeManually}
-                  className="text-[clamp(0.95rem,0.88rem+0.3vw,1.08rem)] sm:text-lg"
-                  autoComplete="off"
-                />
-
-                {showSuggestions && suggestions.length > 0 && (
-                  <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-[24px] border border-amber-200/45 bg-amber-50/95 shadow-[0_0_30px_rgba(245,180,76,0.16)] backdrop-blur-xl">
-                    <div className="border-b border-black/10 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black/55">
-                      {copy.similarPlayers}
-                    </div>
-                    <div className="max-h-64 overflow-y-auto p-2">
-                      {suggestions.map((stored, i) => (
-                        <button
-                          key={i}
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => selectSuggestion(selectedPlayerIndex, stored)}
-                          className="flex w-full items-center justify-between rounded-[16px] px-3 py-2 text-left transition-colors hover:bg-black/8"
-                        >
-                          <div className="min-w-0">
-                            <div className="truncate text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] font-semibold text-black">
-                              {stored.name}
-                            </div>
-                            <div className="inline-flex items-center gap-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-black/60">
-                              <RankIcon rank={stored.rank} className="h-4 w-4" />
-                              <span>{getRankDisplay(stored.rank)}</span>
-                            </div>
-                          </div>
-                          <ArrowRight className="ml-3 h-4 w-4 flex-shrink-0 text-black/45 transition-transform" />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
-                <div>
-                  <Label htmlFor="player-gamertag" className="mb-2 block text-[clamp(0.82rem,0.78rem+0.18vw,0.95rem)] font-semibold">
-                    {copy.gamertag}
-                  </Label>
+              <div className="mt-2 flex flex-col gap-3 xl:flex-row xl:items-start">
+                <div className="relative min-w-0 flex-1">
                   <Input
+                    ref={nameInputRef}
                     id="player-gamertag"
-                    value={currentPlayer.gamertag ?? ''}
-                    onChange={(e) => updatePlayer(selectedPlayerIndex, { gamertag: e.target.value })}
-                    placeholder={currentPlayer.name || copy.gamertag}
-                    className="h-11"
+                    value={currentPlayer.gamertag ?? currentPlayer.name}
+                    onChange={(e) => handleGamertagChange(selectedPlayerIndex, e.target.value)}
+                    onKeyDown={handleNameKeyDown}
+                    onFocus={() => {
+                      if ((currentPlayer.gamertag ?? currentPlayer.name).length >= 2) {
+                        const results = searchPlayers(currentPlayer.gamertag ?? currentPlayer.name);
+                        setSuggestions(results);
+                        setShowSuggestions(results.length > 0);
+                      }
+                    }}
+                    onBlur={() => {
+                      setTimeout(() => setShowSuggestions(false), 200);
+                    }}
+                    placeholder={copy.gamertag}
+                    className="text-[clamp(0.95rem,0.88rem+0.3vw,1.08rem)] sm:text-lg"
+                    autoComplete="off"
                   />
+
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute z-10 mt-2 w-full overflow-hidden rounded-[24px] border border-amber-200/45 bg-amber-50/95 shadow-[0_0_30px_rgba(245,180,76,0.16)] backdrop-blur-xl">
+                      <div className="border-b border-black/10 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-black/55">
+                        {copy.similarPlayers}
+                      </div>
+                      <div className="max-h-64 overflow-y-auto p-2">
+                        {suggestions.map((stored, i) => (
+                          <button
+                            key={i}
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => selectSuggestion(selectedPlayerIndex, stored)}
+                            className="flex w-full items-center justify-between rounded-[16px] px-3 py-2 text-left transition-colors hover:bg-black/8"
+                          >
+                            <div className="min-w-0">
+                              <div className="truncate text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] font-semibold text-black">
+                                {stored.name}
+                              </div>
+                              <div className="inline-flex items-center gap-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-black/60">
+                                <RankIcon rank={stored.rank} className="h-4 w-4" />
+                                <span>{getRankDisplay(stored.rank)}</span>
+                              </div>
+                            </div>
+                            <ArrowRight className="ml-3 h-4 w-4 flex-shrink-0 text-black/45 transition-transform" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
+
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleOpenHaloDataHive}
-                  disabled={!(currentPlayer.gamertag || currentPlayer.name).trim()}
-                  className="h-11 w-full border-white/18 bg-white/6 text-white shadow-[0_0_18px_rgba(100,180,255,0.12)] hover:bg-white/10 hover:shadow-[0_0_26px_rgba(100,180,255,0.18)] sm:self-end"
+                  disabled={!currentPlayerKey}
+                  className="h-11 w-full border-white/18 bg-white/6 text-white shadow-[0_0_18px_rgba(100,180,255,0.12)] hover:bg-white/10 hover:shadow-[0_0_26px_rgba(100,180,255,0.18)] xl:w-auto xl:self-stretch"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   {copy.openDataHive}
@@ -620,8 +620,8 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                   type="button"
                   variant="outline"
                   onClick={handleOpenHaloTracker}
-                  disabled={!(currentPlayer.gamertag || currentPlayer.name).trim()}
-                  className="h-11 w-full border-white/18 bg-white/6 text-white shadow-[0_0_18px_rgba(100,180,255,0.12)] hover:bg-white/10 hover:shadow-[0_0_26px_rgba(100,180,255,0.18)] sm:self-end"
+                  disabled={!currentPlayerKey}
+                  className="h-11 w-full border-white/18 bg-white/6 text-white shadow-[0_0_18px_rgba(100,180,255,0.12)] hover:bg-white/10 hover:shadow-[0_0_26px_rgba(100,180,255,0.18)] xl:w-auto xl:self-stretch"
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   {copy.openTracker}
@@ -702,9 +702,12 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                       {copy.playerAlreadySavedHelp}
                     </div>
                   </div>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/6 px-3 py-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] font-semibold text-white/82">
-                    <CircleCheckBig className="h-4 w-4 flex-shrink-0 text-emerald-300" />
-                    <span>{copy.playerSaved}</span>
+                  <div
+                    className="inline-flex h-11 min-w-[76px] items-center justify-center self-start rounded-[16px] border border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_24px_rgba(245,180,76,0.28)] sm:self-auto"
+                    aria-label={copy.playerSaved}
+                    title={copy.playerSaved}
+                  >
+                    <Check className="h-6 w-6" />
                   </div>
                 </div>
               ) : (
@@ -723,21 +726,20 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                     type="button"
                     variant={currentPlayerSaveState === 'saved' ? 'default' : 'outline'}
                     onClick={() => void handleSaveCurrentPlayer()}
-                    disabled={currentPlayerSaveState === 'saving' || !currentPlayer.name.trim()}
+                    disabled={currentPlayerSaveState === 'saving' || !currentPlayerKey}
                     className={
                       currentPlayerSaveState === 'saved'
-                        ? 'min-h-11 w-full border-emerald-300/55 bg-emerald-500 text-white shadow-[0_0_28px_rgba(16,185,129,0.28)] hover:bg-emerald-500 hover:shadow-[0_0_36px_rgba(16,185,129,0.38)] sm:w-auto sm:self-end'
+                        ? 'min-h-11 w-full border-lime-300/70 bg-lime-400 text-slate-950 shadow-[0_0_24px_rgba(163,230,53,0.34)] hover:bg-lime-400 hover:shadow-[0_0_34px_rgba(163,230,53,0.42)] sm:w-[138px]'
                         : currentPlayerSaveState === 'error'
-                          ? 'min-h-11 w-full border-red-300/55 bg-red-500/18 text-red-50 hover:bg-red-500/24 sm:w-auto sm:self-end'
+                          ? 'min-h-11 w-full border-red-300/55 bg-red-500/18 text-red-50 hover:bg-red-500/24 sm:w-auto'
                           : currentPlayerHasStoredChanges
-                            ? 'min-h-11 w-full border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_24px_rgba(245,180,76,0.28)] hover:shadow-[0_0_34px_rgba(245,180,76,0.4)] sm:w-auto sm:self-end'
-                            : 'min-h-11 w-full border-white/18 bg-white/6 text-white hover:bg-white/10 sm:w-auto sm:self-end'
+                            ? 'min-h-11 w-full border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_24px_rgba(245,180,76,0.28)] hover:shadow-[0_0_34px_rgba(245,180,76,0.4)] sm:w-auto'
+                            : 'min-h-11 w-full border-white/18 bg-white/6 text-white hover:bg-white/10 sm:w-auto'
                     }
                   >
                     {currentPlayerSaveState === 'saved' ? (
                       <>
-                        <CircleCheckBig className="h-4 w-4 text-white" />
-                        {copy.playerSaved}
+                        <Check className="h-6 w-6" />
                       </>
                     ) : currentPlayerSaveState === 'saving' ? (
                       copy.savingPlayer

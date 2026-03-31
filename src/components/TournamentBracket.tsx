@@ -1,6 +1,7 @@
 import { createElement, isValidElement, useEffect, useMemo, useState, type ComponentType, type CSSProperties, type ReactNode } from 'react';
 import {
   ArrowLeft,
+  Check,
   ChevronRight,
   CircleCheckBig,
   RefreshCcw,
@@ -308,18 +309,18 @@ export default function TournamentBracket({
               <Button
                 onClick={handleOpenSaveDialog}
                 className={saveFeedbackVisible && currentSavedTournamentName
-                  ? 'min-h-10 w-full border-emerald-300/55 bg-emerald-500 text-white shadow-[0_0_28px_rgba(16,185,129,0.28)] hover:bg-emerald-500 hover:shadow-[0_0_38px_rgba(16,185,129,0.36)]'
+                  ? 'min-h-10 w-full border-lime-300/70 bg-lime-400 text-slate-950 shadow-[0_0_24px_rgba(163,230,53,0.34)] hover:bg-lime-400 hover:shadow-[0_0_34px_rgba(163,230,53,0.42)] sm:w-[138px]'
                   : currentSavedTournamentName
                     ? 'min-h-10 w-full border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_28px_rgba(245,180,76,0.28)] hover:shadow-[0_0_38px_rgba(245,180,76,0.36)]'
                   : 'min-h-10 w-full border-white/18 bg-white/6 text-white hover:bg-white/10'}
                 variant={saveFeedbackVisible || currentSavedTournamentName ? 'default' : 'outline'}
               >
                 {saveFeedbackVisible && currentSavedTournamentName ? (
-                  <CircleCheckBig className="h-4 w-4" />
+                  <Check className="h-6 w-6" />
                 ) : (
                   <Save className="h-4 w-4" />
                 )}
-                {saveButtonLabel}
+                {saveFeedbackVisible && currentSavedTournamentName ? null : saveButtonLabel}
               </Button>
             </div>
           </div>
