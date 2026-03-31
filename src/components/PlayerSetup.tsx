@@ -13,6 +13,8 @@ import { getBundledPlayers, getPlayerByName, getStoredPlayers, searchPlayers, sa
 import { cn } from '../lib/utils';
 import { RankIcon } from './TournamentIcons';
 import { useLanguage } from './LanguageContext';
+import { isSupabaseConfigured } from '../lib/supabase';
+import { listPlayersFromSupabase } from '../lib/supabase-storage';
 
 interface PlayerSetupProps {
   onComplete: (players: Player[]) => void;
@@ -157,10 +159,33 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
 
   useEffect(() => {
     setBundledPlayers(getBundledPlayers());
+    if (isSupabaseConfigured) {
+      listPlayersFromSupabase()
+        .then((stored) => {
+          setAllStoredPlayers(stored);
+        })
+        .catch(() => {
+          setAllStoredPlayers(getStoredPlayers());
+        });
+      return;
+    }
+
     syncBundledPlayers().then((stored) => {
       setAllStoredPlayers(stored);
     });
   }, []);
+
+  const findStoredPlayerByName = (name: string) =>
+    allStoredPlayers.find((player) => player.name.toLowerCase() === name.toLowerCase());
+
+  const searchStoredPlayers = (query: string) => {
+    if (!query || query.length < 2) return [];
+
+    const normalizedQuery = query.toLowerCase();
+    return allStoredPlayers
+      .filter((player) => player.name.toLowerCase().includes(normalizedQuery))
+      .slice(0, 5);
+  };
 
   function createEmptyPlayer(index: number): Player {
     return {
@@ -235,7 +260,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     });
 
     if (gamertag.length >= 2) {
-      const results = searchPlayers(gamertag);
+      const results = searchStoredPlayers(gamertag);
       setSuggestions(results);
       setShowSuggestions(results.length > 0);
     } else {
@@ -321,7 +346,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
 
     players.forEach((player, index) => {
       const playerKey = (player.gamertag || player.name).trim();
-      const alreadyStored = getPlayerByName(playerKey);
+      const alreadyStored = findStoredPlayerByName(playerKey) ?? getPlayerByName(playerKey);
       const hasStoredChanges =
         !!alreadyStored &&
         (alreadyStored.rank.tier !== player.rank.tier || alreadyStored.rank.level !== player.rank.level);
@@ -356,7 +381,13 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
       name: playerKey,
       gamertag: playerKey,
     });
-    setAllStoredPlayers(getStoredPlayers());
+    if (isSupabaseConfigured) {
+      listPlayersFromSupabase()
+        .then((stored) => setAllStoredPlayers(stored))
+        .catch(() => setAllStoredPlayers(getStoredPlayers()));
+    } else {
+      setAllStoredPlayers(getStoredPlayers());
+    }
     setPlayerSaveStates((current) => {
       const next = [...current];
       next[selectedPlayerIndex] = saved ? 'saved' : 'error';
@@ -400,7 +431,9 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
   const isPlayerComplete = (player: Player) => (player.gamertag || player.name).trim() !== '';
   const currentPlayer = players[selectedPlayerIndex];
   const currentPlayerKey = (currentPlayer.gamertag || currentPlayer.name).trim();
-  const currentPlayerAlreadyStored = currentPlayerKey !== '' ? getPlayerByName(currentPlayerKey) : undefined;
+  const currentPlayerAlreadyStored = currentPlayerKey !== ''
+    ? findStoredPlayerByName(currentPlayerKey) ?? getPlayerByName(currentPlayerKey)
+    : undefined;
   const currentPlayerHasStoredChanges =
     !!currentPlayerAlreadyStored &&
     (currentPlayerAlreadyStored.rank.tier !== currentPlayer.rank.tier ||
@@ -553,7 +586,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                     onKeyDown={handleNameKeyDown}
                     onFocus={() => {
                       if ((currentPlayer.gamertag ?? currentPlayer.name).length >= 2) {
-                        const results = searchPlayers(currentPlayer.gamertag ?? currentPlayer.name);
+                        const results = searchStoredPlayers(currentPlayer.gamertag ?? currentPlayer.name);
                         setSuggestions(results);
                         setShowSuggestions(results.length > 0);
                       }

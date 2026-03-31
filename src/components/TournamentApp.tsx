@@ -16,12 +16,15 @@ import {
   loadTournamentState,
   clearTournamentState,
   hasSavedTournament,
+  deleteSavedTournamentRecord,
   listSavedTournamentRecords,
   loadSavedTournamentRecord,
   saveNamedTournament,
   type SavedTournamentRecord,
 } from '../lib/tournament-storage';
 import { LANGUAGE_STORAGE_KEY, type Language } from '../lib/language';
+import { isSupabaseConfigured } from '../lib/supabase';
+import { listTournamentRecordsFromSupabase, loadTournamentRecordFromSupabase } from '../lib/supabase-storage';
 
 type Step = 'welcome' | 'players' | 'config' | 'teams' | 'bracket';
 
@@ -105,11 +108,40 @@ export default function TournamentApp() {
   }, []);
 
   useEffect(() => {
-    if (hasSavedTournament()) {
-      const saved = loadTournamentState();
-      setSavedTournament(saved);
-    }
-    setSavedTournaments(listSavedTournamentRecords());
+    let cancelled = false;
+
+    const loadSavedData = async () => {
+      if (hasSavedTournament()) {
+        const saved = loadTournamentState();
+        if (!cancelled) {
+          setSavedTournament(saved);
+        }
+      }
+
+      if (!isSupabaseConfigured) {
+        if (!cancelled) {
+          setSavedTournaments(listSavedTournamentRecords());
+        }
+        return;
+      }
+
+      try {
+        const remoteRecords = await listTournamentRecordsFromSupabase();
+        if (!cancelled) {
+          setSavedTournaments(remoteRecords);
+        }
+      } catch {
+        if (!cancelled) {
+          setSavedTournaments(listSavedTournamentRecords());
+        }
+      }
+    };
+
+    void loadSavedData();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -178,8 +210,21 @@ export default function TournamentApp() {
     setStep(saved.step === 'welcome' ? 'players' : saved.step);
   };
 
-  const handleLoadSavedTournament = (id: string) => {
-    const saved = loadSavedTournamentRecord(id);
+  const handleLoadSavedTournament = async (id: string) => {
+    let saved = isSupabaseConfigured
+      ? await loadTournamentRecordFromSupabase(id)
+      : loadSavedTournamentRecord(id);
+
+    if (!saved && isSupabaseConfigured) {
+      deleteSavedTournamentRecord(id);
+      setSavedTournaments(await listTournamentRecordsFromSupabase().catch(() => listSavedTournamentRecords()));
+      if (currentSavedTournamentId === id) {
+        setCurrentSavedTournamentId(null);
+      }
+      setFlowErrorMessage(copy.missingSavedTournament);
+      return;
+    }
+
     if (!saved) {
       setSavedTournaments(listSavedTournamentRecords());
       if (currentSavedTournamentId === id) {

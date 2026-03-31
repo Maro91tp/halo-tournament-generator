@@ -15,6 +15,18 @@ function toPlayerPayload(player: Player | StoredPlayer) {
   };
 }
 
+function normalizePlayerFromSupabase(player: any): StoredPlayer {
+  return {
+    name: player.name,
+    gamertag: player.gamertag ?? undefined,
+    rank: {
+      tier: player.rank_tier,
+      level: player.rank_level,
+    },
+    lastUsed: player.last_used_at ? new Date(player.last_used_at).getTime() : Date.now(),
+  };
+}
+
 export async function syncPlayerToSupabase(player: Player | StoredPlayer): Promise<void> {
   if (!isSupabaseConfigured || !supabase) return;
 
@@ -66,4 +78,70 @@ export async function saveTournamentRecordToSupabase(record: SavedTournamentReco
   if (error) {
     console.error('Error syncing tournament to Supabase:', error);
   }
+}
+
+export async function listPlayersFromSupabase(): Promise<StoredPlayer[]> {
+  if (!isSupabaseConfigured || !supabase) return [];
+
+  const { data, error } = await supabase
+    .from('players')
+    .select('*')
+    .order('name', { ascending: true });
+
+  if (error) {
+    console.error('Error loading players from Supabase:', error);
+    throw error;
+  }
+
+  return (data ?? []).map(normalizePlayerFromSupabase);
+}
+
+function normalizeTournamentRecordFromSupabase(record: any): SavedTournamentRecord {
+  return {
+    id: record.id,
+    name: record.name?.trim() || 'Tournament',
+    status: record.status === 'completed' ? 'completed' : 'active',
+    step: (record.step ?? 'players') as SavedTournamentRecord['step'],
+    config: record.config ?? null,
+    players: Array.isArray(record.players) ? record.players : [],
+    teams: Array.isArray(record.teams) ? record.teams : [],
+    tournament: record.tournament ?? null,
+    createdAt: record.created_at ?? record.saved_at ?? new Date().toISOString(),
+    savedAt: record.saved_at ?? new Date().toISOString(),
+    completedAt: record.completed_at ?? null,
+    expiresAt: record.expires_at ?? null,
+  };
+}
+
+export async function listTournamentRecordsFromSupabase(): Promise<SavedTournamentRecord[]> {
+  if (!isSupabaseConfigured || !supabase) return [];
+
+  const { data, error } = await supabase
+    .from('tournaments')
+    .select('*')
+    .order('saved_at', { ascending: false });
+
+  if (error) {
+    console.error('Error loading tournaments from Supabase:', error);
+    throw error;
+  }
+
+  return (data ?? []).map(normalizeTournamentRecordFromSupabase);
+}
+
+export async function loadTournamentRecordFromSupabase(id: string): Promise<SavedTournamentRecord | null> {
+  if (!isSupabaseConfigured || !supabase) return null;
+
+  const { data, error } = await supabase
+    .from('tournaments')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error loading tournament from Supabase:', error);
+    throw error;
+  }
+
+  return data ? normalizeTournamentRecordFromSupabase(data) : null;
 }
