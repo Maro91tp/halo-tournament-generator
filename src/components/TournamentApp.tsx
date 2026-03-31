@@ -7,6 +7,8 @@ import TeamSetup from './TeamSetup';
 import TournamentBracket from './TournamentBracket';
 import WelcomeScreen from './WelcomeScreen';
 import LanguageToggle from './LanguageToggle';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
 import { LanguageProvider } from './LanguageContext';
 import { generateTournament, updateMatchResult } from '../lib/tournament-utils';
 import {
@@ -66,6 +68,7 @@ export default function TournamentApp() {
   const [savedTournaments, setSavedTournaments] = useState<SavedTournamentRecord[]>([]);
   const [currentSavedTournamentId, setCurrentSavedTournamentId] = useState<string | null>(null);
   const [manualSaveFeedbackToken, setManualSaveFeedbackToken] = useState<string | null>(null);
+  const [flowErrorMessage, setFlowErrorMessage] = useState<string | null>(null);
   const copy = language === 'it'
     ? {
         title: 'Halo Tournament Generator',
@@ -75,6 +78,10 @@ export default function TournamentApp() {
         goToConfig: 'Vai a Config',
         goToTeams: 'Vai a Teams',
         goToBracket: 'Vai a Bracket',
+        missingSavedTournament: 'Torneo non trovato. Potrebbe essere stato cancellato.',
+        missingResumeTournament: 'Nessun torneo da riprendere. Potrebbe essere stato cancellato o svuotato.',
+        flowErrorTitle: 'Torneo non disponibile',
+        flowErrorAction: 'Ho capito',
       }
     : {
         title: 'Halo Tournament Generator',
@@ -84,6 +91,10 @@ export default function TournamentApp() {
         goToConfig: 'Go to Config',
         goToTeams: 'Go to Teams',
         goToBracket: 'Go to Bracket',
+        missingSavedTournament: 'Tournament not found. It may have been deleted.',
+        missingResumeTournament: 'No tournament to resume. It may have been deleted or cleared.',
+        flowErrorTitle: 'Tournament unavailable',
+        flowErrorAction: 'Got it',
       };
 
   useEffect(() => {
@@ -153,19 +164,30 @@ export default function TournamentApp() {
 
   const handleResumeTournament = () => {
     const saved = loadTournamentState();
-    if (saved) {
-      setManualSaveFeedbackToken(null);
-      setPlayers(saved.players);
-      setConfig(saved.config);
-      setTeams(saved.teams);
-      setTournament(saved.tournament);
-      setStep(saved.step === 'welcome' ? 'players' : saved.step);
+    if (!saved) {
+      setSavedTournament(null);
+      setFlowErrorMessage(copy.missingResumeTournament);
+      return;
     }
+
+    setManualSaveFeedbackToken(null);
+    setPlayers(saved.players);
+    setConfig(saved.config);
+    setTeams(saved.teams);
+    setTournament(saved.tournament);
+    setStep(saved.step === 'welcome' ? 'players' : saved.step);
   };
 
   const handleLoadSavedTournament = (id: string) => {
     const saved = loadSavedTournamentRecord(id);
-    if (!saved) return;
+    if (!saved) {
+      setSavedTournaments(listSavedTournamentRecords());
+      if (currentSavedTournamentId === id) {
+        setCurrentSavedTournamentId(null);
+      }
+      setFlowErrorMessage(copy.missingSavedTournament);
+      return;
+    }
 
     setManualSaveFeedbackToken(null);
     setPlayers(saved.players);
@@ -423,6 +445,25 @@ export default function TournamentApp() {
             </button>
           </div>
         )}
+
+        <Dialog open={Boolean(flowErrorMessage)} onOpenChange={(open) => !open && setFlowErrorMessage(null)}>
+          <DialogContent className="max-w-[calc(100%-1.5rem)] border-amber-200/28 bg-[linear-gradient(180deg,rgba(8,18,46,0.96)_0%,rgba(6,14,34,0.98)_100%)] text-white shadow-[0_0_44px_rgba(46,131,255,0.14)] sm:max-w-md">
+            <DialogHeader className="text-left">
+              <DialogTitle className="text-white">{copy.flowErrorTitle}</DialogTitle>
+              <DialogDescription className="max-w-[34ch] text-white/72">
+                {flowErrorMessage}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                onClick={() => setFlowErrorMessage(null)}
+                className="h-11 w-full rounded-[14px] border border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_24px_rgba(245,180,76,0.22)] hover:shadow-[0_0_34px_rgba(245,180,76,0.3)] sm:w-auto"
+              >
+                {copy.flowErrorAction}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         </div>
     </LanguageProvider>
   );
