@@ -1,7 +1,7 @@
 import { useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, Crown, Download, Medal, RefreshCcw, Sparkles, Swords, Trophy } from 'lucide-react';
 import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import type { Game, Match, Player, Team, Tournament } from '../types/tournament';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -146,73 +146,83 @@ export default function TournamentVictoryScreen({
     setIsExportingPdf(true);
     try {
       await document.fonts?.ready;
+      await waitForExportImages(exportNode);
+      const restoreNormalizedStyles = normalizeExportColors(exportNode);
 
-      const canvas = await html2canvas(exportNode, {
-        backgroundColor: '#ffffff',
-        scale: 2,
-        logging: false,
-        useCORS: true,
-        windowWidth: exportNode.scrollWidth,
-        windowHeight: exportNode.scrollHeight,
-      });
+      try {
+        const captureScale = window.innerWidth < 640 ? 1.2 : 1.6;
 
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'pt',
-        format: 'a4',
-        compress: true,
-      });
+        const canvas = await html2canvas(exportNode, {
+          backgroundColor: '#ffffff',
+          scale: captureScale,
+          logging: false,
+          useCORS: true,
+          scrollX: 0,
+          scrollY: 0,
+          windowWidth: exportNode.scrollWidth,
+          windowHeight: exportNode.scrollHeight,
+        });
 
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 20;
-      const usableWidth = pageWidth - margin * 2;
-      const usableHeight = pageHeight - margin * 2;
-      const pageCanvasHeight = Math.max(1, Math.floor((usableHeight * canvas.width) / usableWidth));
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'pt',
+          format: 'a4',
+          compress: true,
+        });
 
-      let renderedHeight = 0;
-      let pageIndex = 0;
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 20;
+        const usableWidth = pageWidth - margin * 2;
+        const usableHeight = pageHeight - margin * 2;
+        const pageCanvasHeight = Math.max(1, Math.floor((usableHeight * canvas.width) / usableWidth));
 
-      while (renderedHeight < canvas.height) {
-        const sliceHeight = Math.min(pageCanvasHeight, canvas.height - renderedHeight);
-        const pageCanvas = document.createElement('canvas');
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = sliceHeight;
+        let renderedHeight = 0;
+        let pageIndex = 0;
 
-        const pageContext = pageCanvas.getContext('2d');
-        if (!pageContext) {
-          throw new Error('Canvas context unavailable');
+        while (renderedHeight < canvas.height) {
+          const sliceHeight = Math.min(pageCanvasHeight, canvas.height - renderedHeight);
+          const pageCanvas = document.createElement('canvas');
+          pageCanvas.width = canvas.width;
+          pageCanvas.height = sliceHeight;
+
+          const pageContext = pageCanvas.getContext('2d');
+          if (!pageContext) {
+            throw new Error('Canvas context unavailable');
+          }
+
+          pageContext.fillStyle = '#ffffff';
+          pageContext.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+          pageContext.drawImage(
+            canvas,
+            0,
+            renderedHeight,
+            canvas.width,
+            sliceHeight,
+            0,
+            0,
+            canvas.width,
+            sliceHeight,
+          );
+
+          const imageData = pageCanvas.toDataURL('image/png');
+          const renderedImageHeight = (sliceHeight * usableWidth) / canvas.width;
+
+          if (pageIndex > 0) {
+            pdf.addPage();
+          }
+
+          pdf.addImage(imageData, 'PNG', margin, margin, usableWidth, renderedImageHeight, undefined, 'FAST');
+
+          renderedHeight += sliceHeight;
+          pageIndex += 1;
         }
 
-        pageContext.fillStyle = '#ffffff';
-        pageContext.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-        pageContext.drawImage(
-          canvas,
-          0,
-          renderedHeight,
-          canvas.width,
-          sliceHeight,
-          0,
-          0,
-          canvas.width,
-          sliceHeight,
-        );
-
-        const imageData = pageCanvas.toDataURL('image/png');
-        const renderedImageHeight = (sliceHeight * usableWidth) / canvas.width;
-
-        if (pageIndex > 0) {
-          pdf.addPage();
-        }
-
-        pdf.addImage(imageData, 'PNG', margin, margin, usableWidth, renderedImageHeight, undefined, 'FAST');
-
-        renderedHeight += sliceHeight;
-        pageIndex += 1;
+        const fileName = `${tournament.winner.name.replace(/\s+/g, '_')}_tournament_${Date.now()}.pdf`;
+        pdf.save(fileName);
+      } finally {
+        restoreNormalizedStyles();
       }
-
-      const fileName = `${tournament.winner.name.replace(/\s+/g, '_')}_tournament_${Date.now()}.pdf`;
-      pdf.save(fileName);
     } catch (error) {
       console.error('Error generating tournament PDF:', error);
       alert(copy.downloadPdfError);
@@ -594,13 +604,88 @@ export default function TournamentVictoryScreen({
       </div>
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed left-[-10000px] top-0 w-[1280px] overflow-hidden bg-white"
+        className="pointer-events-none absolute left-0 top-0 -z-10 w-[1280px] overflow-hidden bg-white opacity-0"
         ref={exportDocumentRef}
       >
         <BracketPrintDocument tournament={tournament} language={language} />
       </div>
     </div>
   );
+}
+
+async function waitForExportImages(container: HTMLElement) {
+  const images = Array.from(container.querySelectorAll('img'));
+  await Promise.all(
+    images.map(async (image) => {
+      if (image.complete && image.naturalWidth > 0) {
+        try {
+          await image.decode?.();
+        } catch {
+          return;
+        }
+        return;
+      }
+
+      await new Promise<void>((resolve) => {
+        const done = () => resolve();
+        image.addEventListener('load', done, { once: true });
+        image.addEventListener('error', done, { once: true });
+      });
+    }),
+  );
+}
+
+function normalizeExportColors(container: HTMLElement) {
+  const elements = [container, ...Array.from(container.querySelectorAll<HTMLElement>('*'))];
+  const cleanupEntries: Array<{ element: HTMLElement; cssText: string }> = [];
+  const colorProperties = [
+    'color',
+    'backgroundColor',
+    'borderTopColor',
+    'borderRightColor',
+    'borderBottomColor',
+    'borderLeftColor',
+    'outlineColor',
+    'textDecorationColor',
+    'caretColor',
+    'fill',
+    'stroke',
+  ] as const;
+
+  elements.forEach((element) => {
+    const computed = window.getComputedStyle(element);
+    const hadOklch =
+      computed.color.includes('oklch') ||
+      computed.backgroundColor.includes('oklch') ||
+      computed.borderTopColor.includes('oklch') ||
+      computed.boxShadow.includes('oklch') ||
+      computed.textShadow.includes('oklch');
+
+    if (!hadOklch) return;
+
+    cleanupEntries.push({ element, cssText: element.style.cssText });
+
+    colorProperties.forEach((property) => {
+      const value = computed[property];
+      if (value) {
+        element.style[property] = value;
+      }
+    });
+
+    if (computed.boxShadow && computed.boxShadow !== 'none') {
+      element.style.boxShadow = computed.boxShadow;
+    }
+
+    if (computed.textShadow && computed.textShadow !== 'none') {
+      element.style.textShadow = computed.textShadow;
+    }
+  });
+
+  return () => {
+    cleanupEntries.forEach(({ element, cssText }) => {
+      element.style.cssText = cssText;
+    });
+  };
 }
 
 function getWinnerStats(winner: Team, matches: Match[]): WinnerStats {
