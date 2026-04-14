@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import type { Player, RankTier } from '../types/tournament';
-import { ArrowLeft, ArrowRight, Check, ChevronsUpDown, Circle, CircleCheckBig, Dice3, ExternalLink, Info, Users, User } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronsUpDown, Circle, CircleCheckBig, Dice3, ExternalLink, Users, User } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -468,6 +468,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     !!currentPlayerAlreadyStored &&
     (currentPlayerAlreadyStored.rank.tier !== currentPlayer.rank.tier ||
       currentPlayerAlreadyStored.rank.level !== currentPlayer.rank.level);
+  const currentPlayerIsSaved = !!currentPlayerAlreadyStored && !currentPlayerHasStoredChanges;
   const currentPlayerSaveState = playerSaveStates[selectedPlayerIndex] ?? 'idle';
   const completedPlayersCount = players.filter(isPlayerComplete).length;
   const allPlayersComplete = completedPlayersCount === players.length;
@@ -660,6 +661,17 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                   )}
                 </div>
 
+                {currentPlayerIsSaved && (
+                  <div
+                    className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-[8px] border border-amber-200/55 bg-primary px-3 text-[0.82rem] font-semibold text-primary-foreground shadow-[0_0_20px_rgba(245,180,76,0.22)] sm:h-11 sm:w-auto"
+                    aria-label={copy.playerSaved}
+                    title={copy.playerSaved}
+                  >
+                    <Check className="h-4 w-4" />
+                    <span>{copy.playerSaved}</span>
+                  </div>
+                )}
+
                 <Button
                   type="button"
                   variant="outline"
@@ -679,30 +691,6 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   {copy.openTracker}
-                </Button>
-              </div>
-
-              <div className="mt-2 flex justify-end gap-2">
-                <Button
-                  onClick={handlePrevious}
-                  disabled={selectedPlayerIndex === 0}
-                  variant="ghost"
-                  size="sm"
-                  className="h-10 w-10 rounded-[14px] border border-white/12 bg-white/5 p-0 text-white/72 hover:bg-white/10 hover:text-white sm:h-11 sm:w-11"
-                  aria-label={copy.previousPlayer}
-                  title={copy.previousPlayer}
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  onClick={handleNext}
-                  disabled={selectedPlayerIndex === players.length - 1}
-                  size="sm"
-                  className="h-10 w-10 rounded-[14px] border border-amber-200/55 bg-primary p-0 text-primary-foreground shadow-[0_0_20px_rgba(245,180,76,0.22)] hover:shadow-[0_0_28px_rgba(245,180,76,0.34)] sm:h-11 sm:w-11"
-                  aria-label={copy.nextPlayer}
-                  title={copy.nextPlayer}
-                >
-                  <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
 
@@ -767,28 +755,12 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
               </div>
             </div>
 
-            <div className={`rounded-[16px] border px-3 py-2.5 sm:rounded-[20px] sm:px-4 sm:py-3 ${
-              currentPlayerHasStoredChanges
-                ? 'border-amber-200/45 bg-amber-200/10 shadow-[0_0_28px_rgba(245,180,76,0.16)]'
-                : 'border-white/10 bg-black/10'
-            }`}>
-              {currentPlayerAlreadyStored && !currentPlayerHasStoredChanges ? (
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="min-w-0">
-                    <div className="text-[clamp(0.82rem,0.78rem+0.18vw,0.95rem)] font-semibold text-white">{copy.playerAlreadySaved}</div>
-                    <div className="text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-white/65">
-                      {copy.playerAlreadySavedHelp}
-                    </div>
-                  </div>
-                  <div
-                    className="inline-flex h-11 min-w-[76px] items-center justify-center self-start rounded-[16px] border border-amber-200/60 bg-primary text-primary-foreground shadow-[0_0_24px_rgba(245,180,76,0.28)] sm:self-auto"
-                    aria-label={copy.playerSaved}
-                    title={copy.playerSaved}
-                  >
-                    <Check className="h-6 w-6" />
-                  </div>
-                </div>
-              ) : (
+            {(!currentPlayerAlreadyStored || currentPlayerHasStoredChanges) && (
+              <div className={`rounded-[16px] border px-3 py-2.5 sm:rounded-[20px] sm:px-4 sm:py-3 ${
+                currentPlayerHasStoredChanges
+                  ? 'border-amber-200/45 bg-amber-200/10 shadow-[0_0_28px_rgba(245,180,76,0.16)]'
+                  : 'border-white/10 bg-black/10'
+              }`}>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0">
                     <div className={`font-semibold ${currentPlayerHasStoredChanges ? 'text-amber-50' : 'text-white'} text-[clamp(0.82rem,0.78rem+0.18vw,0.95rem)]`}>
@@ -828,8 +800,8 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
                         : copy.savePlayer}
                   </Button>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {currentPlayerSaveState === 'error' && (
               <div className="rounded-[16px] border border-red-300/30 bg-red-500/10 px-3 py-2 text-[clamp(0.72rem,0.69rem+0.15vw,0.82rem)] text-red-50/90">
@@ -837,25 +809,39 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
               </div>
             )}
 
-            <Card className="rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
-              <h4 className="mb-2 flex items-center gap-2 text-[clamp(0.82rem,0.78rem+0.18vw,1rem)] font-semibold sm:text-base">
-                <Info className="h-4 w-4 text-primary" />
-                <span>{copy.playerInfo}</span>
-              </h4>
-              <div className="space-y-1 text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] sm:text-sm">
-                <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-                  <span className="text-muted-foreground">{copy.fullRank}:</span>
-                  <span className="inline-flex items-center gap-2 font-semibold">
-                    <RankIcon rank={currentPlayer.rank} className="h-5 w-5" />
-                    <span>{getRankDisplay(currentPlayer.rank, language)}</span>
-                  </span>
-                </div>
-                <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-                  <span className="text-muted-foreground">{copy.strengthValue}:</span>
-                  <span className="font-semibold">{currentPlayer.strengthValue}</span>
-                </div>
+            <div className="flex flex-col gap-3 rounded-[16px] border border-white/10 bg-black/10 px-3 py-2.5 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] text-white/75 sm:flex-row sm:items-center sm:justify-between sm:rounded-[20px] sm:px-4 sm:py-3">
+              <div className="inline-flex min-w-0 items-center gap-2 font-semibold text-white">
+                <RankIcon rank={currentPlayer.rank} className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">{getRankDisplay(currentPlayer.rank, language)}</span>
               </div>
-            </Card>
+              <div className="font-semibold">
+                {copy.strengthValue}: {currentPlayer.strengthValue}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button
+                onClick={handlePrevious}
+                disabled={selectedPlayerIndex === 0}
+                variant="ghost"
+                size="sm"
+                className="h-10 w-10 rounded-[8px] border border-white/12 bg-white/5 p-0 text-white/72 hover:bg-white/10 hover:text-white sm:h-11 sm:w-11"
+                aria-label={copy.previousPlayer}
+                title={copy.previousPlayer}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={handleNext}
+                disabled={selectedPlayerIndex === players.length - 1}
+                size="sm"
+                className="h-10 w-10 rounded-[8px] border border-amber-200/55 bg-primary p-0 text-primary-foreground shadow-[0_0_20px_rgba(245,180,76,0.22)] hover:shadow-[0_0_28px_rgba(245,180,76,0.34)] sm:h-11 sm:w-11"
+                aria-label={copy.nextPlayer}
+                title={copy.nextPlayer}
+              >
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
 
             {allPlayersComplete && (
               <div>
