@@ -22,10 +22,14 @@ interface PlayerSetupProps {
   initialPlayers: Player[];
 }
 
+const MIN_PLAYER_COUNT = 2;
+const MAX_PLAYER_COUNT = 32;
+
 export default function PlayerSetup({ onComplete, onBack, initialPlayers }: PlayerSetupProps) {
   type PlayerSaveState = 'idle' | 'saving' | 'saved' | 'error';
   const language = useLanguage();
   const [playerCount, setPlayerCount] = useState<number>(initialPlayers.length || 4);
+  const [playerCountInput, setPlayerCountInput] = useState<string>((initialPlayers.length || 4).toString());
   const [players, setPlayers] = useState<Player[]>(
     initialPlayers.length > 0
       ? initialPlayers
@@ -198,6 +202,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
   }
 
   const handlePlayerCountChange = (count: number) => {
+    setPlayerCountInput(count.toString());
     setPlayerCount(count);
     const newPlayers = Array.from({ length: count }, (_, i) => {
       if (i < players.length) {
@@ -213,6 +218,31 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
     if (selectedPlayerIndex >= count) {
       setSelectedPlayerIndex(count - 1);
     }
+  };
+
+  const handlePlayerCountInputChange = (value: string) => {
+    if (value === '') {
+      setPlayerCountInput(value);
+      return;
+    }
+
+    if (!/^\d+$/.test(value)) return;
+
+    setPlayerCountInput(value);
+
+    const nextCount = Number(value);
+    if (nextCount >= MIN_PLAYER_COUNT && nextCount <= MAX_PLAYER_COUNT) {
+      handlePlayerCountChange(nextCount);
+    }
+  };
+
+  const normalizePlayerCountInput = () => {
+    const typedCount = Number(playerCountInput);
+    const nextCount = Number.isFinite(typedCount)
+      ? Math.min(MAX_PLAYER_COUNT, Math.max(MIN_PLAYER_COUNT, typedCount))
+      : playerCount;
+
+    handlePlayerCountChange(nextCount);
   };
 
   const updatePlayer = (index: number, updates: Partial<Player>) => {
@@ -463,10 +493,11 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
             <Input
               id="player-count"
               type="number"
-              min="2"
-              max="32"
-              value={playerCount}
-              onChange={(e) => handlePlayerCountChange(Math.max(2, parseInt(e.target.value) || 2))}
+              min={MIN_PLAYER_COUNT}
+              max={MAX_PLAYER_COUNT}
+              value={playerCountInput}
+              onChange={(e) => handlePlayerCountInputChange(e.target.value)}
+              onBlur={normalizePlayerCountInput}
               className="w-full sm:max-w-xs"
             />
           </div>
