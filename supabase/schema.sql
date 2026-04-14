@@ -28,6 +28,15 @@ create table if not exists public.tournaments (
   expires_at timestamptz
 );
 
+create table if not exists public.app_keepalive (
+  id integer primary key default 1,
+  last_ping timestamp with time zone default now()
+);
+
+insert into public.app_keepalive (id)
+values (1)
+on conflict (id) do nothing;
+
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
@@ -47,6 +56,7 @@ execute function public.set_updated_at();
 
 alter table public.players enable row level security;
 alter table public.tournaments enable row level security;
+alter table public.app_keepalive enable row level security;
 
 drop policy if exists "Allow anon read players" on public.players;
 create policy "Allow anon read players"
@@ -88,6 +98,17 @@ drop policy if exists "Allow anon update tournaments" on public.tournaments;
 create policy "Allow anon update tournaments"
 on public.tournaments
 for update
+to anon, authenticated
+using (true)
+with check (true);
+
+drop policy if exists "Allow all app keepalive" on public.app_keepalive;
+drop policy if exists "Allow anon read app keepalive" on public.app_keepalive;
+drop policy if exists "Allow anon write app keepalive" on public.app_keepalive;
+drop policy if exists "Allow anon update app keepalive" on public.app_keepalive;
+create policy "Allow all app keepalive"
+on public.app_keepalive
+for all
 to anon, authenticated
 using (true)
 with check (true);

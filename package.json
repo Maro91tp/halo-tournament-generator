@@ -10,6 +10,7 @@
     "preview": "astro build && wrangler dev",
     "astro": "astro",
     "cf-typegen": "wrangler types",
+    "supabase:ping": "node scripts/ping-supabase.mjs",
     "release:minor": "node scripts/release-version.mjs minor",
     "release:major": "node scripts/release-version.mjs major"
   },
