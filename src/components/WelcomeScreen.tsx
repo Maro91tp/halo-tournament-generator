@@ -1,13 +1,15 @@
 import { Flag, Save, Scale, Share } from 'lucide-react';
 import { Button } from './ui/button';
-import type { SavedTournamentRecord } from '../lib/tournament-storage';
+import type { SavedTournament, SavedTournamentRecord } from '../lib/tournament-storage';
 import type { Language } from '../lib/language';
 import { APP_VERSION_LABEL } from '../lib/app-version';
 
 interface WelcomeScreenProps {
   language: Language;
+  savedTournament?: SavedTournament | null;
   savedTournaments: SavedTournamentRecord[];
   onNewTournament: () => void;
+  onResumeTournament?: () => void;
   onLoadSavedTournament: (id: string) => void;
 }
 

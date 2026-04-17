@@ -300,6 +300,10 @@ export default function GameResultsDialog({
   const requiredWins = matchDuration === 'single' ? 1 : matchDuration === 'bo3' ? 2 : 3;
 
   const calculateSeriesWinner = (): { winnerId: string; team1Wins: number; team2Wins: number } | null => {
+    if (!match.team1 || !match.team2) {
+      return null;
+    }
+
     let team1Wins = 0;
     let team2Wins = 0;
 

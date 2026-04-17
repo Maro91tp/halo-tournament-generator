@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { ArrowLeft, Crown, Download, Medal, RefreshCcw, Sparkles, Swords, Trophy } from 'lucide-react';
 import { jsPDF } from 'jspdf';
-import type { Game, Match, Player, Team, Tournament } from '../types/tournament';
+import type { Game, Match, Player, SlayerGameScore, Team, Tournament } from '../types/tournament';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { getGameModeDisplay, getMatchDurationDisplay, getRankDisplay } from '../lib/tournament-utils';
@@ -41,6 +41,7 @@ export default function TournamentVictoryScreen({
   const language = useLanguage();
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   if (!tournament.winner) return null;
+  const winner = tournament.winner;
   const copy = language === 'en'
     ? {
         champion: 'Tournament champion',
@@ -118,7 +119,7 @@ export default function TournamentVictoryScreen({
       };
 
   const completedMatches = tournament.rounds.flatMap((round) => round.matches).filter((match) => match.winner);
-  const winnerStats = getWinnerStats(tournament.winner, completedMatches);
+  const winnerStats = getWinnerStats(winner, completedMatches);
   const formatLabel = getMatchDurationDisplay(tournament.config.matchDuration, language);
   const celebrationBursts = [
     { left: '8%', top: '14%', delay: '0s', size: '0.5rem' },
@@ -206,7 +207,7 @@ export default function TournamentVictoryScreen({
       pdf.setFontSize(24);
       pdf.text('HALO TOURNAMENT', margin + 20, cursorY + 30);
       pdf.setFontSize(16);
-      pdf.text(tournament.winner.name, margin + 20, cursorY + 58);
+      pdf.text(winner.name, margin + 20, cursorY + 58);
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(11);
       pdf.text(
@@ -216,7 +217,7 @@ export default function TournamentVictoryScreen({
       );
       cursorY += 122;
 
-      addTextBlock(`${copy.champion}: ${tournament.winner.name}`, { size: 18, weight: 'bold', color: '#111827', gap: 8 });
+      addTextBlock(`${copy.champion}: ${winner.name}`, { size: 18, weight: 'bold', color: '#111827', gap: 8 });
       addTextBlock(`${copy.matchesWon}: ${winnerStats.seriesWins}   |   ${copy.gamesWon}: ${winnerStats.gameWins}   |   ${copy.totalKills}: ${winnerStats.totalKills}`, {
         size: 11,
         color: '#475569',
@@ -285,7 +286,7 @@ export default function TournamentVictoryScreen({
         { size: 9, color: '#64748b', gap: 0 },
       );
 
-      const fileName = `${tournament.winner.name.replace(/\s+/g, '_')}_tournament_${Date.now()}.pdf`;
+      const fileName = `${winner.name.replace(/\s+/g, '_')}_tournament_${Date.now()}.pdf`;
       const dataUri = pdf.output('datauristring');
       const downloadLink = document.createElement('a');
       downloadLink.href = dataUri;
@@ -492,7 +493,7 @@ export default function TournamentVictoryScreen({
               className="relative text-[clamp(1.9rem,1.28rem+3.1vw,5.5rem)] font-bold font-heading text-white drop-shadow-[0_0_30px_rgba(245,180,76,0.22)] md:text-8xl"
               style={{ animation: 'haloVictoryNameReveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both' }}
             >
-              {tournament.winner.name}
+              {winner.name}
             </h1>
           </div>
           <div
@@ -540,7 +541,7 @@ export default function TournamentVictoryScreen({
             <StatTile label={copy.totalKills} value={String(winnerStats.totalKills)} highlight />
             <StatTile label={copy.matchesWon} value={String(winnerStats.seriesWins)} />
             <StatTile label={copy.gamesWon} value={String(winnerStats.gameWins)} />
-            <StatTile label={copy.players} value={String(tournament.winner.players.length)} />
+            <StatTile label={copy.players} value={String(winner.players.length)} />
           </div>
 
           <div className="mt-5 rounded-[22px] border border-amber-300/55 bg-[radial-gradient(circle_at_right,rgba(255,214,102,0.24),transparent_30%),radial-gradient(circle_at_left_top,rgba(255,244,200,0.14),transparent_26%),linear-gradient(180deg,rgba(255,205,96,0.28)_0%,rgba(245,180,76,0.16)_42%,rgba(245,180,76,0.07)_100%)] p-4 shadow-[0_0_50px_rgba(245,180,76,0.24),inset_0_1px_0_rgba(255,245,214,0.2)] sm:mt-6 sm:rounded-[30px] sm:p-6">
@@ -644,7 +645,7 @@ export default function TournamentVictoryScreen({
               </div>
               <div className="space-y-3">
                 {round.matches.map((match) => (
-                  <MiniMatchCard key={match.id} match={match} championId={tournament.winner?.id} />
+                  <MiniMatchCard key={match.id} match={match} championId={winner.id} />
                 ))}
               </div>
             </div>
@@ -927,12 +928,8 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
               const modeLabel = getGameModeDisplay(game.mode, language);
               const mapLabel = game.map?.trim() ? game.map : null;
               const scoreLabel = formatGameScore(game);
-              const showPlayerBreakdown = Boolean(
-                game.score &&
-                'team1PlayerKills' in game.score &&
-                match.team1 &&
-                match.team2
-              );
+              const slayerScore = isSlayerGameScore(game.score) ? game.score : null;
+              const showPlayerBreakdown = Boolean(slayerScore && match.team1 && match.team2);
 
               return (
                 <div
@@ -954,14 +951,14 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
                       <div className="grid gap-3 md:grid-cols-2">
                         <PlayerBreakdownColumn
                           team={match.team1!}
-                          killsByPlayer={game.score.team1PlayerKills}
-                          totalKills={game.score.team1TotalKills}
+                          killsByPlayer={slayerScore!.team1PlayerKills}
+                          totalKills={slayerScore!.team1TotalKills}
                           killsLabel={copy.kills}
                         />
                         <PlayerBreakdownColumn
                           team={match.team2!}
-                          killsByPlayer={game.score.team2PlayerKills}
-                          totalKills={game.score.team2TotalKills}
+                          killsByPlayer={slayerScore!.team2PlayerKills}
+                          totalKills={slayerScore!.team2TotalKills}
                           killsLabel={copy.kills}
                         />
                       </div>
@@ -1010,6 +1007,10 @@ function PlayerBreakdownColumn({
       </div>
     </div>
   );
+}
+
+function isSlayerGameScore(score: Game['score']): score is SlayerGameScore {
+  return Boolean(score && 'team1PlayerKills' in score);
 }
 function formatGameScore(game: Game): string {
   if (!game.score) return '-';

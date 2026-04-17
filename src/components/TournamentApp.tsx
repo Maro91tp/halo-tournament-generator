@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Check, Gamepad2 } from 'lucide-react';
+import { RANKED_MODE_ROTATION } from '../types/tournament';
 import type { Player, Team, Tournament, TournamentConfig, SeriesScore, Game } from '../types/tournament';
 import PlayerSetup from './PlayerSetup';
 import ConfigSetup from './ConfigSetup';
@@ -41,6 +42,10 @@ const DEV_CONFIG: TournamentConfig = {
   matchDuration: 'bo3',
   teamCreationMode: 'automatic',
   killLimit: 50,
+  selectedSlayerMaps: [],
+  rankedMapSelectionMode: 'random',
+  selectedRankedMaps: [],
+  selectedRankedModes: [...RANKED_MODE_ROTATION],
 };
 
 const DEV_TEAMS: Team[] = [
@@ -162,7 +167,7 @@ export default function TournamentApp() {
     const updatedRecord = saveNamedTournament({
       id: existingRecord.id,
       name: existingRecord.name,
-      step: step === 'welcome' ? 'players' : step,
+      step,
       players,
       config,
       teams,
@@ -207,7 +212,7 @@ export default function TournamentApp() {
     setConfig(saved.config);
     setTeams(saved.teams);
     setTournament(saved.tournament);
-    setStep(saved.step === 'welcome' ? 'players' : saved.step);
+    setStep(saved.step);
   };
 
   const handleLoadSavedTournament = async (id: string) => {

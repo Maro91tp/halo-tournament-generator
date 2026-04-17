@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
-import { ArrowLeft, ArrowRight, Dice3, FileText, Settings2, Shield, Target, TriangleAlert, Trophy, Users2 } from 'lucide-react';
-import { SLAYER_MAPS, type TournamentConfig, type TeamMode, type TeamCreationMode } from '../types/tournament';
+import { ArrowLeft, ArrowRight, ChevronDown, Dice3, FileText, Settings2, Shield, Target, TriangleAlert, Trophy, Users2 } from 'lucide-react';
+import { RANKED_MAPS, RANKED_MODE_ROTATION, SLAYER_MAPS, type GameMode, type RankedMapSelectionMode, type TournamentConfig, type TeamMode, type TeamCreationMode } from '../types/tournament';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Card } from './ui/card';
@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { validatePlayerCount } from '../lib/tournament-utils';
 import { ModeIcon } from './TournamentIcons';
 import { useLanguage } from './LanguageContext';
+import { cn } from '@/lib/utils';
 
 interface ConfigSetupProps {
   playerCount: number;
@@ -26,6 +27,9 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
     teamCreationMode: 'automatic',
     killLimit: 50,
     selectedSlayerMaps: [...SLAYER_MAPS],
+    rankedMapSelectionMode: 'random',
+    selectedRankedMaps: RANKED_MAPS.map((map) => map.name),
+    selectedRankedModes: [...RANKED_MODE_ROTATION],
   };
 
   const [config, setConfig] = useState<TournamentConfig>(
@@ -34,6 +38,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
   const presetKillLimits = [25, 50, 75, 100];
   const initialIsCustomKillLimit = !presetKillLimits.includes((initialConfig ? { ...defaultConfig, ...initialConfig } : defaultConfig).killLimit);
   const [customKillLimitEnabled, setCustomKillLimitEnabled] = useState(initialIsCustomKillLimit);
+  const [openSetting, setOpenSetting] = useState<'type' | 'teamMode' | 'duration' | 'teamCreation' | null>('type');
   const [error, setError] = useState('');
   const copy = language === 'en'
     ? {
@@ -55,6 +60,13 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         customKillLimitPlaceholder: 'Enter kill limit',
         slayerMaps: 'Slayer map pool',
         slayerMapsHelp: 'Choose the maps available for Slayer tournaments. If you leave more than one active, the app will rotate them from your selected pool.',
+        rankedMaps: 'Ranked map pool',
+        rankedMapsHelp: 'Keep the current random rotation or limit Ranked games to the maps you choose. Modes still only use compatible maps.',
+        rankedModes: 'Ranked mode pool',
+        rankedModesHelp: 'Choose which Ranked modes can appear in the rotation. Leave at least one active.',
+        rankedCompatibilityWarning: 'The selected maps are not enabled for: {modes}. Select a compatible map or disable that game mode.',
+        rankedMapModeRandom: 'Random rotation',
+        rankedMapModeCustom: 'Selected maps',
         mapsSelected: 'maps selected',
         allMaps: 'All maps',
         teamCreation: 'Team creation mode',
@@ -100,6 +112,13 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         customKillLimitPlaceholder: 'Inserisci limite kill',
         slayerMaps: 'Pool mappe Slayer',
         slayerMapsHelp: 'Scegli le mappe disponibili per i tornei Massacro. Se ne lasci attiva piu di una, l app ruotera solo nella pool selezionata.',
+        rankedMaps: 'Pool mappe Ranked',
+        rankedMapsHelp: 'Mantieni la rotazione casuale attuale oppure limita le partite Ranked alle mappe che scegli. Ogni modalita usa comunque solo mappe compatibili.',
+        rankedModes: 'Pool modalita Ranked',
+        rankedModesHelp: 'Scegli quali modalita Ranked possono apparire nella rotazione. Lasciane almeno una attiva.',
+        rankedCompatibilityWarning: 'Le mappe selezionate non sono abilitate per: {modes}. Seleziona una mappa compatibile o disattiva quella modalita di gioco.',
+        rankedMapModeRandom: 'Rotazione casuale',
+        rankedMapModeCustom: 'Mappe selezionate',
         mapsSelected: 'mappe selezionate',
         allMaps: 'Tutte le mappe',
         teamCreation: 'Modalita creazione squadre',
@@ -128,6 +147,15 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
       };
 
   const handleSubmit = () => {
+    const rankedMapCompatibilityIssues = getRankedMapCompatibilityIssues(config);
+    if (config.type === 'ranked' && rankedMapCompatibilityIssues.length > 0) {
+      setError(copy.rankedCompatibilityWarning.replace(
+        '{modes}',
+        rankedMapCompatibilityIssues.map((mode) => getRankedModeLabel(mode, language)).join(', ')
+      ));
+      return;
+    }
+
     if (!validatePlayerCount(playerCount, config.teamMode)) {
       const teamSize = parseInt(config.teamMode.charAt(0));
       setError(
@@ -171,7 +199,52 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
     updateConfig('selectedSlayerMaps', nextMaps.length > 0 ? nextMaps : [mapName]);
   };
 
+  const toggleRankedMap = (mapName: string) => {
+    const hasMap = config.selectedRankedMaps.includes(mapName);
+    const nextMaps = hasMap
+      ? config.selectedRankedMaps.filter((map) => map !== mapName)
+      : [...config.selectedRankedMaps, mapName];
+
+    updateConfig('selectedRankedMaps', nextMaps.length > 0 ? nextMaps : [mapName]);
+  };
+
+  const toggleRankedMode = (mode: GameMode) => {
+    const hasMode = config.selectedRankedModes.includes(mode);
+    const nextModes = hasMode
+      ? config.selectedRankedModes.filter((candidate) => candidate !== mode)
+      : [...config.selectedRankedModes, mode];
+
+    updateConfig('selectedRankedModes', nextModes.length > 0 ? nextModes : [mode]);
+  };
+
+  const updateRankedMapSelectionMode = (mode: RankedMapSelectionMode) => {
+    updateConfig('rankedMapSelectionMode', mode);
+  };
+
   const sectionTitleClass = 'mb-3 block text-[clamp(1.05rem,1rem+0.42vw,1.28rem)] font-bold tracking-[0.01em] text-white sm:mb-4';
+  const selectedTournamentTypeLabel = config.type === 'slayer' ? copy.slayerTitle : copy.rankedTitle;
+  const selectedDurationLabel =
+    config.matchDuration === 'single'
+      ? copy.single
+      : config.matchDuration === 'bo3'
+        ? copy.bo3Title
+        : copy.bo5Title;
+  const selectedTeamCreationLabel =
+    config.teamCreationMode === 'automatic'
+      ? copy.balanced
+      : config.teamCreationMode === 'random'
+        ? copy.random
+        : copy.manual;
+  const selectedTeamCreationIcon =
+    config.teamCreationMode === 'automatic'
+      ? <Users2 />
+      : config.teamCreationMode === 'random'
+        ? <Dice3 />
+        : <Shield />;
+  const toggleSetting = (setting: 'type' | 'teamMode' | 'duration' | 'teamCreation') => {
+    setOpenSetting((current) => (current === setting ? null : setting));
+  };
+  const rankedMapCompatibilityIssues = getRankedMapCompatibilityIssues(config);
 
   return (
     <div className="app-section flex w-full flex-col">
@@ -185,64 +258,99 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         </p>
       </div>
 
-      <div>
-        <Label className={sectionTitleClass}>{copy.tournamentType}</Label>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="grid gap-3">
+        <ExpandableSettingCard
+          title={copy.tournamentType}
+          selectedValue={selectedTournamentTypeLabel}
+          icon={config.type === 'slayer' ? <ModeIcon mode="slayer" /> : <Trophy />}
+          isOpen={openSetting === 'type'}
+          onToggle={() => toggleSetting('type')}
+        >
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <OptionCard
             selected={config.type === 'slayer'}
-            onClick={() => updateConfig('type', 'slayer')}
+            onClick={() => {
+              updateConfig('type', 'slayer');
+              setOpenSetting(null);
+            }}
             icon={<ModeIcon mode="slayer" className="h-4 w-4" />}
             title={copy.slayerTitle}
             description={copy.slayerDescription}
           />
           <OptionCard
             selected={config.type === 'ranked'}
-            onClick={() => updateConfig('type', 'ranked')}
+            onClick={() => {
+              updateConfig('type', 'ranked');
+              setOpenSetting(null);
+            }}
             icon={<Trophy className="h-4 w-4 text-primary" />}
             title={copy.rankedTitle}
             description={copy.rankedDescription}
           />
-        </div>
-      </div>
+          </div>
+        </ExpandableSettingCard>
 
-      <div>
-        <Label className={sectionTitleClass}>{copy.teamMode}</Label>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <ExpandableSettingCard
+          title={copy.teamMode}
+          selectedValue={config.teamMode}
+          icon={<Users2 />}
+          isOpen={openSetting === 'teamMode'}
+          onToggle={() => toggleSetting('teamMode')}
+        >
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {(['1v1', '2v2', '3v3', '4v4'] as TeamMode[]).map((mode) => (
             <OptionCard
               key={mode}
               selected={config.teamMode === mode}
-              onClick={() => updateConfig('teamMode', mode)}
+              onClick={() => {
+                updateConfig('teamMode', mode);
+                setOpenSetting(null);
+              }}
               title={mode}
               compact
             />
           ))}
-        </div>
-      </div>
+          </div>
+        </ExpandableSettingCard>
 
-      <div>
-        <Label className={sectionTitleClass}>{copy.matchDuration}</Label>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <ExpandableSettingCard
+          title={copy.matchDuration}
+          selectedValue={selectedDurationLabel}
+          icon={<Target />}
+          isOpen={openSetting === 'duration'}
+          onToggle={() => toggleSetting('duration')}
+        >
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <OptionCard
             selected={config.matchDuration === 'single'}
-            onClick={() => updateConfig('matchDuration', 'single')}
+            onClick={() => {
+              updateConfig('matchDuration', 'single');
+              setOpenSetting(null);
+            }}
             title={copy.single}
             description={copy.singleDescription}
           />
           <OptionCard
             selected={config.matchDuration === 'bo3'}
-            onClick={() => updateConfig('matchDuration', 'bo3')}
+            onClick={() => {
+              updateConfig('matchDuration', 'bo3');
+              setOpenSetting(null);
+            }}
             title={copy.bo3Title}
             description={copy.bo3Description}
           />
           <OptionCard
             selected={config.matchDuration === 'bo5'}
-            onClick={() => updateConfig('matchDuration', 'bo5')}
+            onClick={() => {
+              updateConfig('matchDuration', 'bo5');
+              setOpenSetting(null);
+            }}
             title={copy.bo5Title}
             description={copy.bo5Description}
           />
+          </div>
+        </ExpandableSettingCard>
         </div>
-      </div>
 
       <div>
         <Label className={sectionTitleClass}>{copy.killLimit}</Label>
@@ -336,44 +444,169 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         </div>
       )}
 
+      {config.type === 'ranked' && (
+        <div className="pb-2 sm:pb-3">
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <Label className={sectionTitleClass}>{copy.rankedMaps}</Label>
+              <p className="max-w-3xl text-[clamp(0.76rem,0.73rem+0.16vw,0.9rem)] text-muted-foreground">
+                {copy.rankedMapsHelp}
+              </p>
+            </div>
+            <div className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] font-medium text-white/78">
+              {config.rankedMapSelectionMode === 'random'
+                ? copy.rankedMapModeRandom
+                : `${config.selectedRankedMaps.length}/${RANKED_MAPS.length} ${copy.mapsSelected}`}
+            </div>
+          </div>
+
+          <div className="glass-card space-y-4 p-4 sm:p-6">
+            <div>
+              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                <div className="text-[clamp(0.9rem,0.84rem+0.24vw,1rem)] font-semibold text-white">
+                  {copy.rankedModes}
+                </div>
+                <div className="text-[clamp(0.72rem,0.69rem+0.15vw,0.86rem)] text-white/62">
+                  {config.selectedRankedModes.length}/{RANKED_MODE_ROTATION.length}
+                </div>
+              </div>
+              <p className="mb-3 max-w-3xl text-[clamp(0.76rem,0.73rem+0.16vw,0.9rem)] text-muted-foreground">
+                {copy.rankedModesHelp}
+              </p>
+              <div className="flex flex-wrap gap-2.5">
+                {RANKED_MODE_ROTATION.map((mode) => {
+                  const selected = config.selectedRankedModes.includes(mode);
+
+                  return (
+                    <Button
+                      key={mode}
+                      type="button"
+                      variant={selected ? 'default' : 'outline'}
+                      onClick={() => toggleRankedMode(mode)}
+                      className={`min-h-10 rounded-full px-3 text-[0.8rem] sm:min-h-11 sm:px-4 sm:text-[0.94rem] ${
+                        selected
+                          ? 'shadow-[0_0_24px_rgba(245,180,76,0.22)]'
+                          : 'border-white/18 bg-white/5 text-white/80 hover:bg-white/10'
+                      }`}
+                    >
+                      <ModeIcon mode={mode} className="h-3.5 w-3.5" />
+                      {getRankedModeLabel(mode, language)}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="border-t border-white/8 pt-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <OptionCard
+                selected={config.rankedMapSelectionMode === 'random'}
+                onClick={() => updateRankedMapSelectionMode('random')}
+                icon={<Dice3 className="h-4 w-4 text-primary" />}
+                title={copy.rankedMapModeRandom}
+                description={copy.rankedMapsHelp}
+              />
+              <OptionCard
+                selected={config.rankedMapSelectionMode === 'custom'}
+                onClick={() => updateRankedMapSelectionMode('custom')}
+                icon={<Target className="h-4 w-4 text-primary" />}
+                title={copy.rankedMapModeCustom}
+                description={`${config.selectedRankedMaps.length}/${RANKED_MAPS.length} ${copy.mapsSelected}`}
+              />
+            </div>
+
+            {config.rankedMapSelectionMode === 'custom' && (
+              <div className="space-y-4 border-t border-white/8 pt-4">
+                <div className="flex flex-wrap gap-2.5">
+                  {RANKED_MAPS.map((map) => {
+                    const selected = config.selectedRankedMaps.includes(map.name);
+
+                    return (
+                      <Button
+                        key={map.name}
+                        type="button"
+                        variant={selected ? 'default' : 'outline'}
+                        onClick={() => toggleRankedMap(map.name)}
+                        className={`min-h-10 rounded-full px-3 text-[0.8rem] sm:min-h-11 sm:px-4 sm:text-[0.94rem] ${
+                          selected
+                            ? 'shadow-[0_0_24px_rgba(245,180,76,0.22)]'
+                            : 'border-white/18 bg-white/5 text-white/80 hover:bg-white/10'
+                        }`}
+                      >
+                        {map.name}
+                      </Button>
+                    );
+                  })}
+                </div>
+
+                {rankedMapCompatibilityIssues.length > 0 && (
+                  <div className="rounded-[16px] border border-amber-200/35 bg-[linear-gradient(180deg,rgba(245,180,76,0.16)_0%,rgba(245,180,76,0.06)_100%)] px-4 py-3 text-[clamp(0.76rem,0.73rem+0.16vw,0.9rem)] leading-relaxed text-amber-50 shadow-[0_0_22px_rgba(245,180,76,0.10)]">
+                    <div className="flex items-start gap-2">
+                      <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <span>
+                        {copy.rankedCompatibilityWarning.replace(
+                          '{modes}',
+                          rankedMapCompatibilityIssues.map((mode) => getRankedModeLabel(mode, language)).join(', ')
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="pt-3 sm:pt-5">
-        <Label className={sectionTitleClass}>{copy.teamCreation}</Label>
-        <p className="mb-5 max-w-2xl text-[clamp(0.76rem,0.73rem+0.16vw,0.9rem)] text-muted-foreground sm:mb-6">
-          {copy.teamCreationHelp}
-        </p>
-        <RadioGroup
-          value={config.teamCreationMode}
-          onValueChange={(value) => updateConfig('teamCreationMode', value as TeamCreationMode)}
-          className="grid gap-5 md:grid-cols-3"
+        <ExpandableSettingCard
+          title={copy.teamCreation}
+          selectedValue={selectedTeamCreationLabel}
+          icon={selectedTeamCreationIcon}
+          isOpen={openSetting === 'teamCreation'}
+          onToggle={() => toggleSetting('teamCreation')}
         >
-          <TeamCreationCard
-            id="auto"
-            value="automatic"
-            selected={config.teamCreationMode === 'automatic'}
-            icon={Users2}
-            title={copy.balanced}
-            description={copy.balancedDescription}
-            detail={copy.balancedDetail}
-          />
-          <TeamCreationCard
-            id="random"
-            value="random"
-            selected={config.teamCreationMode === 'random'}
-            icon={Dice3}
-            title={copy.random}
-            description={copy.randomDescription}
-            detail={copy.randomDetail}
-          />
-          <TeamCreationCard
-            id="manual"
-            value="manual"
-            selected={config.teamCreationMode === 'manual'}
-            icon={Shield}
-            title={copy.manual}
-            description={copy.manualDescription}
-            detail={copy.manualDetail}
-          />
-        </RadioGroup>
+          <p className="mb-4 max-w-2xl text-[clamp(0.76rem,0.73rem+0.16vw,0.9rem)] text-muted-foreground">
+            {copy.teamCreationHelp}
+          </p>
+          <RadioGroup
+            value={config.teamCreationMode}
+            onValueChange={(value) => {
+              updateConfig('teamCreationMode', value as TeamCreationMode);
+              setOpenSetting(null);
+            }}
+            className="grid gap-4 md:grid-cols-3"
+          >
+            <TeamCreationCard
+              id="auto"
+              value="automatic"
+              selected={config.teamCreationMode === 'automatic'}
+              icon={Users2}
+              title={copy.balanced}
+              description={copy.balancedDescription}
+              detail={copy.balancedDetail}
+            />
+            <TeamCreationCard
+              id="random"
+              value="random"
+              selected={config.teamCreationMode === 'random'}
+              icon={Dice3}
+              title={copy.random}
+              description={copy.randomDescription}
+              detail={copy.randomDetail}
+            />
+            <TeamCreationCard
+              id="manual"
+              value="manual"
+              selected={config.teamCreationMode === 'manual'}
+              icon={Shield}
+              title={copy.manual}
+              description={copy.manualDescription}
+              detail={copy.manualDetail}
+            />
+          </RadioGroup>
+        </ExpandableSettingCard>
       </div>
 
       {error && (
@@ -396,6 +629,8 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
           <li>{copy.teams}: {config.teamMode}</li>
           <li>{copy.killSummary}: {config.killLimit}</li>
           {config.type === 'slayer' && <li>{copy.slayerMaps}: {config.selectedSlayerMaps.length === SLAYER_MAPS.length ? copy.allMaps : config.selectedSlayerMaps.join(', ')}</li>}
+          {config.type === 'ranked' && <li>{copy.rankedModes}: {config.selectedRankedModes.map((mode) => getRankedModeLabel(mode, language)).join(', ')}</li>}
+          {config.type === 'ranked' && <li>{copy.rankedMaps}: {config.rankedMapSelectionMode === 'random' ? copy.rankedMapModeRandom : config.selectedRankedMaps.join(', ')}</li>}
           <li>{Math.floor(playerCount / parseInt(config.teamMode.charAt(0)))} {copy.teamCount}</li>
         </ul>
       </div>
@@ -421,6 +656,118 @@ interface OptionCardProps {
   description?: string;
   compact?: boolean;
   icon?: ReactNode;
+}
+
+function getRankedModeLabel(mode: GameMode, language: 'it' | 'en'): string {
+  const labels: Record<GameMode, { it: string; en: string }> = {
+    slayer: { it: 'Massacro', en: 'Slayer' },
+    oddball: { it: 'Teschio', en: 'Oddball' },
+    ctf: { it: 'Ruba bandiera', en: 'Capture the Flag' },
+    koth: { it: 'Re della collina', en: 'King of the Hill' },
+  };
+
+  return labels[mode][language];
+}
+
+function getRankedMapCompatibilityIssues(config: TournamentConfig): GameMode[] {
+  if (config.type !== 'ranked' || config.rankedMapSelectionMode !== 'custom') {
+    return [];
+  }
+
+  return config.selectedRankedModes.filter((mode) => {
+    return !RANKED_MAPS.some((map) => (
+      config.selectedRankedMaps.includes(map.name) && map.modes.includes(mode)
+    ));
+  });
+}
+
+interface ExpandableSettingCardProps {
+  title: string;
+  selectedValue: string;
+  icon: ReactNode;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: ReactNode;
+}
+
+function ExpandableSettingCard({
+  title,
+  selectedValue,
+  icon,
+  isOpen,
+  onToggle,
+  children,
+}: ExpandableSettingCardProps) {
+  return (
+    <Card
+      className={cn(
+        'overflow-hidden rounded-[18px] p-0 transition-all duration-300 sm:rounded-[22px]',
+        isOpen
+          ? 'border-primary/70 bg-[linear-gradient(135deg,rgba(12,184,217,0.64)_0%,rgba(8,34,107,0.84)_48%,rgba(5,10,41,0.94)_100%)] shadow-[0_0_34px_rgba(245,180,76,0.18)]'
+          : 'border-cyan-100/18 bg-[linear-gradient(135deg,rgba(15,190,222,0.46)_0%,rgba(8,40,116,0.76)_46%,rgba(4,9,39,0.92)_100%)] shadow-[0_0_22px_rgba(79,194,255,0.10)] hover:border-primary/40 hover:shadow-[0_0_28px_rgba(245,180,76,0.12)]'
+      )}
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        className="flex min-h-[78px] w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.035] focus-visible:ring-2 focus-visible:ring-primary/45 sm:min-h-[86px] sm:px-5"
+      >
+        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+          <div
+            className={cn(
+              'flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] border bg-black/12 text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] sm:h-12 sm:w-12',
+              '[&_svg]:block [&_svg]:h-5 [&_svg]:w-5 [&_svg]:translate-y-0 [&_svg]:text-primary [&_svg]:opacity-100 sm:[&_svg]:h-5 sm:[&_svg]:w-5',
+              isOpen
+                ? 'border-primary/55 bg-primary/13 shadow-[0_0_18px_rgba(245,180,76,0.14),inset_0_1px_0_rgba(255,255,255,0.12)]'
+                : 'border-cyan-100/20 bg-cyan-100/[0.055]'
+            )}
+          >
+            {icon}
+          </div>
+          <div className="min-w-0">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/56 sm:text-[11px]">
+              {title}
+            </div>
+            <div className="mt-1 truncate text-[clamp(1.08rem,0.98rem+0.38vw,1.28rem)] font-black leading-tight text-white">
+              {selectedValue}
+            </div>
+          </div>
+        </div>
+        <div
+          className={cn(
+            'flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-white/[0.055] text-white/82 transition-all duration-300',
+            isOpen ? 'border-primary/50 shadow-[0_0_18px_rgba(245,180,76,0.16)]' : 'border-white/14'
+          )}
+        >
+          <ChevronDown
+            className={cn(
+              'h-4 w-4 transition-transform duration-300 ease-out',
+              isOpen ? 'rotate-180 text-primary' : ''
+            )}
+          />
+        </div>
+      </button>
+
+      <div
+        className={cn(
+          'grid transition-[grid-template-rows] duration-300 ease-out',
+          isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+        )}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div
+            className={cn(
+              'border-t border-white/8 px-4 pb-4 pt-3 transition-all duration-300 ease-out sm:px-5 sm:pb-5 sm:pt-4',
+              isOpen ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'
+            )}
+          >
+            {children}
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
 }
 
 function OptionCard({ selected, onClick, title, description, compact, icon }: OptionCardProps) {

@@ -9,7 +9,7 @@ import { Card } from './ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
 import { calculateStrengthValue, getRankDisplay } from '../lib/tournament-utils';
-import { getBundledPlayers, getPlayerByName, getStoredPlayers, searchPlayers, savePlayer, syncBundledPlayers, type StoredPlayer } from '../lib/player-storage';
+import { getBundledPlayers, getPlayerByName, getStoredPlayers, savePlayer, syncBundledPlayers, type StoredPlayer } from '../lib/player-storage';
 import { cn } from '../lib/utils';
 import { RankIcon } from './TournamentIcons';
 import { useLanguage } from './LanguageContext';
@@ -374,7 +374,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
       return;
     }
 
-    players.forEach((player, index) => {
+    players.forEach((player) => {
       const playerKey = (player.gamertag || player.name).trim();
       const alreadyStored = findStoredPlayerByName(playerKey) ?? getPlayerByName(playerKey);
       const hasStoredChanges =

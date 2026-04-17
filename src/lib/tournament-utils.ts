@@ -104,12 +104,6 @@ export function generateRandomTeams(players: Player[], teamSize: number, languag
   return teams;
 }
 
-function getRandomSlayerMap(usedMaps: string[] = []): string {
-  const availableMaps = SLAYER_MAPS.filter((map) => !usedMaps.includes(map));
-  const mapsToUse = availableMaps.length > 0 ? availableMaps : SLAYER_MAPS;
-  return mapsToUse[Math.floor(Math.random() * mapsToUse.length)];
-}
-
 function getConfiguredSlayerMapPool(config: TournamentConfig): string[] {
   if (Array.isArray(config.selectedSlayerMaps) && config.selectedSlayerMaps.length > 0) {
     return config.selectedSlayerMaps;
@@ -125,17 +119,34 @@ function getRandomConfiguredSlayerMap(config: TournamentConfig, usedMaps: string
   return mapsToUse[Math.floor(Math.random() * mapsToUse.length)];
 }
 
-function getRandomRankedMap(mode: GameMode, usedMaps: string[] = []): string {
-  const availableMaps = RANKED_MAPS.filter((map) => map.modes.includes(mode))
-    .filter((map) => !usedMaps.includes(map.name))
-    .map((map) => map.name);
+function getConfiguredRankedMapPool(config: TournamentConfig, mode: GameMode): string[] {
+  const mapsForMode = RANKED_MAPS.filter((map) => map.modes.includes(mode)).map((map) => map.name);
 
-  const mapsToUse =
-    availableMaps.length > 0
-      ? availableMaps
-      : RANKED_MAPS.filter((map) => map.modes.includes(mode)).map((map) => map.name);
+  if (config.rankedMapSelectionMode !== 'custom') {
+    return mapsForMode;
+  }
+
+  const selectedMapsForMode = Array.isArray(config.selectedRankedMaps)
+    ? config.selectedRankedMaps.filter((mapName) => mapsForMode.includes(mapName))
+    : [];
+
+  return selectedMapsForMode.length > 0 ? selectedMapsForMode : mapsForMode;
+}
+
+function getRandomConfiguredRankedMap(config: TournamentConfig, mode: GameMode, usedMaps: string[] = []): string {
+  const mapPool = getConfiguredRankedMapPool(config, mode);
+  const availableMaps = mapPool.filter((mapName) => !usedMaps.includes(mapName));
+  const mapsToUse = availableMaps.length > 0 ? availableMaps : mapPool;
 
   return mapsToUse[Math.floor(Math.random() * mapsToUse.length)];
+}
+
+function getConfiguredRankedModeRotation(config: TournamentConfig): GameMode[] {
+  const selectedModes = Array.isArray(config.selectedRankedModes)
+    ? RANKED_MODE_ROTATION.filter((mode) => config.selectedRankedModes.includes(mode))
+    : [];
+
+  return selectedModes.length > 0 ? selectedModes : RANKED_MODE_ROTATION;
 }
 
 /**
@@ -147,12 +158,13 @@ export function generateTournament(teams: Team[], config: TournamentConfig, lang
   const rounds: Round[] = [];
   const usedMaps: string[] = [];
   const shuffledTeams = [...teams].sort(() => Math.random() - 0.5);
+  const rankedModeRotation = getConfiguredRankedModeRotation(config);
 
   const firstRoundMatches: Match[] = [];
-  const firstRoundMode = config.type === 'ranked' ? RANKED_MODE_ROTATION[0] : undefined;
+  const firstRoundMode = config.type === 'ranked' ? rankedModeRotation[0] : undefined;
   const firstRoundMap =
     config.type === 'ranked'
-      ? getRandomRankedMap(firstRoundMode!, usedMaps)
+      ? getRandomConfiguredRankedMap(config, firstRoundMode!, usedMaps)
       : getRandomConfiguredSlayerMap(config, usedMaps);
 
   usedMaps.push(firstRoundMap);
@@ -194,11 +206,11 @@ export function generateTournament(teams: Team[], config: TournamentConfig, lang
     const matches: Match[] = [];
     const roundMode =
       config.type === 'ranked'
-        ? RANKED_MODE_ROTATION[roundIndex % RANKED_MODE_ROTATION.length]
+        ? rankedModeRotation[roundIndex % rankedModeRotation.length]
         : undefined;
     const roundMap =
       config.type === 'ranked'
-        ? getRandomRankedMap(roundMode!, usedMaps)
+        ? getRandomConfiguredRankedMap(config, roundMode!, usedMaps)
         : getRandomConfiguredSlayerMap(config, usedMaps);
 
     usedMaps.push(roundMap);
@@ -380,8 +392,9 @@ export function generateGamesForMatch(
       mode = 'slayer';
       map = getRandomConfiguredSlayerMap(config, usedMaps);
     } else {
-      mode = RANKED_MODE_ROTATION[(roundIndex + i) % RANKED_MODE_ROTATION.length];
-      map = getRandomRankedMap(mode, usedMaps);
+      const rankedModeRotation = getConfiguredRankedModeRotation(config);
+      mode = rankedModeRotation[(roundIndex + i) % rankedModeRotation.length];
+      map = getRandomConfiguredRankedMap(config, mode, usedMaps);
     }
 
     usedMaps.push(map);

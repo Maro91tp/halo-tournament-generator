@@ -29,6 +29,7 @@ export type TournamentType = 'slayer' | 'ranked';
 export type TeamMode = '1v1' | '2v2' | '3v3' | '4v4';
 export type MatchDuration = 'single' | 'bo3' | 'bo5';
 export type TeamCreationMode = 'manual' | 'automatic' | 'random';
+export type RankedMapSelectionMode = 'random' | 'custom';
 
 export interface TournamentConfig {
   type: TournamentType;
@@ -37,6 +38,9 @@ export interface TournamentConfig {
   teamCreationMode: TeamCreationMode;
   killLimit: number;
   selectedSlayerMaps: string[];
+  rankedMapSelectionMode: RankedMapSelectionMode;
+  selectedRankedMaps: string[];
+  selectedRankedModes: GameMode[];
 }
 
 export type GameMode = 'slayer' | 'ctf' | 'oddball' | 'koth';
