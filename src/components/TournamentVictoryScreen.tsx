@@ -40,6 +40,7 @@ export default function TournamentVictoryScreen({
 }: TournamentVictoryScreenProps) {
   const language = useLanguage();
   const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const [finalBracketVisible, setFinalBracketVisible] = useState(false);
   if (!tournament.winner) return null;
   const winner = tournament.winner;
   const copy = language === 'en'
@@ -55,6 +56,10 @@ export default function TournamentVictoryScreen({
         players: 'Players',
         championRoster: 'Champion roster',
         tournamentRun: 'Tournament run',
+        finalBracket: 'Final bracket',
+        finalBracketHelp: 'Read-only compact view of every round, result, winner and key player kills.',
+        showFinalBracket: 'Show bracket',
+        hideFinalBracket: 'Hide bracket',
         back: 'Back',
         replay: 'Replay same tournament',
         newTournament: 'New tournament',
@@ -92,6 +97,10 @@ export default function TournamentVictoryScreen({
         players: 'Giocatori',
         championRoster: 'Roster campione',
         tournamentRun: 'Percorso torneo',
+        finalBracket: 'Tabellone finale',
+        finalBracketHelp: 'Vista compatta read-only con round, risultato, vincitore e kill principali.',
+        showFinalBracket: 'Mostra bracket',
+        hideFinalBracket: 'Nascondi bracket',
         back: 'Indietro',
         replay: 'Rigioca stesso torneo',
         newTournament: 'Nuovo torneo',
@@ -200,6 +209,80 @@ export default function TournamentVictoryScreen({
         cursorY += 16;
       };
 
+      const addPdfSectionTitle = (title: string, subtitle?: string) => {
+        ensureSpace(subtitle ? 44 : 28);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(16);
+        pdf.setTextColor('#0f172a');
+        pdf.text(title, margin, cursorY);
+        cursorY += 18;
+
+        if (subtitle) {
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(10);
+          pdf.setTextColor('#64748b');
+          const lines = pdf.splitTextToSize(subtitle, contentWidth);
+          pdf.text(lines, margin, cursorY);
+          cursorY += lines.length * 13 + 8;
+        }
+      };
+
+      const addPdfBracket = () => {
+        addDivider();
+        addPdfSectionTitle(copy.finalBracket, copy.finalBracketHelp);
+
+        tournament.rounds.forEach((round) => {
+          ensureSpace(42);
+          pdf.setFillColor(15, 23, 42);
+          pdf.roundedRect(margin, cursorY, contentWidth, 30, 8, 8, 'F');
+          pdf.setTextColor('#f8fafc');
+          pdf.setFont('helvetica', 'bold');
+          pdf.setFontSize(12);
+          pdf.text(`${round.name}${round.map ? ` - ${round.map}` : ''}`, margin + 12, cursorY + 19);
+          cursorY += 40;
+
+          round.matches.forEach((match) => {
+            const { team1Score, team2Score } = getDisplaySeriesScore(match);
+            const team1Name = match.team1?.name ?? 'TBD';
+            const team2Name = match.team2?.name ?? 'TBD';
+            const winnerName = match.winner?.name ?? 'TBD';
+            const killLeaders = getMatchPlayerKillLeaders(match, copy.kills).slice(0, 4);
+            const boxHeight = 58 + killLeaders.length * 12;
+
+            ensureSpace(boxHeight + 10);
+            pdf.setDrawColor(226, 232, 240);
+            pdf.setFillColor(248, 250, 252);
+            pdf.roundedRect(margin, cursorY, contentWidth, boxHeight, 8, 8, 'FD');
+
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(10);
+            pdf.setTextColor('#64748b');
+            pdf.text(`Match ${match.matchIndex + 1}`, margin + 12, cursorY + 16);
+
+            pdf.setFontSize(13);
+            pdf.setTextColor('#0f172a');
+            const resultLine = `${team1Name} ${team1Score} - ${team2Score} ${team2Name}`;
+            pdf.text(pdf.splitTextToSize(resultLine, contentWidth - 24), margin + 12, cursorY + 34);
+
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(10);
+            pdf.setTextColor('#92400e');
+            pdf.text(`${copy.winner}: ${winnerName}`, margin + 12, cursorY + 50);
+
+            if (killLeaders.length > 0) {
+              pdf.setFont('helvetica', 'normal');
+              pdf.setFontSize(9);
+              pdf.setTextColor('#475569');
+              killLeaders.forEach((line, index) => {
+                pdf.text(line, margin + 12, cursorY + 66 + index * 12);
+              });
+            }
+
+            cursorY += boxHeight + 8;
+          });
+        });
+      };
+
       pdf.setFillColor(15, 23, 42);
       pdf.roundedRect(margin, cursorY, contentWidth, 98, 16, 16, 'F');
       pdf.setTextColor('#f8fafc');
@@ -237,6 +320,8 @@ export default function TournamentVictoryScreen({
           { size: 11, color: '#334155', gap: 6 },
         );
       });
+
+      addPdfBracket();
 
       addDivider();
       addTextBlock(copy.tournamentRun, { size: 16, weight: 'bold', color: '#0f172a', gap: 12 });
@@ -617,7 +702,7 @@ export default function TournamentVictoryScreen({
             onClick={handleDownloadPdf}
             disabled={isExportingPdf}
             size="lg"
-            className="min-h-12 w-full shadow-[0_0_34px_rgba(245,180,76,0.28)] hover:shadow-[0_0_44px_rgba(245,180,76,0.38)] lg:min-w-[260px] lg:w-auto"
+            className="min-h-12 w-full border border-amber-200/70 shadow-[0_0_38px_rgba(245,180,76,0.34)] hover:shadow-[0_0_50px_rgba(245,180,76,0.46)] lg:min-w-[260px] lg:w-auto"
           >
             <Download className="h-4 w-4" />
             {isExportingPdf ? copy.exportingPdf : copy.downloadPdf}
@@ -653,6 +738,19 @@ export default function TournamentVictoryScreen({
         </div>
       </Card>
 
+      <FinalBracketSummary
+        tournament={tournament}
+        title={copy.finalBracket}
+        subtitle={copy.finalBracketHelp}
+        showLabel={copy.showFinalBracket}
+        hideLabel={copy.hideFinalBracket}
+        visible={finalBracketVisible}
+        onToggle={() => setFinalBracketVisible((visible) => !visible)}
+        championLabel={copy.champion}
+        winnerLabel={copy.winner}
+        killsLabel={copy.kills}
+      />
+
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/60 hover:text-white sm:w-auto">
           <ArrowLeft className="h-4 w-4" />
@@ -662,7 +760,7 @@ export default function TournamentVictoryScreen({
           <RefreshCcw className="h-4 w-4" />
           {copy.replay}
         </Button>
-        <Button onClick={onReset} size="lg" className="w-full shadow-[0_0_34px_rgba(245,180,76,0.28)] hover:shadow-[0_0_44px_rgba(245,180,76,0.38)] sm:min-w-44 sm:w-auto">
+        <Button onClick={onReset} size="lg" className="w-full border border-amber-200/70 shadow-[0_0_38px_rgba(245,180,76,0.34)] hover:shadow-[0_0_50px_rgba(245,180,76,0.46)] sm:min-w-44 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
           {copy.newTournament}
         </Button>
@@ -841,6 +939,188 @@ function StatTile({
       </div>
       <div className={`mt-1.5 font-bold leading-none sm:mt-2 ${highlight ? 'text-2xl text-white sm:text-4xl' : 'text-xl text-white sm:text-3xl'}`}>
         {value}
+      </div>
+    </div>
+  );
+}
+
+function FinalBracketSummary({
+  tournament,
+  title,
+  subtitle,
+  showLabel,
+  hideLabel,
+  visible,
+  onToggle,
+  championLabel,
+  winnerLabel,
+  killsLabel,
+}: {
+  tournament: Tournament;
+  title: string;
+  subtitle: string;
+  showLabel: string;
+  hideLabel: string;
+  visible: boolean;
+  onToggle: () => void;
+  championLabel: string;
+  winnerLabel: string;
+  killsLabel: string;
+}) {
+  const champion = tournament.winner;
+  const completedMatches = tournament.rounds
+    .flatMap((round) => round.matches)
+    .filter((match) => match.winner).length;
+  const totalMatches = tournament.rounds.flatMap((round) => round.matches).length;
+
+  return (
+    <section className="space-y-4" aria-labelledby="final-bracket-title">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h3 id="final-bracket-title" className="flex items-center gap-2 text-[clamp(1.02rem,0.96rem+0.28vw,1.25rem)] font-bold text-white">
+            <Trophy className="h-4 w-4 text-primary" />
+            <span>{title}</span>
+          </h3>
+          <p className="mt-1 max-w-3xl text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] leading-relaxed text-white/62">
+            {subtitle}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onToggle}
+            aria-expanded={visible}
+            aria-controls="final-bracket-panel"
+            className="h-9 min-w-[136px] rounded-[14px] border-primary/35 bg-primary/12 px-3 py-1.5 text-[11px] font-semibold uppercase text-amber-50 shadow-[0_0_22px_rgba(245,180,76,0.14)] hover:bg-primary/18 sm:hidden"
+          >
+            {visible ? hideLabel : showLabel}
+          </Button>
+          <div className="inline-flex h-9 min-w-[136px] items-center justify-center gap-2 rounded-[14px] border border-primary/35 bg-primary/12 px-3 py-1.5 text-[11px] font-semibold uppercase text-amber-50 shadow-[0_0_22px_rgba(245,180,76,0.14)] sm:min-w-0 sm:rounded-full sm:text-xs">
+            <Trophy className="h-3.5 w-3.5" />
+            <span>{completedMatches}/{totalMatches}</span>
+          </div>
+        </div>
+      </div>
+
+      <Card
+        id="final-bracket-panel"
+        className={`overflow-hidden p-0 ${visible ? 'block' : 'hidden sm:block'}`}
+      >
+        <div className="relative overflow-x-auto overscroll-x-contain px-4 py-5 sm:px-5 md:px-6">
+          <div className="flex min-w-max items-stretch gap-5 pb-2 sm:gap-6">
+            {tournament.rounds.map((round, roundIndex) => (
+              <div key={round.index} className="flex w-[220px] shrink-0 flex-col sm:w-[250px]">
+                <div className="mb-3 flex min-h-8 items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="truncate text-[10px] font-semibold uppercase tracking-[0.08em] text-white/58 sm:text-[11px]">
+                      {round.name}
+                    </div>
+                    {round.map && (
+                      <div className="mt-0.5 truncate text-[10px] text-white/38">{round.map}</div>
+                    )}
+                  </div>
+                  <div className="rounded-full border border-white/10 bg-black/12 px-2 py-0.5 text-[10px] text-white/58">
+                    {round.matches.length}
+                  </div>
+                </div>
+                <div className={`relative flex flex-1 flex-col justify-around ${['gap-3', 'gap-8', 'gap-14', 'gap-20'][Math.min(roundIndex, 3)]}`}>
+                  {round.matches.map((match) => (
+                    <FinalBracketMatch
+                      key={match.id}
+                      match={match}
+                      winnerLabel={winnerLabel}
+                      killsLabel={killsLabel}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            <div className="flex w-[190px] shrink-0 flex-col justify-center sm:w-[220px]">
+              <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/50 sm:text-[11px]">
+                {championLabel}
+              </div>
+              <div className="rounded-[16px] border border-primary/40 bg-[linear-gradient(180deg,rgba(245,180,76,0.18)_0%,rgba(255,255,255,0.045)_100%)] p-3 shadow-[0_0_28px_rgba(245,180,76,0.16)] sm:rounded-[18px] sm:p-4">
+                <div className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-100/86">
+                  <Trophy className="h-3.5 w-3.5 text-primary" />
+                  <span>{winnerLabel}</span>
+                </div>
+                <div className="text-[clamp(0.9rem,0.84rem+0.28vw,1.04rem)] font-bold text-white">
+                  {champion?.name ?? 'TBD'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+    </section>
+  );
+}
+
+function FinalBracketMatch({
+  match,
+  winnerLabel,
+  killsLabel,
+}: {
+  match: Match;
+  winnerLabel: string;
+  killsLabel: string;
+}) {
+  const { team1Score, team2Score } = getDisplaySeriesScore(match);
+  const killLeaders = getMatchPlayerKillLeaders(match, killsLabel).slice(0, 3);
+
+  return (
+    <div className="relative min-h-[136px] rounded-[18px] border border-cyan-200/28 bg-cyan-100/[0.075] p-3 shadow-[0_0_24px_rgba(84,211,255,0.10)] before:absolute before:left-full before:top-1/2 before:hidden before:h-px before:w-5 before:bg-cyan-100/28 before:content-[''] sm:before:block">
+      <div className="mb-2 flex items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/44">
+        <span>Match {match.matchIndex + 1}</span>
+        <span className="text-amber-100/70">{team1Score} - {team2Score}</span>
+      </div>
+
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
+        <FinalBracketTeamLine team={match.team1} score={team1Score} winnerId={match.winner?.id} />
+        <div className="text-[10px] font-black uppercase text-white/42">VS</div>
+        <FinalBracketTeamLine team={match.team2} score={team2Score} winnerId={match.winner?.id} alignRight />
+      </div>
+
+      <div className="mt-2 border-t border-white/8 pt-2">
+        <div className="truncate text-[11px] font-semibold text-amber-100/88">
+          {winnerLabel}: {match.winner?.name ?? 'TBD'}
+        </div>
+        {killLeaders.length > 0 && (
+          <div className="mt-1.5 grid gap-1 text-[10px] leading-4 text-white/58">
+            {killLeaders.map((line) => (
+              <div key={line} className="truncate">{line}</div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FinalBracketTeamLine({
+  team,
+  score,
+  winnerId,
+  alignRight = false,
+}: {
+  team?: Team;
+  score: number;
+  winnerId?: string;
+  alignRight?: boolean;
+}) {
+  const isWinner = Boolean(team && winnerId === team.id);
+
+  return (
+    <div className={`min-w-0 rounded-[12px] border px-2 py-1.5 ${
+      isWinner
+        ? 'border-amber-300/34 bg-amber-300/12 text-white'
+        : 'border-white/8 bg-black/10 text-white/72'
+    } ${alignRight ? 'text-right' : 'text-left'}`}>
+      <div className="truncate text-[0.78rem] font-bold sm:text-sm">{team?.name ?? 'TBD'}</div>
+      <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/45">
+        {score}
       </div>
     </div>
   );
@@ -1043,6 +1323,33 @@ function PlayerBreakdownColumn({
 function isSlayerGameScore(score: Game['score']): score is SlayerGameScore {
   return Boolean(score && 'team1PlayerKills' in score);
 }
+
+function getMatchPlayerKillLeaders(match: Match, killsLabel: string): string[] {
+  const playerKills = new Map<string, { name: string; kills: number; teamName: string }>();
+
+  match.games?.forEach((game) => {
+    if (!isSlayerGameScore(game.score)) return;
+    const score = game.score;
+
+    match.team1?.players.forEach((player) => {
+      const current = playerKills.get(player.id) ?? { name: player.name, kills: 0, teamName: match.team1?.name ?? '' };
+      current.kills += score.team1PlayerKills[player.id] ?? 0;
+      playerKills.set(player.id, current);
+    });
+
+    match.team2?.players.forEach((player) => {
+      const current = playerKills.get(player.id) ?? { name: player.name, kills: 0, teamName: match.team2?.name ?? '' };
+      current.kills += score.team2PlayerKills[player.id] ?? 0;
+      playerKills.set(player.id, current);
+    });
+  });
+
+  return Array.from(playerKills.values())
+    .filter((summary) => summary.kills > 0)
+    .sort((a, b) => b.kills - a.kills)
+    .map((summary) => `${summary.name} (${summary.teamName}) - ${summary.kills} ${killsLabel}`);
+}
+
 function formatGameScore(game: Game): string {
   if (!game.score) return '-';
 

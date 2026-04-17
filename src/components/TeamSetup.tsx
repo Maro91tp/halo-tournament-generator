@@ -23,6 +23,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
   const teamSize = parseInt(config.teamMode.charAt(0));
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
+  const [activeMobileTeamIndex, setActiveMobileTeamIndex] = useState(0);
   const [availablePlayers, setAvailablePlayers] = useState<Player[]>([]);
   const [editMode, setEditMode] = useState<boolean>(config.teamCreationMode === 'manual');
   const [playerTeamAssignments, setPlayerTeamAssignments] = useState<Map<string, number>>(new Map());
@@ -58,6 +59,12 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
     }
   }, [config.teamCreationMode, initialTeams, language, players, teamSize]);
 
+  useEffect(() => {
+    if (activeMobileTeamIndex > Math.max(teams.length - 1, 0)) {
+      setActiveMobileTeamIndex(0);
+    }
+  }, [activeMobileTeamIndex, teams.length]);
+
   const copy = language === 'en'
     ? {
         balancedTeams: 'Balanced Teams',
@@ -83,6 +90,8 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
         confirmHelp: 'Check names, roster, and strength. When you are ready, generate the tournament.',
         generateTournament: 'Generate Tournament',
         back: 'Back',
+        previousTeam: 'Previous team',
+        nextTeam: 'Next team',
         teamLimit: `A team can have at most ${teamSize} players!`,
         allTeamsRequired: `All teams must have exactly ${teamSize} players!`,
       }
@@ -110,6 +119,8 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
         confirmHelp: 'Controlla nomi, composizione e forza dei team. Quando sei pronto puoi generare il torneo.',
         generateTournament: 'Genera Torneo',
         back: 'Indietro',
+        previousTeam: 'Squadra precedente',
+        nextTeam: 'Squadra successiva',
         teamLimit: `La squadra puo avere massimo ${teamSize} giocatori!`,
         allTeamsRequired: `Tutte le squadre devono avere esattamente ${teamSize} giocatori!`,
       };
@@ -206,6 +217,16 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
       updateAvailablePlayers(teams);
     }
     setEditMode(!editMode);
+  };
+
+  const showPreviousMobileTeam = () => {
+    setActiveMobileTeamIndex((current) => Math.max(current - 1, 0));
+    setSelectedTeam(null);
+  };
+
+  const showNextMobileTeam = () => {
+    setActiveMobileTeamIndex((current) => Math.min(current + 1, teams.length - 1));
+    setSelectedTeam(null);
   };
 
   const isManualMode = config.teamCreationMode === 'manual';
@@ -334,9 +355,47 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
         </Card>
       )}
 
-      <div className="grid gap-4 xl:grid-cols-2">
+      {teams.length > 0 && (
+        <div className="flex items-center justify-between gap-2 rounded-[14px] border border-white/10 bg-white/6 px-2.5 py-2 shadow-[0_0_18px_rgba(79,194,255,0.08)] sm:hidden">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={showPreviousMobileTeam}
+            disabled={activeMobileTeamIndex === 0}
+            className="h-9 w-9 rounded-[8px] p-0 text-white/70 hover:bg-white/10 hover:text-white"
+            aria-label={copy.previousTeam}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="min-w-0 flex-1 text-center">
+            <div className="truncate text-[0.92rem] font-semibold text-white">{teams[activeMobileTeamIndex]?.name}</div>
+            <div className="text-[0.72rem] text-white/55">
+              {activeMobileTeamIndex + 1}/{teams.length}
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={showNextMobileTeam}
+            disabled={activeMobileTeamIndex === teams.length - 1}
+            className="h-9 w-9 rounded-[8px] p-0 text-primary hover:bg-white/10"
+            aria-label={copy.nextTeam}
+          >
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
+      <div className="grid gap-3 sm:gap-4 xl:grid-cols-2">
         {teams.map((team, teamIndex) => (
-          <Card key={team.id} className="space-y-3 rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-6">
+          <Card
+            key={team.id}
+            className={`space-y-3 rounded-[18px] p-3 sm:block sm:rounded-[24px] sm:p-6 ${
+              teamIndex === activeMobileTeamIndex ? 'block' : 'hidden'
+            }`}
+          >
             <div>
               <Label className="mb-1 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)]">{copy.teamName}</Label>
               <Input
@@ -416,7 +475,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
         ))}
       </div>
 
-      <div className="glass-card space-y-4 rounded-[18px] p-4 sm:rounded-[24px] sm:p-5 md:p-6">
+      <div className="glass-card space-y-3 rounded-[18px] border-white/10 bg-white/[0.04] p-3.5 sm:space-y-4 sm:rounded-[24px] sm:p-5 md:p-6">
         <div className="space-y-1">
           <div className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] font-semibold uppercase tracking-[0.14em] text-white sm:text-sm sm:tracking-normal">{copy.confirmTeams}</div>
           <p className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-white/70 sm:text-sm">

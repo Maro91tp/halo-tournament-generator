@@ -11,7 +11,7 @@ import type {
   TournamentConfig,
 } from '../types/tournament';
 import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
 import { generateGamesForMatch, getGameModeDisplay } from '../lib/tournament-utils';
 import { ModeIcon } from './TournamentIcons';
 import { useLanguage } from './LanguageContext';
@@ -376,7 +376,7 @@ export default function GameResultsDialog({
           maxHeight: 'calc(100dvh - 0.75rem)',
         }}
       >
-        <DialogHeader className="gap-1.5 px-2 pb-1 sm:gap-3 sm:px-0">
+        <DialogHeader className="gap-1 px-2 pb-0 sm:gap-3 sm:px-0 sm:pb-1">
           <DialogTitle className="flex items-center gap-2 text-slate-950">
             <ModeIcon
               mode={match.mode ?? 'slayer'}
@@ -391,13 +391,10 @@ export default function GameResultsDialog({
             />
             <span>{copy.matchResults}</span>
           </DialogTitle>
-          <DialogDescription className="text-center text-slate-600 sm:text-left">
-            {match.team1.name} vs {match.team2.name}
-          </DialogDescription>
         </DialogHeader>
 
-        <div className={`rounded-[24px] border p-2.5 backdrop-blur-sm transition-[background,border-color,box-shadow] duration-300 sm:rounded-[30px] sm:p-6 md:p-8 ${modalPanelToneClass}`}>
-          <div className="mb-4 sm:mb-8">
+        <div className={`rounded-[22px] border p-2.5 backdrop-blur-sm transition-[background,border-color,box-shadow] duration-300 sm:rounded-[30px] sm:p-6 md:p-8 ${modalPanelToneClass}`}>
+          <div className="mb-3 sm:mb-8">
             <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-2 sm:gap-4">
               <TeamSideSummary team={match.team1} wins={team1Wins} align="left" gamesWonLabel={copy.gamesWon} />
               <div className="min-w-[72px] pt-1 text-center sm:min-w-[120px] md:min-w-[160px]">
@@ -411,8 +408,8 @@ export default function GameResultsDialog({
           </div>
 
           {activeGame && (
-            <div className="space-y-4">
-              <div className="flex flex-col gap-3 rounded-[20px] border border-amber-100/80 bg-white/72 px-3 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-4">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex flex-col gap-2 rounded-[18px] border border-amber-100/55 bg-white/60 px-3 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3 sm:rounded-[20px] sm:px-4 sm:py-3">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 sm:text-sm sm:tracking-[0.18em]">
                   Game {activeGame.gameNumber} {copy.of} {visibleGames.length}
                 </div>
@@ -453,19 +450,19 @@ export default function GameResultsDialog({
                 gameIndex={safeGameIndex}
               />
 
-              <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+              <div className="flex items-center justify-between gap-2 sm:flex-row sm:flex-wrap sm:gap-2.5">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => setCurrentGameIndex((current) => Math.max(current - 1, 0))}
                   disabled={!canGoBackGame}
-                  className="w-full text-slate-700 hover:bg-amber-100/70 hover:text-slate-950 sm:w-auto"
+                  className="w-auto px-4 text-slate-700 hover:bg-amber-100/70 hover:text-slate-950 sm:w-auto"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   <span className="hidden sm:inline">{copy.back}</span>
                 </Button>
 
-                <div className="text-center text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] text-slate-600 sm:text-left">
+                <div className="min-w-0 flex-1 text-center text-[clamp(0.76rem,0.73rem+0.14vw,0.94rem)] text-slate-600 sm:text-left">
                   {seriesResult
                     ? copy.seriesCompleted
                     : `${requiredWins - Math.max(team1Wins, team2Wins)} ${copy.winsToClose}`}
@@ -476,7 +473,7 @@ export default function GameResultsDialog({
                     type="button"
                     variant="ghost"
                     onClick={() => setCurrentGameIndex((current) => Math.min(current + 1, visibleGames.length - 1))}
-                    className="w-full text-slate-700 hover:bg-amber-100/70 hover:text-slate-950 sm:w-auto"
+                    className="w-auto px-4 text-slate-700 hover:bg-amber-100/70 hover:text-slate-950 sm:w-auto"
                   >
                     <span className="hidden sm:inline">{copy.forward}</span>
                     <ArrowRight className="h-4 w-4" />
@@ -811,7 +808,7 @@ function GameSection({
         </div>
       )}
 
-      <div className="mt-7 flex justify-center">
+      <div className="sticky bottom-0 z-10 mt-4 flex justify-center bg-gradient-to-t from-white/90 via-white/70 to-transparent pt-3 sm:static sm:mt-7 sm:bg-none sm:pt-0">
         <Button
           onClick={() => {
             if (seriesCompleted) {
@@ -821,7 +818,7 @@ function GameSection({
             onConfirmResult(gameIndex);
           }}
           size="lg"
-          className="w-full justify-center text-[clamp(0.9rem,0.86rem+0.2vw,1rem)] shadow-[0_0_30px_rgba(245,180,76,0.26)] hover:shadow-[0_0_38px_rgba(245,180,76,0.36)] sm:min-w-[300px] sm:w-auto"
+          className="w-full justify-center border border-amber-300/75 text-[clamp(0.9rem,0.86rem+0.2vw,1rem)] shadow-[0_0_34px_rgba(245,180,76,0.34)] hover:shadow-[0_0_44px_rgba(245,180,76,0.44)] sm:min-w-[300px] sm:w-auto"
         >
           {seriesCompleted ? 'Conferma risultati serie' : 'Conferma risultato'}
         </Button>

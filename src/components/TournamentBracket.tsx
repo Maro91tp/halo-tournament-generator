@@ -295,7 +295,7 @@ export default function TournamentBracket({
   }
 
   return (
-    <div className="app-section flex w-full flex-col gap-6">
+    <div className="app-section flex w-full flex-col gap-5 sm:gap-6">
       <div className="max-w-3xl">
           <h2 className="app-title mb-2 flex items-center gap-2.5 font-bold font-heading sm:gap-3">
             <Trophy className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
@@ -306,7 +306,7 @@ export default function TournamentBracket({
           </p>
       </div>
 
-      <Card className="p-4 sm:p-5 md:p-6">
+      <Card className="border-white/12 p-3.5 sm:p-5 md:p-6">
         <div className="space-y-4">
           <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
             <div className="grid grid-cols-1 gap-3 text-[clamp(0.78rem,0.75rem+0.16vw,0.9rem)] max-sm:grid-cols-2 max-sm:gap-2.5 max-sm:text-[clamp(0.72rem,0.68rem+0.18vw,0.9rem)] sm:grid-cols-2 xl:grid-cols-4">
@@ -411,7 +411,7 @@ export default function TournamentBracket({
       </Card>
 
       <Card
-        className="relative overflow-hidden p-5 sm:p-6 md:p-7"
+        className="relative overflow-hidden p-4 sm:p-6 md:p-7"
         style={getMapCardBackgroundStyle(nextPlayableGame?.map)}
       >
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(18,168,209,0.30)_0%,rgba(7,16,43,0.60)_44%,rgba(8,11,36,0.88)_100%)]" />
@@ -925,7 +925,7 @@ function AvailableMatchCard({ match, config, previewGamesByRound, highlighted, o
       tabIndex={0}
       aria-label={actionLabel}
       className={cn(
-        'cursor-pointer p-5 shadow-[0_0_26px_rgba(245,180,76,0.16)] transition-all hover:border-primary hover:shadow-[0_0_34px_rgba(245,180,76,0.22)] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/55',
+        'cursor-pointer border-amber-200/24 p-4 shadow-[0_0_30px_rgba(245,180,76,0.20)] transition-all hover:border-primary hover:shadow-[0_0_40px_rgba(245,180,76,0.30)] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/55 sm:p-5',
         highlighted ? 'border-primary shadow-[0_0_42px_rgba(245,180,76,0.34)]' : ''
       )}
       onClick={onClick}
@@ -996,7 +996,7 @@ function AvailableMatchCard({ match, config, previewGamesByRound, highlighted, o
 
         <Button
           size="lg"
-          className="w-full justify-center shadow-[0_0_30px_rgba(245,180,76,0.28)] hover:shadow-[0_0_40px_rgba(245,180,76,0.4)]"
+          className="w-full justify-center border border-amber-200/70 shadow-[0_0_34px_rgba(245,180,76,0.34)] hover:shadow-[0_0_46px_rgba(245,180,76,0.46)]"
         >
           {actionLabel}
           <ChevronRight className="h-4 w-4" />

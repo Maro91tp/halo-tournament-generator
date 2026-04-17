@@ -262,16 +262,16 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
   return (
     <div className="app-section flex w-full flex-col">
       <div>
-        <h2 className="app-title mb-3 flex items-center gap-2.5 font-bold font-heading sm:gap-3">
+        <h2 className="app-title mb-2 flex items-center gap-2.5 font-bold font-heading sm:mb-3 sm:gap-3">
           <Settings2 className="h-[var(--app-icon-lg)] w-[var(--app-icon-lg)] text-primary" />
           <span>{copy.title}</span>
         </h2>
-        <p className="app-subtitle mb-5 text-muted-foreground sm:mb-6">
+        <p className="app-subtitle mb-4 text-muted-foreground sm:mb-6">
           {copy.subtitle}
         </p>
       </div>
 
-      <div className="grid gap-3">
+      <div className="grid gap-2.5 sm:gap-3">
         <ExpandableSettingCard
           title={copy.tournamentType}
           selectedValue={selectedTournamentTypeLabel}
@@ -367,8 +367,8 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
 
       <div>
         <Label className={sectionTitleClass}>{copy.killLimit}</Label>
-        <div className="glass-card p-4 sm:p-5">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="glass-card border-white/10 bg-white/[0.045] p-3 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
             <div>
               <div className="flex items-center gap-2 text-[clamp(0.95rem,0.9rem+0.25vw,1.05rem)] font-semibold">
                 <Target className="h-4 w-4 text-primary" />
@@ -431,7 +431,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
             </div>
           </div>
 
-          <div className="glass-card p-4 sm:p-6">
+          <div className="glass-card border-white/10 bg-white/[0.04] p-3 sm:p-6">
             <div className="flex flex-wrap gap-2.5">
               {SLAYER_MAPS.map((mapName) => {
                 const selected = config.selectedSlayerMaps.includes(mapName);
@@ -473,7 +473,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
             </div>
           </div>
 
-          <div className="glass-card space-y-4 p-4 sm:p-6">
+          <div className="glass-card space-y-3 border-white/10 bg-white/[0.04] p-3 sm:space-y-4 sm:p-6">
             <div>
               <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                 <div className="text-[clamp(0.9rem,0.84rem+0.24vw,1rem)] font-semibold text-white">
@@ -631,7 +631,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         </div>
       )}
 
-      <div className="glass-card rounded-[18px] p-3.5 sm:rounded-[24px] sm:p-4">
+      <div className="glass-card rounded-[18px] border-white/10 bg-white/[0.04] p-3 sm:rounded-[24px] sm:p-4">
         <h3 className="mb-3 flex items-center gap-2 text-[clamp(1.05rem,1rem+0.42vw,1.24rem)] font-bold text-white">
           <FileText className="h-4 w-4 text-primary" />
           <span>{copy.summary}</span>

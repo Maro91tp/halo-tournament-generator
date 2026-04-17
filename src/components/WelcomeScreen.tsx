@@ -159,7 +159,7 @@ export default function WelcomeScreen({
                 'linear-gradient(180deg, rgba(255, 252, 244, 0.34) 0%, rgba(255, 247, 224, 0.28) 100%), linear-gradient(180deg, rgba(245, 180, 76, 0.78) 0%, rgba(180, 110, 22, 0.95) 100%)',
               border: '1px solid rgba(255, 214, 140, 0.78)',
               boxShadow:
-                '0 0 24px rgba(245, 180, 76, 0.18), 0 9px 10px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.10)',
+                '0 0 34px rgba(245, 180, 76, 0.28), 0 12px 18px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
               color: 'rgb(36, 19, 0)',
               fontSize: 'clamp(19px, 6.4vw, 36px)',
               fontFamily: "'Oxanium', sans-serif",
@@ -168,7 +168,7 @@ export default function WelcomeScreen({
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               backdropFilter: 'blur(12px)',
-              padding: '14px 18px',
+              padding: '15px 18px',
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.boxShadow =
@@ -176,7 +176,7 @@ export default function WelcomeScreen({
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                '0 0 24px rgba(245, 180, 76, 0.18), 0 9px 10px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.10)';
+                '0 0 34px rgba(245, 180, 76, 0.28), 0 12px 18px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.12)';
             }}
           >
             {copy.create}
