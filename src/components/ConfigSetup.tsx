@@ -213,8 +213,18 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
     const nextModes = hasMode
       ? config.selectedRankedModes.filter((candidate) => candidate !== mode)
       : [...config.selectedRankedModes, mode];
+    const safeModes = nextModes.length > 0 ? nextModes : [mode];
+    const compatibleMaps = RANKED_MAPS
+      .filter((map) => map.modes.some((candidate) => safeModes.includes(candidate)))
+      .map((map) => map.name);
+    const nextSelectedMaps = config.selectedRankedMaps.filter((mapName) => compatibleMaps.includes(mapName));
 
-    updateConfig('selectedRankedModes', nextModes.length > 0 ? nextModes : [mode]);
+    setConfig({
+      ...config,
+      selectedRankedModes: safeModes,
+      selectedRankedMaps: nextSelectedMaps.length > 0 ? nextSelectedMaps : compatibleMaps,
+    });
+    setError('');
   };
 
   const updateRankedMapSelectionMode = (mode: RankedMapSelectionMode) => {
@@ -244,6 +254,9 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
   const toggleSetting = (setting: 'type' | 'teamMode' | 'duration' | 'teamCreation') => {
     setOpenSetting((current) => (current === setting ? null : setting));
   };
+  const rankedMapsForSelectedModes = RANKED_MAPS.filter((map) =>
+    map.modes.some((mode) => config.selectedRankedModes.includes(mode))
+  );
   const rankedMapCompatibilityIssues = getRankedMapCompatibilityIssues(config);
 
   return (
@@ -456,7 +469,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
             <div className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] font-medium text-white/78">
               {config.rankedMapSelectionMode === 'random'
                 ? copy.rankedMapModeRandom
-                : `${config.selectedRankedMaps.length}/${RANKED_MAPS.length} ${copy.mapsSelected}`}
+                : `${config.selectedRankedMaps.filter((mapName) => rankedMapsForSelectedModes.some((map) => map.name === mapName)).length}/${rankedMapsForSelectedModes.length} ${copy.mapsSelected}`}
             </div>
           </div>
 
@@ -511,14 +524,14 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
                 onClick={() => updateRankedMapSelectionMode('custom')}
                 icon={<Target className="h-4 w-4 text-primary" />}
                 title={copy.rankedMapModeCustom}
-                description={`${config.selectedRankedMaps.length}/${RANKED_MAPS.length} ${copy.mapsSelected}`}
+                description={`${config.selectedRankedMaps.filter((mapName) => rankedMapsForSelectedModes.some((map) => map.name === mapName)).length}/${rankedMapsForSelectedModes.length} ${copy.mapsSelected}`}
               />
             </div>
 
             {config.rankedMapSelectionMode === 'custom' && (
               <div className="space-y-4 border-t border-white/8 pt-4">
                 <div className="flex flex-wrap gap-2.5">
-                  {RANKED_MAPS.map((map) => {
+                  {rankedMapsForSelectedModes.map((map) => {
                     const selected = config.selectedRankedMaps.includes(map.name);
 
                     return (
