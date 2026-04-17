@@ -892,7 +892,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
 
       <div className="flex justify-start pt-1">
         <Button onClick={onBack} variant="ghost" size="lg" className="min-h-11 w-full text-white/65 hover:text-white sm:w-auto">
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" />
           {copy.back}
         </Button>
       </div>

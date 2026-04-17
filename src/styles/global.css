@@ -322,6 +322,13 @@
   button {
     font-family: var(--button-font);
   }
+
+  :is(button, a[role="button"], [data-slot="button"]) > svg {
+    display: block;
+    align-self: center;
+    position: relative;
+    top: -0.06em;
+  }
 }
 
 img,

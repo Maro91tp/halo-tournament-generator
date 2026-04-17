@@ -4,13 +4,16 @@ import {
   Check,
   ChevronRight,
   CircleCheckBig,
+  Lock,
+  MousePointer2,
+  Play,
   RefreshCcw,
   Save,
   Swords,
   TimerReset,
   Trophy,
 } from 'lucide-react';
-import type { Tournament, Match, Team, SeriesScore, Game } from '../types/tournament';
+import type { Tournament, Match, SeriesScore, Game } from '../types/tournament';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
@@ -54,6 +57,8 @@ export default function TournamentBracket({
 }: TournamentBracketProps) {
   const language = useLanguage();
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  const [highlightedMatchId, setHighlightedMatchId] = useState<string | null>(null);
+  const [mobileBracketVisible, setMobileBracketVisible] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [tournamentName, setTournamentName] = useState(currentSavedTournamentName ?? '');
   const [saveFeedbackVisible, setSaveFeedbackVisible] = useState(false);
@@ -68,6 +73,10 @@ export default function TournamentBracket({
         format: 'Format',
         teams: 'Teams',
         progress: 'Tournament progress',
+        visualBracket: 'Tournament bracket',
+        visualBracketSubtitle: 'View the full progression and open available matches.',
+        showBracket: 'Show bracket',
+        hideBracket: 'Hide bracket',
         match: 'match',
         matches: 'matches',
         completed: 'completed',
@@ -82,6 +91,12 @@ export default function TournamentBracket({
         activeBracketHelp: 'Highlighted matches are ready. Waiting matches stay secondary until the round unlocks.',
         availableMatches: 'available matches',
         waitingResults: 'Waiting for results',
+        openMatch: 'Open match',
+        ready: 'Playable',
+        locked: 'Waiting',
+        winner: 'Winner',
+        bye: 'Bye',
+        emptySlot: 'Pending team',
         editTeams: 'Edit teams',
         newTournament: 'New tournament',
         slayer: 'Slayer',
@@ -115,6 +130,10 @@ export default function TournamentBracket({
         format: 'Formato',
         teams: 'Squadre',
         progress: 'Avanzamento torneo',
+        visualBracket: 'Bracket torneo',
+        visualBracketSubtitle: 'Visualizza l\'avanzamento completo e apri i match disponibili.',
+        showBracket: 'Mostra bracket',
+        hideBracket: 'Nascondi bracket',
         match: 'match',
         matches: 'match',
         completed: 'completato',
@@ -129,6 +148,12 @@ export default function TournamentBracket({
         activeBracketHelp: 'I match evidenziati sono pronti. Quelli in attesa restano secondari finche il round non si sblocca.',
         availableMatches: 'match disponibili',
         waitingResults: 'In attesa dei risultati',
+        openMatch: 'Apri match',
+        ready: 'Giocabile',
+        locked: 'In attesa',
+        winner: 'Vincitore',
+        bye: 'Bye',
+        emptySlot: 'Squadra in arrivo',
         editTeams: 'Modifica squadre',
         newTournament: 'Nuovo torneo',
         slayer: 'Massacro',
@@ -228,6 +253,15 @@ export default function TournamentBracket({
     : undefined;
 
   const handleMatchClick = (match: Match) => {
+    setHighlightedMatchId(match.id);
+    if (match.team1 && match.team2 && !match.winner) {
+      setSelectedMatch(match);
+    }
+  };
+
+  const handleBracketMatchSelect = (match: Match) => {
+    setHighlightedMatchId(match.id);
+
     if (match.team1 && match.team2 && !match.winner) {
       setSelectedMatch(match);
     }
@@ -275,7 +309,7 @@ export default function TournamentBracket({
       <Card className="p-4 sm:p-5 md:p-6">
         <div className="space-y-4">
           <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-            <div className="grid grid-cols-1 gap-3 text-[clamp(0.78rem,0.75rem+0.16vw,0.9rem)] sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 text-[clamp(0.78rem,0.75rem+0.16vw,0.9rem)] max-sm:grid-cols-2 max-sm:gap-2.5 max-sm:text-[clamp(0.72rem,0.68rem+0.18vw,0.9rem)] sm:grid-cols-2 xl:grid-cols-4">
               <InfoStat
                 label={copy.type}
                 value={tournament.config.type === 'slayer' ? copy.slayer : copy.ranked}
@@ -422,6 +456,28 @@ export default function TournamentBracket({
         </div>
       </Card>
 
+      <TournamentBracketOverview
+        tournament={tournament}
+        highlightedMatchId={highlightedMatchId}
+        mobileVisible={mobileBracketVisible}
+        copy={{
+          title: copy.visualBracket,
+          subtitle: copy.visualBracketSubtitle,
+          showBracket: copy.showBracket,
+          hideBracket: copy.hideBracket,
+          completed: copy.completed,
+          openMatch: copy.openMatch,
+          ready: copy.ready,
+          locked: copy.locked,
+          winner: copy.winner,
+          champion: copy.champion,
+          bye: copy.bye,
+          emptySlot: copy.emptySlot,
+        }}
+        onToggleMobile={() => setMobileBracketVisible((visible) => !visible)}
+        onMatchSelect={handleBracketMatchSelect}
+      />
+
       <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -443,6 +499,7 @@ export default function TournamentBracket({
                 match={match}
                 config={tournament.config}
                 previewGamesByRound={previewGamesByRound}
+                highlighted={highlightedMatchId === match.id}
                 onClick={() => handleMatchClick(match)}
               />
             ))}
@@ -535,6 +592,276 @@ function getMapCardBackgroundStyle(mapName?: string): CSSProperties | undefined 
   };
 }
 
+type BracketCopy = {
+  title: string;
+  subtitle: string;
+  showBracket: string;
+  hideBracket: string;
+  completed: string;
+  openMatch: string;
+  ready: string;
+  locked: string;
+  winner: string;
+  champion: string;
+  bye: string;
+  emptySlot: string;
+};
+
+function TournamentBracketOverview({
+  tournament,
+  highlightedMatchId,
+  mobileVisible,
+  copy,
+  onToggleMobile,
+  onMatchSelect,
+}: {
+  tournament: Tournament;
+  highlightedMatchId: string | null;
+  mobileVisible: boolean;
+  copy: BracketCopy;
+  onToggleMobile: () => void;
+  onMatchSelect: (match: Match) => void;
+}) {
+  const champion = tournament.rounds[tournament.rounds.length - 1]?.matches[0]?.winner;
+  const playableCount = tournament.rounds
+    .flatMap((round) => round.matches)
+    .filter((match) => match.team1 && match.team2 && !match.winner).length;
+
+  return (
+    <section className="space-y-4" aria-labelledby="visual-tournament-bracket-title">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h3 id="visual-tournament-bracket-title" className="text-[clamp(1.02rem,0.96rem+0.28vw,1.25rem)] font-bold text-white">
+            {copy.title}
+          </h3>
+          <p className="mt-1 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] leading-relaxed text-white/68">
+            {copy.subtitle}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onToggleMobile}
+            aria-expanded={mobileVisible}
+            aria-controls="visual-tournament-bracket-panel"
+            className="h-9 min-w-[136px] rounded-[14px] border-primary/35 bg-primary/12 px-3 py-1.5 text-[11px] font-semibold uppercase text-amber-50 shadow-[0_0_22px_rgba(245,180,76,0.14)] hover:bg-primary/18 sm:hidden"
+          >
+            {mobileVisible ? copy.hideBracket : copy.showBracket}
+          </Button>
+          <div className="inline-flex h-9 min-w-[136px] items-center justify-center gap-2 rounded-[14px] border border-primary/35 bg-primary/12 px-3 py-1.5 text-[11px] font-semibold uppercase text-amber-50 shadow-[0_0_22px_rgba(245,180,76,0.14)] sm:min-w-0 sm:rounded-full sm:text-xs">
+            <Play className="h-3.5 w-3.5" />
+            <span>{playableCount} {copy.ready}</span>
+          </div>
+        </div>
+      </div>
+
+      <Card
+        id="visual-tournament-bracket-panel"
+        className={cn('overflow-hidden p-0', mobileVisible ? 'block' : 'hidden sm:block')}
+      >
+        <div className="relative overflow-x-auto overscroll-x-contain px-4 py-5 sm:px-5 md:px-6">
+          <div className="flex min-w-max items-stretch gap-5 pb-2 sm:gap-6">
+            {tournament.rounds.map((round, roundIndex) => (
+              <BracketRoundColumn
+                key={round.index}
+                roundName={round.name}
+                roundIndex={roundIndex}
+                matches={round.matches}
+                highlightedMatchId={highlightedMatchId}
+                copy={copy}
+                onMatchSelect={onMatchSelect}
+              />
+            ))}
+
+            <div className="flex w-[190px] shrink-0 flex-col justify-center sm:w-[220px]">
+              <div className="mb-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-white/50 sm:text-[11px]">
+                {copy.champion}
+              </div>
+              <div className="rounded-[16px] border border-primary/40 bg-[linear-gradient(180deg,rgba(245,180,76,0.18)_0%,rgba(255,255,255,0.045)_100%)] p-3 shadow-[0_0_28px_rgba(245,180,76,0.16)] sm:rounded-[18px] sm:p-4">
+                <div className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.08em] text-amber-100/86">
+                  <Trophy className="h-3.5 w-3.5 text-primary" />
+                  <span>{copy.winner}</span>
+                </div>
+                <div className={cn('text-[clamp(0.9rem,0.84rem+0.28vw,1.04rem)] font-bold', champion ? 'text-white' : 'text-white/48')}>
+                  {champion?.name ?? copy.emptySlot}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+    </section>
+  );
+}
+
+function BracketRoundColumn({
+  roundName,
+  roundIndex,
+  matches,
+  highlightedMatchId,
+  copy,
+  onMatchSelect,
+}: {
+  roundName: string;
+  roundIndex: number;
+  matches: Match[];
+  highlightedMatchId: string | null;
+  copy: BracketCopy;
+  onMatchSelect: (match: Match) => void;
+}) {
+  const gapByRound = Math.min(roundIndex, 3);
+  const columnGapClass = ['gap-3', 'gap-8', 'gap-14', 'gap-20'][gapByRound];
+
+  return (
+    <div className="flex w-[220px] shrink-0 flex-col sm:w-[250px]">
+      <div className="mb-3 flex min-h-8 items-center justify-between gap-2">
+        <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/58 sm:text-[11px]">
+          {roundName}
+        </div>
+        <div className="rounded-full border border-white/10 bg-black/12 px-2 py-0.5 text-[10px] text-white/58">
+          {matches.length}
+        </div>
+      </div>
+      <div className={cn('relative flex flex-1 flex-col justify-around', columnGapClass)}>
+        {matches.map((match) => (
+          <BracketMatchNode
+            key={match.id}
+            match={match}
+            highlighted={highlightedMatchId === match.id}
+            copy={copy}
+            onSelect={() => onMatchSelect(match)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BracketMatchNode({
+  match,
+  highlighted,
+  copy,
+  onSelect,
+}: {
+  match: Match;
+  highlighted: boolean;
+  copy: BracketCopy;
+  onSelect: () => void;
+}) {
+  const isPlayable = Boolean(match.team1 && match.team2 && !match.winner);
+  const isCompleted = Boolean(match.winner);
+  const statusLabel = isCompleted ? copy.completed : isPlayable ? copy.ready : copy.locked;
+  const team1Winner = match.winner?.id === match.team1?.id;
+  const team2Winner = match.winner?.id === match.team2?.id;
+
+  return (
+    <button
+      type="button"
+      id={`bracket-node-${match.id}`}
+      aria-label={`Match ${match.matchIndex + 1}: ${statusLabel}`}
+      aria-disabled={!isPlayable}
+      disabled={!isPlayable}
+      onClick={isPlayable ? onSelect : undefined}
+      className={cn(
+        'group relative min-h-[116px] w-full rounded-[18px] border p-3 text-left transition-all focus-visible:ring-2 focus-visible:ring-primary/65',
+        'before:absolute before:left-full before:top-1/2 before:hidden before:h-px before:w-5 before:bg-cyan-100/28 before:content-[""] sm:before:block',
+        isCompleted
+          ? 'border-cyan-200/28 bg-cyan-100/[0.075] shadow-[0_0_24px_rgba(84,211,255,0.10)]'
+          : isPlayable
+            ? 'border-primary/55 bg-primary/[0.105] shadow-[0_0_30px_rgba(245,180,76,0.20)] hover:border-primary hover:bg-primary/[0.16] hover:shadow-[0_0_38px_rgba(245,180,76,0.28)]'
+            : 'border-white/10 bg-black/12 opacity-[0.62]',
+        highlighted ? 'border-primary shadow-[0_0_42px_rgba(245,180,76,0.34)] ring-1 ring-primary/45' : '',
+        !isPlayable ? 'cursor-default' : 'cursor-pointer'
+      )}
+    >
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-white/46">
+          Match {match.matchIndex + 1}
+        </div>
+        <StatusPill isCompleted={isCompleted} isPlayable={isPlayable} label={statusLabel} />
+      </div>
+
+      <div className="space-y-1.5">
+        <BracketTeamLine teamName={match.team1?.name} fallback={match.team2 ? copy.emptySlot : copy.bye} winner={team1Winner} muted={!match.team1} />
+        <BracketTeamLine teamName={match.team2?.name} fallback={match.team1 && !match.team2 ? copy.bye : copy.emptySlot} winner={team2Winner} muted={!match.team2} />
+      </div>
+
+      {isCompleted && match.winner && (
+        <div className="mt-2 flex items-center gap-1.5 border-t border-white/8 pt-2 text-[11px] font-semibold text-cyan-50/86">
+          <CircleCheckBig className="h-3.5 w-3.5 text-cyan-200" />
+          <span>{copy.winner}: {match.winner.name}</span>
+        </div>
+      )}
+
+      {isPlayable && (
+        <div className="mt-2 flex items-center gap-1.5 border-t border-primary/14 pt-2 text-[11px] font-semibold text-amber-50/88">
+          <MousePointer2 className="h-3.5 w-3.5" />
+          <span>{copy.openMatch}</span>
+        </div>
+      )}
+    </button>
+  );
+}
+
+function StatusPill({
+  isCompleted,
+  isPlayable,
+  label,
+}: {
+  isCompleted: boolean;
+  isPlayable: boolean;
+  label: string;
+}) {
+  const Icon = isCompleted ? CircleCheckBig : isPlayable ? Play : Lock;
+
+  return (
+    <span
+      className={cn(
+        'inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em]',
+        isCompleted
+          ? 'border-cyan-100/24 bg-cyan-100/10 text-cyan-50/84'
+          : isPlayable
+            ? 'border-primary/34 bg-primary/18 text-amber-50'
+            : 'border-white/10 bg-white/[0.035] text-white/48'
+      )}
+    >
+      <Icon className="h-3 w-3" />
+      <span>{label}</span>
+    </span>
+  );
+}
+
+function BracketTeamLine({
+  teamName,
+  fallback,
+  winner,
+  muted,
+}: {
+  teamName?: string;
+  fallback: string;
+  winner: boolean;
+  muted: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        'flex min-h-8 items-center justify-between gap-2 rounded-[12px] border px-2.5 py-1.5',
+        winner
+          ? 'border-primary/38 bg-primary/14 text-white'
+          : muted
+            ? 'border-white/7 bg-white/[0.025] text-white/44'
+            : 'border-white/9 bg-white/[0.04] text-white/84'
+      )}
+    >
+      <span className="truncate text-[clamp(0.76rem,0.72rem+0.16vw,0.9rem)] font-semibold">
+        {teamName ?? fallback}
+      </span>
+      {winner && <Trophy className="h-3.5 w-3.5 shrink-0 text-primary" />}
+    </div>
+  );
+}
+
 function InfoStat({
   label,
   value,
@@ -549,12 +876,12 @@ function InfoStat({
     : createElement(Icon as ComponentType<{ className?: string }>, { className: 'h-3.5 w-3.5 text-primary' });
 
   return (
-    <div className="min-w-0 rounded-[18px] border border-white/10 bg-black/8 px-3 py-2.5 sm:rounded-[20px] sm:px-3.5 sm:py-3">
-      <div className="mb-1.5 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.08em] text-white/50 sm:text-[11px]">
+    <div className="min-w-0 rounded-[18px] border border-white/10 bg-black/8 px-3 py-2.5 max-sm:rounded-[16px] max-sm:px-2.5 sm:rounded-[20px] sm:px-3.5 sm:py-3">
+      <div className="mb-1.5 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.08em] text-white/50 max-sm:text-[9px] sm:text-[11px]">
         {iconNode}
-        <span>{label}</span>
+        <span className="max-sm:truncate">{label}</span>
       </div>
-      <div className="text-[clamp(0.9rem,0.87rem+0.22vw,1.02rem)] font-bold text-white sm:text-[0.98rem]">{value}</div>
+      <div className="text-[clamp(0.9rem,0.87rem+0.22vw,1.02rem)] font-bold text-white max-sm:truncate max-sm:text-[clamp(0.82rem,0.76rem+0.24vw,1.02rem)] sm:text-[0.98rem]">{value}</div>
     </div>
   );
 }
@@ -582,18 +909,32 @@ interface MatchCardProps {
   match: Match;
   config: Tournament['config'];
   previewGamesByRound: Record<number, Game[]>;
+  highlighted: boolean;
   onClick: () => void;
 }
 
-function AvailableMatchCard({ match, config, previewGamesByRound, onClick }: MatchCardProps) {
+function AvailableMatchCard({ match, config, previewGamesByRound, highlighted, onClick }: MatchCardProps) {
   const language = useLanguage();
   const nextGame = getNextPlayableGame(match, config, previewGamesByRound);
   const actionLabel = language === 'en' ? 'Record this match' : 'Registra questo match';
 
   return (
     <Card
-      className="cursor-pointer p-5 shadow-[0_0_26px_rgba(245,180,76,0.16)] transition-all hover:border-primary hover:shadow-[0_0_34px_rgba(245,180,76,0.22)]"
+      id={`match-card-${match.id}`}
+      role="button"
+      tabIndex={0}
+      aria-label={actionLabel}
+      className={cn(
+        'cursor-pointer p-5 shadow-[0_0_26px_rgba(245,180,76,0.16)] transition-all hover:border-primary hover:shadow-[0_0_34px_rgba(245,180,76,0.22)] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/55',
+        highlighted ? 'border-primary shadow-[0_0_42px_rgba(245,180,76,0.34)]' : ''
+      )}
       onClick={onClick}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onClick();
+        }
+      }}
     >
       <div className="space-y-5">
         <div className="flex items-center justify-between gap-3">
@@ -607,33 +948,33 @@ function AvailableMatchCard({ match, config, previewGamesByRound, onClick }: Mat
           )}
         </div>
 
-        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_44px_minmax(0,1fr)] md:items-start">
-          <div className="space-y-2 text-left">
-            <div className="text-sm font-bold text-white sm:text-base">
+        <div className="grid gap-4 max-sm:grid-cols-[minmax(0,1fr)_34px_minmax(0,1fr)] max-sm:items-start md:grid-cols-[minmax(0,1fr)_44px_minmax(0,1fr)] md:items-start">
+          <div className="min-w-0 space-y-2 text-left">
+            <div className="truncate text-sm font-bold text-white sm:text-base">
               {match.team1?.name}
             </div>
             <div className="space-y-1.5">
               {match.team1?.players.map((player) => (
-                <div key={player.id} className="text-sm leading-relaxed text-white/84 sm:text-[0.95rem]">
+                <div key={player.id} className="truncate text-sm leading-relaxed text-white/84 sm:text-[0.95rem]">
                   {player.name}
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="flex items-center justify-center self-stretch">
-            <div className="text-[1.1rem] font-black uppercase tracking-[0.04em] text-white/78 sm:text-[1.3rem]">
+          <div className="flex items-center justify-center self-stretch max-sm:pt-6">
+            <div className="text-[1rem] font-black uppercase tracking-[0.04em] text-white/78 sm:text-[1.3rem]">
               VS
             </div>
           </div>
 
-          <div className="space-y-2 text-left md:text-right">
-            <div className="text-sm font-bold text-white sm:text-base">
+          <div className="min-w-0 space-y-2 text-left max-sm:text-right md:text-right">
+            <div className="truncate text-sm font-bold text-white sm:text-base">
               {match.team2?.name}
             </div>
             <div className="space-y-1.5">
               {match.team2?.players.map((player) => (
-                <div key={player.id} className="text-sm leading-relaxed text-white/84 sm:text-[0.95rem]">
+                <div key={player.id} className="truncate text-sm leading-relaxed text-white/84 sm:text-[0.95rem]">
                   {player.name}
                 </div>
               ))}
