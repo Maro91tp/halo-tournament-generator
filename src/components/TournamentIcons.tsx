@@ -60,9 +60,24 @@ export function RankIcon({ rank, className }: RankIconProps) {
 interface ModeIconProps {
   mode: GameMode;
   className?: string;
+  colorClassName?: string;
 }
 
-export function ModeIcon({ mode, className }: ModeIconProps) {
+export function ModeIcon({ mode, className, colorClassName }: ModeIconProps) {
+  if (colorClassName) {
+    return (
+      <span
+        role="img"
+        aria-label={mode}
+        className={cn('inline-block h-4 w-4 shrink-0 bg-current', className, colorClassName)}
+        style={{
+          WebkitMask: `url("${getGameModeIconSrc(mode)}") center / contain no-repeat`,
+          mask: `url("${getGameModeIconSrc(mode)}") center / contain no-repeat`,
+        }}
+      />
+    );
+  }
+
   return (
     <img
       src={getGameModeIconSrc(mode)}

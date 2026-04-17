@@ -201,7 +201,7 @@ export default function AboutPage() {
               className="inline-flex min-h-12 items-center gap-3 rounded-[16px] border border-white/12 bg-white/5 px-5 py-3 text-[0.98rem] font-semibold text-white/82 transition hover:border-white/28 hover:bg-white/10 hover:text-white"
             >
               <ArrowLeft className="h-5 w-5 shrink-0" />
-              {copy.back}
+              <span className="hidden sm:inline">{copy.back}</span>
             </a>
           </div>
 

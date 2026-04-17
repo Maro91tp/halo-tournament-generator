@@ -537,29 +537,29 @@ export default function TournamentVictoryScreen({
             <Trophy className="h-4 w-4 text-primary" />
             <span>{copy.finalStats}</span>
           </div>
-          <div className="grid gap-3 sm:gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4">
             <StatTile label={copy.totalKills} value={String(winnerStats.totalKills)} highlight />
             <StatTile label={copy.matchesWon} value={String(winnerStats.seriesWins)} />
             <StatTile label={copy.gamesWon} value={String(winnerStats.gameWins)} />
             <StatTile label={copy.players} value={String(winner.players.length)} />
           </div>
 
-          <div className="mt-5 rounded-[22px] border border-amber-300/55 bg-[radial-gradient(circle_at_right,rgba(255,214,102,0.24),transparent_30%),radial-gradient(circle_at_left_top,rgba(255,244,200,0.14),transparent_26%),linear-gradient(180deg,rgba(255,205,96,0.28)_0%,rgba(245,180,76,0.16)_42%,rgba(245,180,76,0.07)_100%)] p-4 shadow-[0_0_50px_rgba(245,180,76,0.24),inset_0_1px_0_rgba(255,245,214,0.2)] sm:mt-6 sm:rounded-[30px] sm:p-6">
-            <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-amber-50 sm:mb-4 sm:text-sm sm:tracking-[0.18em]">
-              <Medal className="h-5 w-5 text-[#ffd76a] drop-shadow-[0_0_10px_rgba(255,215,106,0.5)] motion-safe:animate-pulse" />
+          <div className="mt-4 rounded-[18px] border border-amber-300/55 bg-[radial-gradient(circle_at_right,rgba(255,214,102,0.24),transparent_30%),radial-gradient(circle_at_left_top,rgba(255,244,200,0.14),transparent_26%),linear-gradient(180deg,rgba(255,205,96,0.28)_0%,rgba(245,180,76,0.16)_42%,rgba(245,180,76,0.07)_100%)] p-3 shadow-[0_0_36px_rgba(245,180,76,0.2),inset_0_1px_0_rgba(255,245,214,0.2)] sm:mt-6 sm:rounded-[30px] sm:p-6 sm:shadow-[0_0_50px_rgba(245,180,76,0.24),inset_0_1px_0_rgba(255,245,214,0.2)]">
+            <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-50 sm:mb-4 sm:text-sm sm:tracking-[0.18em]">
+              <Medal className="h-4 w-4 text-[#ffd76a] drop-shadow-[0_0_10px_rgba(255,215,106,0.5)] motion-safe:animate-pulse sm:h-5 sm:w-5" />
               <span>MVP</span>
             </div>
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-amber-300/60 bg-[radial-gradient(circle_at_top,rgba(255,224,138,0.34),rgba(36,18,0,0.3)_72%)] shadow-[0_0_30px_rgba(245,180,76,0.3),inset_0_1px_0_rgba(255,245,214,0.2)] sm:h-16 sm:w-16">
-                <RankIcon rank={winnerStats.mvp.player.rank} className="h-8 w-8 sm:h-10 sm:w-10" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300/60 bg-[radial-gradient(circle_at_top,rgba(255,224,138,0.34),rgba(36,18,0,0.3)_72%)] shadow-[0_0_24px_rgba(245,180,76,0.26),inset_0_1px_0_rgba(255,245,214,0.2)] sm:h-16 sm:w-16 sm:shadow-[0_0_30px_rgba(245,180,76,0.3),inset_0_1px_0_rgba(255,245,214,0.2)]">
+                <RankIcon rank={winnerStats.mvp.player.rank} className="h-7 w-7 sm:h-10 sm:w-10" />
               </div>
               <div className="min-w-0">
-                <div className="truncate text-xl font-bold text-white drop-shadow-[0_0_14px_rgba(255,218,125,0.16)] sm:text-3xl">{winnerStats.mvp.player.name}</div>
+                <div className="truncate text-lg font-bold text-white drop-shadow-[0_0_14px_rgba(255,218,125,0.16)] sm:text-3xl">{winnerStats.mvp.player.name}</div>
                 <div className="mt-1 text-xs text-amber-50/82 sm:text-sm">
                   {winnerStats.mvp.kills} {copy.kills}{' - '}{winnerStats.mvp.gameWins} {copy.gamesWon}
                 </div>
               </div>
-              <div className="ml-auto rounded-full border border-amber-300/72 bg-[linear-gradient(180deg,rgba(255,225,132,0.34)_0%,rgba(245,180,76,0.2)_100%)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#fff3c7] shadow-[0_0_24px_rgba(245,180,76,0.34),inset_0_1px_0_rgba(255,245,214,0.24)] sm:px-4 sm:py-1.5 sm:text-sm sm:tracking-[0.18em]">
+              <div className="ml-auto rounded-full border border-amber-300/72 bg-[linear-gradient(180deg,rgba(255,225,132,0.34)_0%,rgba(245,180,76,0.2)_100%)] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[#fff3c7] shadow-[0_0_20px_rgba(245,180,76,0.28),inset_0_1px_0_rgba(255,245,214,0.24)] sm:px-4 sm:py-1.5 sm:text-sm sm:tracking-[0.18em]">
                 MVP
               </div>
             </div>
@@ -571,28 +571,28 @@ export default function TournamentVictoryScreen({
             <Crown className="h-4 w-4 text-primary" />
             <span>{copy.championRoster}</span>
           </div>
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2 sm:block sm:space-y-3">
             {winnerStats.playerSummaries.map((summary) => (
               <div
                 key={summary.player.id}
-                className={`rounded-[18px] border px-3 py-3.5 sm:rounded-[22px] sm:px-4 sm:py-4 ${
+                className={`rounded-[16px] border px-2.5 py-3 sm:rounded-[22px] sm:px-4 sm:py-4 ${
                   summary.player.id === winnerStats.mvp.player.id
                     ? 'border-amber-300/40 bg-amber-300/10 shadow-[0_0_22px_rgba(245,180,76,0.12)]'
                     : 'border-white/10 bg-black/10'
                 }`}
               >
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex min-h-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                   <div className="min-w-0">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <RankIcon rank={summary.player.rank} className="h-5 w-5 sm:h-6 sm:w-6" />
-                      <div className="truncate text-base font-semibold text-white sm:text-lg">{summary.player.name}</div>
+                      <div className="truncate text-sm font-semibold text-white sm:text-lg">{summary.player.name}</div>
                     </div>
-                    <div className="mt-2 text-xs text-white/70 sm:text-sm">
+                    <div className="mt-1.5 text-[11px] leading-5 text-white/70 sm:mt-2 sm:text-sm">
                       {summary.kills} {copy.kills}{' - '}{summary.gameWins} {copy.gamesWon}{' - '}{summary.appearances} {copy.appearances}
                     </div>
                   </div>
                   {summary.player.id === winnerStats.mvp.player.id && (
-                    <div className="rounded-full border border-amber-300/40 bg-amber-300/16 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-100 shadow-[0_0_16px_rgba(245,180,76,0.18)] sm:px-3 sm:text-xs sm:tracking-[0.16em]">
+                    <div className="w-fit rounded-full border border-amber-300/40 bg-amber-300/16 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-amber-100 shadow-[0_0_16px_rgba(245,180,76,0.18)] sm:px-3 sm:py-1 sm:text-xs sm:tracking-[0.16em]">
                       MVP
                     </div>
                   )}
@@ -656,7 +656,7 @@ export default function TournamentVictoryScreen({
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/60 hover:text-white sm:w-auto">
           <ArrowLeft className="h-4 w-4" />
-          {copy.back}
+          <span className="hidden sm:inline">{copy.back}</span>
         </Button>
         <Button onClick={onReplay} variant="outline" size="lg" className="w-full border-white/18 text-white/74 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />
@@ -830,16 +830,16 @@ function StatTile({
 }) {
   return (
     <div
-      className={`rounded-[18px] border p-3 sm:rounded-[22px] sm:p-4 ${
+      className={`rounded-[14px] border p-2.5 sm:rounded-[22px] sm:p-4 ${
         highlight
-          ? 'border-amber-300/30 bg-amber-300/10 shadow-[0_0_20px_rgba(245,180,76,0.12)]'
+          ? 'border-amber-300/36 bg-amber-300/10 shadow-[0_0_16px_rgba(245,180,76,0.12)] sm:border-amber-300/30 sm:shadow-[0_0_20px_rgba(245,180,76,0.12)]'
           : 'border-white/10 bg-black/10'
       }`}
     >
-      <div className={`text-[11px] font-semibold uppercase tracking-[0.14em] sm:text-xs sm:tracking-[0.16em] ${highlight ? 'text-amber-100/85' : 'text-white/50'}`}>
+      <div className={`text-[9px] font-semibold uppercase tracking-[0.12em] sm:text-xs sm:tracking-[0.16em] ${highlight ? 'text-amber-100/85' : 'text-white/50'}`}>
         {label}
       </div>
-      <div className={`mt-2 font-bold ${highlight ? 'text-3xl text-white sm:text-4xl' : 'text-2xl text-white sm:text-3xl'}`}>
+      <div className={`mt-1.5 font-bold leading-none sm:mt-2 ${highlight ? 'text-2xl text-white sm:text-4xl' : 'text-xl text-white sm:text-3xl'}`}>
         {value}
       </div>
     </div>
@@ -875,14 +875,56 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
   const winnerIsChampion = winnerTeam?.id === championId;
 
   return (
-    <div
-      className={`rounded-[16px] border p-3.5 sm:rounded-[18px] sm:p-4 ${
-        match.roundIndex === 0
-          ? 'border-white/10 bg-slate-950/28'
-          : 'border-amber-300/18 bg-[linear-gradient(180deg,rgba(245,180,76,0.08)_0%,rgba(2,6,23,0.34)_100%)] shadow-[0_0_22px_rgba(245,180,76,0.1)]'
-      }`}
-    >
-      <div className="flex flex-wrap items-stretch gap-3">
+    <div className="space-y-4">
+      <div className="rounded-[16px] border border-white/10 bg-black/12 p-3 sm:hidden">
+        <div className="text-center">
+          <div className="text-[9px] uppercase tracking-[0.16em] text-white/42">{copy.finalResult}</div>
+          <div className="mt-1 text-[2rem] font-black leading-none text-white">
+            {team1Score} <span className="mx-1.5 text-white/35">-</span> {team2Score}
+          </div>
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <div
+            className={`min-w-0 rounded-[13px] border px-2.5 py-2.5 ${
+              winnerIsChampion
+                ? 'border-amber-300/34 bg-amber-300/12 shadow-[0_0_16px_rgba(245,180,76,0.12)]'
+                : 'border-white/10 bg-white/[0.05]'
+            }`}
+          >
+            <div className="text-[9px] uppercase tracking-[0.12em] text-amber-100/70">{copy.winner}</div>
+            <div className="mt-1 truncate text-[0.95rem] font-bold text-white">
+              {winnerTeam?.name ?? match.team1?.name ?? match.team2?.name ?? 'TBD'}
+            </div>
+            {winnerTeam && (
+              <div className="mt-1 space-y-0.5 text-[10px] leading-4 text-white/70">
+                {winnerTeam.players.map((player) => (
+                  <div key={player.id} className="truncate">
+                    {player.name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="min-w-0 rounded-[13px] border border-white/8 bg-white/[0.03] px-2.5 py-2.5">
+            <div className="text-[9px] uppercase tracking-[0.12em] text-white/42">{copy.opponent}</div>
+            <div className="mt-1 truncate text-[0.95rem] font-semibold text-white/86">
+              {loserTeam?.name ?? (winnerTeam ? copy.bye : match.team2?.name ?? match.team1?.name ?? 'TBD')}
+            </div>
+            {loserTeam && (
+              <div className="mt-1 space-y-0.5 text-[10px] leading-4 text-white/58">
+                {loserTeam.players.map((player) => (
+                  <div key={player.id} className="truncate">
+                    {player.name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="hidden items-stretch gap-3 sm:flex sm:flex-wrap">
         <div
           className={`min-w-0 flex-[1_1_220px] rounded-[16px] border px-4 py-3 ${
             winnerIsChampion
@@ -891,30 +933,30 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
           }`}
         >
           <div className="text-[11px] uppercase tracking-[0.16em] text-amber-100/70">{copy.winner}</div>
-          <div className="mt-1 text-lg font-bold text-white sm:text-xl">
+          <div className="mt-1 text-xl font-bold text-white">
             {winnerTeam?.name ?? match.team1?.name ?? match.team2?.name ?? 'TBD'}
           </div>
           {winnerTeam && (
-            <div className="mt-1 text-xs text-white/70 sm:text-sm">
+            <div className="mt-1 text-sm text-white/70">
               {winnerTeam.players.map((player) => player.name).join(' - ')}
             </div>
           )}
         </div>
 
-        <div className="w-full rounded-[16px] border border-white/10 bg-black/16 px-4 py-3 text-center sm:w-auto sm:min-w-[210px] sm:shrink-0 sm:px-5 sm:py-4">
+        <div className="w-auto min-w-[210px] shrink-0 rounded-[16px] border border-white/10 bg-black/16 px-5 py-4 text-center">
           <div className="text-[11px] uppercase tracking-[0.18em] text-white/42">{copy.finalResult}</div>
-          <div className="mt-2 text-[2.35rem] font-black leading-none text-white sm:text-[3.2rem]">
+          <div className="mt-2 text-[3.2rem] font-black leading-none text-white">
             {team1Score} <span className="mx-2 text-white/35">-</span> {team2Score}
           </div>
         </div>
 
         <div className="min-w-0 flex-[1_1_220px] rounded-[16px] border border-white/8 bg-white/[0.03] px-4 py-3">
           <div className="text-[11px] uppercase tracking-[0.16em] text-white/42">{copy.opponent}</div>
-          <div className="mt-1 text-base font-semibold text-white/86 sm:text-lg">
+          <div className="mt-1 text-lg font-semibold text-white/86">
             {loserTeam?.name ?? (winnerTeam ? copy.bye : match.team2?.name ?? match.team1?.name ?? 'TBD')}
           </div>
           {loserTeam && (
-            <div className="mt-1 text-xs text-white/58 sm:text-sm">
+            <div className="mt-1 text-sm text-white/58">
               {loserTeam.players.map((player) => player.name).join(' - ')}
             </div>
           )}
@@ -922,7 +964,7 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
       </div>
 
       {hasGames && (
-        <div className="mt-4 border-t border-white/8 pt-4">
+        <div className="border-t border-white/8 pt-4">
           <div className="space-y-2.5">
             {match.games?.map((game) => {
               const modeLabel = getGameModeDisplay(game.mode, language);
@@ -934,32 +976,28 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
               return (
                 <div
                   key={game.gameNumber}
-                  className="rounded-[14px] border border-white/8 bg-white/[0.03] px-3 py-3 text-sm"
+                  className="rounded-[14px] border border-white/8 bg-white/[0.03] px-2.5 py-2.5 text-sm sm:px-3 sm:py-3"
                 >
-                  <div className="grid gap-2 md:grid-cols-[auto_1fr_auto] md:items-center">
+                  <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 sm:gap-2 md:grid-cols-[auto_1fr_auto] md:items-center">
                     <div className="font-semibold text-white/90">Game {game.gameNumber}</div>
-                    <div className="min-w-0 text-[1rem] font-semibold text-white/84 sm:text-[1.08rem]">
+                    <div className="text-lg font-bold text-amber-100 sm:text-xl md:order-3">{scoreLabel}</div>
+                    <div className="col-span-2 min-w-0 text-[0.95rem] font-semibold text-white/84 sm:text-[1.08rem] md:order-2 md:col-span-1">
                       <span>{modeLabel}</span>
                       {mapLabel && <span className="mx-2 text-white/28">-</span>}
                       {mapLabel && <span>{mapLabel}</span>}
                     </div>
-                    <div className="text-lg font-bold text-amber-100 sm:text-xl">{scoreLabel}</div>
                   </div>
 
                   {showPlayerBreakdown && (
-                    <div className="mt-3 border-t border-white/8 pt-3">
-                      <div className="grid gap-3 md:grid-cols-2">
+                    <div className="mt-2.5 border-t border-white/8 pt-2.5 sm:mt-3 sm:pt-3">
+                      <div className="grid grid-cols-2 gap-2 sm:gap-3">
                         <PlayerBreakdownColumn
                           team={match.team1!}
                           killsByPlayer={slayerScore!.team1PlayerKills}
-                          totalKills={slayerScore!.team1TotalKills}
-                          killsLabel={copy.kills}
                         />
                         <PlayerBreakdownColumn
                           team={match.team2!}
                           killsByPlayer={slayerScore!.team2PlayerKills}
-                          totalKills={slayerScore!.team2TotalKills}
-                          killsLabel={copy.kills}
                         />
                       </div>
                     </div>
@@ -976,30 +1014,23 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
 function PlayerBreakdownColumn({
   team,
   killsByPlayer,
-  totalKills,
-  killsLabel,
 }: {
   team: Team;
   killsByPlayer: Record<string, number>;
-  totalKills: number;
-  killsLabel: string;
 }) {
   return (
-    <div className="rounded-[12px] border border-white/8 bg-black/12 p-3">
-      <div className="mb-2 flex items-center justify-between gap-3">
-        <div className="truncate text-sm font-semibold text-white/90">{team.name}</div>
-        <div className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-100">
-          {totalKills} {killsLabel}
-        </div>
+    <div className="rounded-[12px] border border-white/8 bg-black/12 p-2 sm:p-3">
+      <div className="mb-2 flex items-center gap-2 sm:gap-3">
+        <div className="truncate text-xs font-semibold text-white/90 sm:text-sm">{team.name}</div>
       </div>
-      <div className="space-y-2">
+      <div className="space-y-1.5 sm:space-y-2">
         {team.players.map((player) => (
           <div
             key={player.id}
-            className="flex items-center justify-between gap-3 rounded-[10px] border border-white/8 bg-white/[0.03] px-3 py-2"
+            className="flex items-center justify-between gap-2 rounded-[9px] border border-white/8 bg-white/[0.03] px-2 py-1.5 sm:gap-3 sm:rounded-[10px] sm:px-3 sm:py-2"
           >
-            <div className="truncate text-sm text-white/78">{player.name}</div>
-            <div className="shrink-0 text-sm font-semibold text-white">
+            <div className="truncate text-xs text-white/78 sm:text-sm">{player.name}</div>
+            <div className="shrink-0 text-xs font-semibold text-white sm:text-sm">
               {killsByPlayer[player.id] ?? 0}
             </div>
           </div>

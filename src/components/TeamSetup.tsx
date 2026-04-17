@@ -423,19 +423,16 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
             {copy.confirmHelp}
           </p>
         </div>
-        <div className="flex justify-stretch sm:justify-end">
-          <Button onClick={handleSubmit} size="lg" className="w-full text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] shadow-[0_0_24px_rgba(245,180,76,0.24)] hover:shadow-[0_0_34px_rgba(245,180,76,0.34)] sm:min-w-48 sm:w-auto">
-            {copy.generateTournament}
-            <ArrowRight className="ml-2 h-4 w-4" />
+        <div className="flex items-center justify-between gap-3">
+          <Button onClick={onBack} variant="ghost" size="lg" className="w-auto px-4 text-white/65 hover:text-white sm:w-auto">
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">{copy.back}</span>
+          </Button>
+          <Button onClick={handleSubmit} size="lg" className="w-auto px-4 text-[clamp(0.92rem,0.88rem+0.22vw,1rem)] shadow-[0_0_24px_rgba(245,180,76,0.24)] hover:shadow-[0_0_34px_rgba(245,180,76,0.34)] sm:min-w-48 sm:w-auto">
+            <span className="hidden sm:inline">{copy.generateTournament}</span>
+            <ArrowRight className="h-4 w-4 sm:ml-2" />
           </Button>
         </div>
-      </div>
-
-      <div className="flex justify-start pt-1">
-        <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/65 hover:text-white sm:w-auto">
-          <ArrowLeft className="h-4 w-4" />
-          {copy.back}
-        </Button>
       </div>
     </div>
   );

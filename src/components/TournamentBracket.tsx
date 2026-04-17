@@ -555,7 +555,7 @@ export default function TournamentBracket({
       <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <Button onClick={onBack} variant="ghost" size="lg" className="w-full text-white/60 hover:text-white sm:w-auto">
           <ArrowLeft className="h-4 w-4" />
-          {copy.editTeams}
+          <span className="hidden sm:inline">{copy.editTeams}</span>
         </Button>
         <Button onClick={onReset} variant="outline" size="lg" className="w-full border-white/18 text-white/70 sm:w-auto">
           <RefreshCcw className="h-4 w-4" />

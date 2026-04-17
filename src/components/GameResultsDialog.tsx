@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AlertTriangle, Crown, Minus, Plus } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, ArrowRight, Crown, Minus, Plus } from 'lucide-react';
 import type {
   Game,
   Match,
@@ -351,6 +351,19 @@ export default function GameResultsDialog({
   const visibleGames = games.slice(0, visibleGameCount);
   const safeGameIndex = Math.min(currentGameIndex, Math.max(visibleGames.length - 1, 0));
   const activeGame = visibleGames[safeGameIndex];
+  const activeCompletionSide = getGameCompletionSide(activeGame, killLimit);
+  const dialogToneClass =
+    activeCompletionSide === 'red'
+      ? 'border-red-400/65 bg-[linear-gradient(180deg,rgba(255,241,241,0.98)_0%,rgba(254,226,226,0.96)_100%)] shadow-[0_20px_80px_rgba(220,38,38,0.24)]'
+      : activeCompletionSide === 'blue'
+      ? 'border-blue-400/65 bg-[linear-gradient(180deg,rgba(239,246,255,0.98)_0%,rgba(219,234,254,0.96)_100%)] shadow-[0_20px_80px_rgba(37,99,235,0.22)]'
+      : 'border-amber-300/55 bg-[linear-gradient(180deg,rgba(255,249,238,0.98)_0%,rgba(248,238,218,0.96)_100%)] shadow-[0_20px_70px_rgba(176,120,20,0.18)]';
+  const modalPanelToneClass =
+    activeCompletionSide === 'red'
+      ? 'border-red-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.9)_0%,rgba(254,242,242,0.82)_100%)] shadow-[0_16px_48px_rgba(220,38,38,0.14)]'
+      : activeCompletionSide === 'blue'
+      ? 'border-blue-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.9)_0%,rgba(239,246,255,0.82)_100%)] shadow-[0_16px_48px_rgba(37,99,235,0.14)]'
+      : 'border-amber-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(255,248,236,0.78)_100%)] shadow-[0_16px_44px_rgba(176,120,20,0.12)]';
   const canGoBackGame = safeGameIndex > 0;
   const canGoForwardGame = safeGameIndex < visibleGames.length - 1 && !seriesResult;
   const shouldShowForwardGame = canGoForwardGame && Boolean(activeGame?.winner);
@@ -358,32 +371,42 @@ export default function GameResultsDialog({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className="!top-1.5 !w-[calc(100vw-0.5rem)] !max-w-[calc(100vw-0.5rem)] !translate-y-0 overflow-y-auto overscroll-contain rounded-[28px] border-amber-300/55 bg-[linear-gradient(180deg,rgba(255,249,238,0.98)_0%,rgba(248,238,218,0.96)_100%)] p-2 sm:!top-4 sm:!w-full sm:!max-w-[calc(100vw-1.5rem)] sm:rounded-[32px] sm:p-6 shadow-[0_20px_70px_rgba(176,120,20,0.18)]"
+        className={`!top-1.5 !w-[calc(100vw-0.5rem)] !max-w-[calc(100vw-0.5rem)] !translate-y-0 overflow-y-auto overscroll-contain rounded-[28px] p-2 transition-[background,border-color,box-shadow] duration-300 sm:!top-4 sm:!w-full sm:!max-w-[calc(100vw-1.5rem)] sm:rounded-[32px] sm:p-6 ${dialogToneClass}`}
         style={{
           maxHeight: 'calc(100dvh - 0.75rem)',
         }}
       >
-        <DialogHeader className="gap-3 pb-1">
+        <DialogHeader className="gap-1.5 px-2 pb-1 sm:gap-3 sm:px-0">
           <DialogTitle className="flex items-center gap-2 text-slate-950">
-            <ModeIcon mode={match.mode ?? 'slayer'} className="h-[18px] w-[18px] sm:h-5 sm:w-5" />
+            <ModeIcon
+              mode={match.mode ?? 'slayer'}
+              className="h-[18px] w-[18px] sm:h-5 sm:w-5"
+              colorClassName={
+                activeCompletionSide === 'red'
+                  ? 'text-red-600'
+                  : activeCompletionSide === 'blue'
+                  ? 'text-blue-600'
+                  : 'text-amber-500'
+              }
+            />
             <span>{copy.matchResults}</span>
           </DialogTitle>
-          <DialogDescription className="text-slate-600">
+          <DialogDescription className="text-center text-slate-600 sm:text-left">
             {match.team1.name} vs {match.team2.name}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="rounded-[24px] border border-amber-100/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(255,248,236,0.78)_100%)] p-2.5 sm:rounded-[30px] sm:p-6 md:p-8 shadow-[0_16px_44px_rgba(176,120,20,0.12)] backdrop-blur-sm">
-          <div className="mb-5 sm:mb-8">
-            <div className="grid items-center gap-3 sm:gap-4 md:grid-cols-[1fr_auto_1fr]">
-              <TeamSideSummary team={match.team1} wins={team1Wins} align="right" gamesWonLabel={copy.gamesWon} />
-              <div className="text-center">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500 sm:text-xs sm:tracking-[0.24em]">{copy.series}</div>
-                <div className="mt-2 text-[clamp(2rem,1.5rem+3vw,4.5rem)] font-bold tracking-tight text-slate-950 drop-shadow-[0_3px_10px_rgba(255,255,255,0.45)] md:text-7xl">
+        <div className={`rounded-[24px] border p-2.5 backdrop-blur-sm transition-[background,border-color,box-shadow] duration-300 sm:rounded-[30px] sm:p-6 md:p-8 ${modalPanelToneClass}`}>
+          <div className="mb-4 sm:mb-8">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-2 sm:gap-4">
+              <TeamSideSummary team={match.team1} wins={team1Wins} align="left" gamesWonLabel={copy.gamesWon} />
+              <div className="min-w-[72px] pt-1 text-center sm:min-w-[120px] md:min-w-[160px]">
+                <div className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-xs sm:tracking-[0.24em]">{copy.series}</div>
+                <div className="mt-1 text-[clamp(1.65rem,1.35rem+2vw,4.5rem)] font-bold tracking-tight text-slate-950 drop-shadow-[0_3px_10px_rgba(255,255,255,0.45)] sm:mt-2 md:text-7xl">
                   {team1Wins} <span className="text-slate-400">-</span> {team2Wins}
                 </div>
               </div>
-              <TeamSideSummary team={match.team2} wins={team2Wins} align="left" gamesWonLabel={copy.gamesWon} />
+              <TeamSideSummary team={match.team2} wins={team2Wins} align="right" gamesWonLabel={copy.gamesWon} />
             </div>
           </div>
 
@@ -438,7 +461,8 @@ export default function GameResultsDialog({
                   disabled={!canGoBackGame}
                   className="w-full text-slate-700 hover:bg-amber-100/70 hover:text-slate-950 sm:w-auto"
                 >
-                  {copy.back}
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">{copy.back}</span>
                 </Button>
 
                 <div className="text-center text-[clamp(0.8rem,0.76rem+0.18vw,0.94rem)] text-slate-600 sm:text-left">
@@ -454,7 +478,8 @@ export default function GameResultsDialog({
                     onClick={() => setCurrentGameIndex((current) => Math.min(current + 1, visibleGames.length - 1))}
                     className="w-full text-slate-700 hover:bg-amber-100/70 hover:text-slate-950 sm:w-auto"
                   >
-                    {copy.forward}
+                    <span className="hidden sm:inline">{copy.forward}</span>
+                    <ArrowRight className="h-4 w-4" />
                   </Button>
                 )}
               </div>
@@ -505,11 +530,22 @@ function TeamSideSummary({
   align: 'left' | 'right';
   gamesWonLabel: string;
 }) {
+  const playersLabel = team.players.map((player) => player.name).join(', ');
+
   return (
-    <div className={align === 'right' ? 'space-y-1 text-center md:text-right' : 'space-y-1 text-center md:text-left'}>
-      <div className="text-[clamp(0.98rem,0.92rem+0.32vw,1.25rem)] font-semibold text-slate-950 sm:text-xl">{team.name}</div>
-      <div className="break-words text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-slate-600 sm:text-sm">{team.players.map((player) => player.name).join(', ')}</div>
-      <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-xs sm:tracking-[0.18em]">{wins} {gamesWonLabel}</div>
+    <div className={align === 'right' ? 'min-w-0 space-y-1 text-right' : 'min-w-0 space-y-1 text-left'}>
+      <div className="truncate text-[clamp(0.92rem,0.86rem+0.26vw,1.25rem)] font-semibold leading-tight text-slate-950 sm:text-xl">{team.name}</div>
+      <div className="space-y-0.5 sm:hidden">
+        {team.players.map((player) => (
+          <div key={player.id} className="truncate text-[0.72rem] font-semibold leading-snug text-slate-700">
+            {player.name}
+          </div>
+        ))}
+      </div>
+      <div className="hidden break-words text-sm font-medium leading-snug text-slate-700 sm:line-clamp-2 sm:block">
+        {playersLabel}
+      </div>
+      <div className="text-[9px] font-semibold uppercase tracking-[0.14em] text-slate-500 sm:text-xs sm:tracking-[0.18em]">{wins} {gamesWonLabel}</div>
     </div>
   );
 }
@@ -523,6 +559,33 @@ function cloneGame(game: Game): Game {
         : game.score
       : undefined,
   };
+}
+
+function getGameCompletionSide(game: Game | undefined, killLimit: number): 'blue' | 'red' | undefined {
+  if (!game) return undefined;
+
+  if (game.winner === 1) return 'blue';
+  if (game.winner === 2) return 'red';
+
+  if (game.mode === 'slayer') {
+    const score = game.score as SlayerGameScore | undefined;
+    const team1Total = score?.team1TotalKills ?? 0;
+    const team2Total = score?.team2TotalKills ?? 0;
+
+    if (team1Total >= killLimit && team1Total > team2Total) return 'blue';
+    if (team2Total >= killLimit && team2Total > team1Total) return 'red';
+  }
+
+  if (game.mode === 'oddball') {
+    const score = game.score as OddballGameScore | undefined;
+    const team1Rounds = score?.team1Rounds ?? 0;
+    const team2Rounds = score?.team2Rounds ?? 0;
+
+    if (team1Rounds >= 2 && team1Rounds > team2Rounds) return 'blue';
+    if (team2Rounds >= 2 && team2Rounds > team1Rounds) return 'red';
+  }
+
+  return undefined;
 }
 
 interface GameSectionProps {
@@ -590,14 +653,35 @@ function GameSection({
     team1Current === team2Current ? undefined : team1Current > team2Current ? 1 : 2;
   const team1Progress = game.mode === 'slayer' ? Math.min(100, Math.round((team1Current / killLimit) * 100)) : undefined;
   const team2Progress = game.mode === 'slayer' ? Math.min(100, Math.round((team2Current / killLimit) * 100)) : undefined;
+  const scoreTotal = team1Current + team2Current;
+  const team1Balance = scoreTotal > 0 ? Math.round((team1Current / scoreTotal) * 100) : 50;
+  const completionSide = getGameCompletionSide(game, killLimit);
+  const sectionToneClass =
+    completionSide === 'red'
+      ? 'border-red-300/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(254,226,226,0.62)_100%)] shadow-[0_14px_38px_rgba(220,38,38,0.13)]'
+      : completionSide === 'blue'
+      ? 'border-blue-300/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.88)_0%,rgba(219,234,254,0.62)_100%)] shadow-[0_14px_38px_rgba(37,99,235,0.13)]'
+      : 'border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(239,247,255,0.76)_100%)] shadow-[0_10px_32px_rgba(90,150,220,0.08)]';
+  const modePillToneClass =
+    completionSide === 'red'
+      ? 'border-red-300/80 bg-[linear-gradient(180deg,rgba(255,245,245,0.96)_0%,rgba(254,226,226,0.88)_100%)] shadow-[0_8px_22px_rgba(220,38,38,0.12)]'
+      : completionSide === 'blue'
+      ? 'border-blue-300/80 bg-[linear-gradient(180deg,rgba(239,246,255,0.96)_0%,rgba(219,234,254,0.88)_100%)] shadow-[0_8px_22px_rgba(37,99,235,0.12)]'
+      : 'border-amber-200/70 bg-[linear-gradient(180deg,rgba(255,250,240,0.96)_0%,rgba(255,243,214,0.88)_100%)] shadow-[0_8px_20px_rgba(245,180,76,0.1)]';
+  const modeIconToneClass =
+    completionSide === 'red'
+      ? 'text-red-600'
+      : completionSide === 'blue'
+      ? 'text-blue-600'
+      : 'text-amber-500';
 
   return (
-    <section className="rounded-[20px] border border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(239,247,255,0.76)_100%)] p-2.5 sm:rounded-[28px] sm:p-5 md:p-6 shadow-[0_10px_32px_rgba(90,150,220,0.08)]">
+    <section className={`rounded-[20px] border p-2.5 transition-[background,border-color,box-shadow] duration-300 sm:rounded-[28px] sm:p-5 md:p-6 ${sectionToneClass}`}>
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3 sm:mb-6">
         <div className="space-y-3">
           <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 sm:text-sm sm:tracking-[0.18em]">Game {game.gameNumber}</div>
-          <div className="inline-flex flex-wrap items-center gap-1.5 rounded-[16px] border border-amber-200/70 bg-[linear-gradient(180deg,rgba(255,250,240,0.96)_0%,rgba(255,243,214,0.88)_100%)] px-2.5 py-2 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-800 shadow-[0_8px_20px_rgba(245,180,76,0.1)] sm:gap-2 sm:rounded-[18px] sm:px-4 sm:py-3 sm:text-base sm:tracking-[0.12em] md:text-lg">
-            <ModeIcon mode={game.mode} className="h-[15px] w-[15px] sm:h-4 sm:w-4" />
+          <div className={`inline-flex flex-wrap items-center gap-1.5 rounded-[16px] border px-2.5 py-2 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-800 transition-[background,border-color,box-shadow] duration-300 sm:gap-2 sm:rounded-[18px] sm:px-4 sm:py-3 sm:text-base sm:tracking-[0.12em] md:text-lg ${modePillToneClass}`}>
+            <ModeIcon mode={game.mode} className="h-[15px] w-[15px] sm:h-4 sm:w-4" colorClassName={modeIconToneClass} />
             <span>{getGameModeDisplay(game.mode, language)}</span>
             {game.mode === 'slayer' && <span>{limitLabel} {killLimit}</span>}
             <span>{game.map}</span>
@@ -610,7 +694,7 @@ function GameSection({
         )}
       </div>
 
-      <div className="mb-5 grid items-center gap-4 md:mb-7 md:grid-cols-[1fr_auto_1fr]">
+      <div className="mb-4 grid items-center gap-4 md:mb-7 md:grid-cols-[1fr_auto_1fr]">
         <div />
         <div className="text-center">
           {game.mode === 'slayer' && (
@@ -626,11 +710,19 @@ function GameSection({
             {game.mode === 'slayer' && <span className="text-[clamp(0.9rem,0.82rem+0.6vw,1.4rem)] text-slate-400 md:text-3xl">/{killLimit}</span>}
           </div>
           {game.mode === 'slayer' && (
-            <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-slate-200/80">
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200/80 ring-1 ring-slate-200 sm:mt-3 sm:h-2.5">
               <div
-                className="h-full rounded-full bg-[linear-gradient(90deg,rgba(245,180,76,0.95)_0%,rgba(217,119,6,0.95)_100%)] transition-all"
-                style={{ width: `${Math.max(team1Progress ?? 0, team2Progress ?? 0)}%` }}
-              />
+                className="flex h-full w-full transition-all"
+                aria-label={`Blu ${team1Current}, Rosso ${team2Current}`}
+              >
+                <div
+                  className="h-full bg-[linear-gradient(90deg,#2563eb_0%,#0ea5e9_100%)] transition-[width] duration-300"
+                  style={{ width: `${team1Balance}%` }}
+                />
+                <div
+                  className="h-full flex-1 bg-[linear-gradient(90deg,#ef4444_0%,#dc2626_100%)] transition-[width] duration-300"
+                />
+              </div>
             </div>
           )}
         </div>
@@ -638,12 +730,13 @@ function GameSection({
       </div>
 
       {game.mode === 'slayer' && slayerScore && (
-        <div className="grid grid-cols-[minmax(0,1fr)_30px_minmax(0,1fr)] items-start gap-2.5 sm:gap-5 md:grid-cols-[minmax(0,1fr)_40px_minmax(0,1fr)]">
+        <div className="grid grid-cols-[minmax(0,1fr)_24px_minmax(0,1fr)] items-start gap-2 sm:gap-5 md:grid-cols-[minmax(0,1fr)_40px_minmax(0,1fr)]">
           <TeamEditor
             team={team1}
             values={slayerScore.team1PlayerKills}
             total={slayerScore.team1TotalKills}
             isLeading={leader === 1}
+            side="blue"
             target={killLimit}
             progress={team1Progress ?? 0}
             onChange={(playerId, nextValue) =>
@@ -658,6 +751,7 @@ function GameSection({
             values={slayerScore.team2PlayerKills}
             total={slayerScore.team2TotalKills}
             isLeading={leader === 2}
+            side="red"
             target={killLimit}
             progress={team2Progress ?? 0}
             onChange={(playerId, nextValue) =>
@@ -668,12 +762,13 @@ function GameSection({
       )}
 
       {(game.mode === 'ctf' || game.mode === 'koth') && (
-        <div className="grid grid-cols-[minmax(0,1fr)_30px_minmax(0,1fr)] items-start gap-2.5 sm:gap-5 md:grid-cols-[minmax(0,1fr)_40px_minmax(0,1fr)]">
+        <div className="grid grid-cols-[minmax(0,1fr)_24px_minmax(0,1fr)] items-start gap-2 sm:gap-5 md:grid-cols-[minmax(0,1fr)_40px_minmax(0,1fr)]">
           <ObjectiveEditor
             team={team1}
             value={objectiveScore?.team1Score ?? 0}
             label={game.mode === 'ctf' ? 'Bandiere' : 'Punti'}
             isLeading={leader === 1}
+            side="blue"
             onChange={(nextValue) => onAdjustObjectiveScore(gameIndex, 'team1Score', nextValue)}
           />
           <div className="flex h-full items-start justify-center pt-8 sm:pt-10">
@@ -684,18 +779,20 @@ function GameSection({
             value={objectiveScore?.team2Score ?? 0}
             label={game.mode === 'ctf' ? 'Bandiere' : 'Punti'}
             isLeading={leader === 2}
+            side="red"
             onChange={(nextValue) => onAdjustObjectiveScore(gameIndex, 'team2Score', nextValue)}
           />
         </div>
       )}
 
       {game.mode === 'oddball' && (
-        <div className="grid grid-cols-[minmax(0,1fr)_30px_minmax(0,1fr)] items-start gap-2.5 sm:gap-5 md:grid-cols-[minmax(0,1fr)_40px_minmax(0,1fr)]">
+        <div className="grid grid-cols-[minmax(0,1fr)_24px_minmax(0,1fr)] items-start gap-2 sm:gap-5 md:grid-cols-[minmax(0,1fr)_40px_minmax(0,1fr)]">
           <ObjectiveEditor
             team={team1}
             value={oddballRounds?.team1Rounds ?? 0}
             label="Round vinti"
             isLeading={leader === 1}
+            side="blue"
             max={2}
             onChange={(nextValue) => onAdjustOddballScore(gameIndex, 'team1Rounds', nextValue)}
           />
@@ -707,6 +804,7 @@ function GameSection({
             value={oddballRounds?.team2Rounds ?? 0}
             label="Round vinti"
             isLeading={leader === 2}
+            side="red"
             max={2}
             onChange={(nextValue) => onAdjustOddballScore(gameIndex, 'team2Rounds', nextValue)}
           />
@@ -737,6 +835,7 @@ function TeamEditor({
   values,
   total,
   isLeading,
+  side,
   target,
   progress,
   onChange,
@@ -745,53 +844,63 @@ function TeamEditor({
   values: Record<string, number>;
   total: number;
   isLeading: boolean;
+  side: 'blue' | 'red';
   target: number;
   progress: number;
   onChange: (playerId: string, nextValue: number) => void;
 }) {
   const isHot = progress >= 70;
   const isMatchPoint = progress >= 90 || target - total <= 5;
+  const sideStyles =
+    side === 'blue'
+      ? {
+          card: isLeading
+            ? 'border-blue-500/70 bg-[linear-gradient(180deg,rgba(37,99,235,0.13)_0%,rgba(14,165,233,0.06)_100%)] shadow-[0_0_22px_rgba(37,99,235,0.16)]'
+            : 'border-blue-300/70 bg-[linear-gradient(180deg,rgba(239,246,255,0.86)_0%,rgba(255,255,255,0.72)_100%)]',
+          progress: 'bg-[linear-gradient(90deg,#2563eb_0%,#0ea5e9_100%)]',
+          progressGlow: 'shadow-[0_0_18px_rgba(37,99,235,0.35)]',
+          matchPointGlow: 'shadow-[0_0_24px_rgba(37,99,235,0.48)] brightness-110',
+          player: 'border-blue-200/80 hover:border-blue-400/80 hover:shadow-[0_8px_18px_rgba(37,99,235,0.12)]',
+        }
+      : {
+          card: isLeading
+            ? 'border-red-500/70 bg-[linear-gradient(180deg,rgba(239,68,68,0.13)_0%,rgba(248,113,113,0.06)_100%)] shadow-[0_0_22px_rgba(239,68,68,0.16)]'
+            : 'border-red-300/70 bg-[linear-gradient(180deg,rgba(254,242,242,0.86)_0%,rgba(255,255,255,0.72)_100%)]',
+          progress: 'bg-[linear-gradient(90deg,#ef4444_0%,#dc2626_100%)]',
+          progressGlow: 'shadow-[0_0_18px_rgba(239,68,68,0.35)]',
+          matchPointGlow: 'shadow-[0_0_24px_rgba(239,68,68,0.48)] brightness-110',
+          player: 'border-red-200/80 hover:border-red-400/80 hover:shadow-[0_8px_18px_rgba(239,68,68,0.12)]',
+        };
 
   return (
     <div
-      className={`min-w-0 rounded-[20px] border p-2 sm:rounded-[22px] sm:p-4 ${
-        isLeading
-          ? 'border-amber-400/55 bg-[linear-gradient(180deg,rgba(245,180,76,0.18)_0%,rgba(245,180,76,0.08)_100%)]'
-          : 'border-amber-100/80 bg-white/72'
-      }`}
+      className={`min-w-0 rounded-[16px] border p-2 sm:rounded-[22px] sm:p-4 ${sideStyles.card}`}
     >
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-        <div className="text-[clamp(0.9rem,0.86rem+0.22vw,1rem)] font-semibold text-slate-950 sm:text-base">{team.name}</div>
-        <div className="text-left sm:text-right">
-          <div className="text-[clamp(1.2rem,1.08rem+0.8vw,1.6rem)] font-bold text-slate-950 sm:text-2xl">
-            {total}
-            <span className="ml-1 text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] font-semibold text-slate-400">/ {target}</span>
-          </div>
-          <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">Kill</div>
-        </div>
+      <div className="mb-2.5 text-center sm:mb-4">
+        <div className="truncate text-[0.86rem] font-bold text-slate-950 sm:text-base">{team.name}</div>
       </div>
 
-      <div className="mb-4">
-        <div className="h-2.5 overflow-hidden rounded-full bg-slate-200/80">
+      <div className="mb-2.5 sm:mb-4">
+        <div className="h-2 overflow-hidden rounded-full bg-slate-200/80 sm:h-2.5">
           <div
-            className={`h-full rounded-full bg-[linear-gradient(90deg,rgba(245,180,76,0.95)_0%,rgba(217,119,6,0.95)_100%)] transition-all ${
-              isHot ? 'shadow-[0_0_18px_rgba(245,180,76,0.35)]' : ''
-            } ${isMatchPoint ? 'shadow-[0_0_24px_rgba(245,180,76,0.48)] brightness-110' : ''}`}
+            className={`h-full rounded-full ${sideStyles.progress} transition-all ${
+              isHot ? sideStyles.progressGlow : ''
+            } ${isMatchPoint ? sideStyles.matchPointGlow : ''}`}
             style={{ width: `${progress}%` }}
           />
         </div>
       </div>
 
-      <div className="space-y-2.5 sm:space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {team.players.map((player) => (
           <div
             key={player.id}
-            className="flex flex-col items-start gap-2 rounded-[16px] border border-amber-100/80 bg-white px-2.5 py-2.5 shadow-sm transition hover:border-amber-300/80 hover:shadow-[0_8px_18px_rgba(245,180,76,0.14)] sm:grid sm:grid-cols-[minmax(160px,1fr)_auto] sm:items-center sm:gap-3 sm:rounded-[18px] sm:px-4 sm:py-3.5"
+            className={`rounded-[14px] border bg-white px-2 py-2 shadow-sm transition sm:rounded-[18px] sm:px-4 sm:py-3.5 ${sideStyles.player}`}
           >
-            <div className="min-w-0 pr-2">
-              <div className="truncate text-[0.88rem] font-semibold leading-tight text-slate-950 sm:text-base">{player.name}</div>
+            <div className="mb-1.5 min-w-0 text-center">
+              <div className="truncate text-[0.78rem] font-bold leading-tight text-slate-950 sm:text-base">{player.name}</div>
             </div>
-            <div className="flex w-full justify-start sm:w-auto sm:justify-end">
+            <div className="flex justify-center">
               <Stepper
                 value={values[player.id] ?? 0}
                 max={Math.max(0, target - (total - (values[player.id] ?? 0)))}
@@ -811,6 +920,7 @@ function ObjectiveEditor({
   value,
   label,
   isLeading,
+  side,
   max,
   onChange,
 }: {
@@ -818,16 +928,22 @@ function ObjectiveEditor({
   value: number;
   label: string;
   isLeading: boolean;
+  side: 'blue' | 'red';
   max?: number;
   onChange: (nextValue: number) => void;
 }) {
+  const sideCardClass =
+    side === 'blue'
+      ? isLeading
+        ? 'border-blue-500/70 bg-[linear-gradient(180deg,rgba(37,99,235,0.13)_0%,rgba(14,165,233,0.06)_100%)] shadow-[0_0_22px_rgba(37,99,235,0.16)]'
+        : 'border-blue-300/70 bg-[linear-gradient(180deg,rgba(239,246,255,0.86)_0%,rgba(255,255,255,0.72)_100%)]'
+      : isLeading
+      ? 'border-red-500/70 bg-[linear-gradient(180deg,rgba(239,68,68,0.13)_0%,rgba(248,113,113,0.06)_100%)] shadow-[0_0_22px_rgba(239,68,68,0.16)]'
+      : 'border-red-300/70 bg-[linear-gradient(180deg,rgba(254,242,242,0.86)_0%,rgba(255,255,255,0.72)_100%)]';
+
   return (
     <div
-      className={`min-w-0 rounded-[18px] border p-2.5 sm:rounded-[22px] sm:p-5 ${
-        isLeading
-          ? 'border-amber-400/55 bg-[linear-gradient(180deg,rgba(245,180,76,0.18)_0%,rgba(245,180,76,0.08)_100%)]'
-          : 'border-amber-100/80 bg-white/72'
-      }`}
+      className={`min-w-0 rounded-[18px] border p-2.5 sm:rounded-[22px] sm:p-5 ${sideCardClass}`}
     >
       <div className="mb-4">
         <div className="text-[clamp(0.9rem,0.86rem+0.22vw,1rem)] font-semibold text-slate-950 sm:text-base">{team.name}</div>
@@ -863,7 +979,7 @@ function Stepper({
   return (
     <div
       className={`inline-flex items-center rounded-full border border-amber-300/80 bg-[linear-gradient(180deg,#ffffff_0%,#fff4dd_100%)] shadow-[0_10px_24px_rgba(245,180,76,0.14)] ${
-        large ? 'px-1.5 py-1.5 sm:px-2 sm:py-2' : compact ? 'px-1 py-1' : 'px-1 py-1 sm:px-1.5 sm:py-1.5'
+        large ? 'px-1.5 py-1.5 sm:px-2 sm:py-2' : compact ? 'px-0.5 py-0.5 sm:px-1 sm:py-1' : 'px-1 py-1 sm:px-1.5 sm:py-1.5'
       }`}
     >
       <StepperButton onClick={() => onChange(clampValue(value - 1))} ariaLabel="Diminuisci valore">
@@ -876,7 +992,7 @@ function Stepper({
         max={max}
         onChange={(e) => onChange(clampValue(Number.parseInt(e.target.value || '0', 10) || 0))}
         className={`bg-transparent text-center font-bold text-slate-950 outline-none ${
-          large ? 'w-11 text-lg sm:w-16 sm:text-2xl' : compact ? 'w-8 text-[13px] sm:w-10 sm:text-base' : 'w-10 text-sm sm:w-16 sm:text-lg'
+          large ? 'w-11 text-lg sm:w-16 sm:text-2xl' : compact ? 'w-6 text-[12px] sm:w-10 sm:text-base' : 'w-10 text-sm sm:w-16 sm:text-lg'
         }`}
       />
       <StepperButton onClick={() => onChange(clampValue(value + 1))} ariaLabel="Aumenta valore">
@@ -900,7 +1016,7 @@ function StepperButton({
       type="button"
       aria-label={ariaLabel}
       onClick={onClick}
-      className="flex h-8 w-8 items-center justify-center rounded-full border border-amber-300/80 bg-[linear-gradient(180deg,#fffaf0_0%,#ffe9b8_100%)] text-slate-800 transition hover:border-amber-400 hover:bg-white hover:text-slate-950 hover:shadow-[0_0_18px_rgba(245,180,76,0.24)] focus-visible:border-amber-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/25 sm:h-8 sm:w-8"
+      className="flex h-7 w-7 items-center justify-center rounded-full border border-amber-300/80 bg-[linear-gradient(180deg,#fffaf0_0%,#ffe9b8_100%)] text-slate-800 transition hover:border-amber-400 hover:bg-white hover:text-slate-950 hover:shadow-[0_0_18px_rgba(245,180,76,0.24)] focus-visible:border-amber-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/25 sm:h-8 sm:w-8"
     >
       {children}
     </button>
