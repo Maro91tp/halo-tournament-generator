@@ -131,6 +131,10 @@ export default function TournamentApp() {
         flowErrorAction: 'Ho capito',
         passwordInvalid: 'Password errata. Riprova.',
         passwordSyncError: 'Non sono riuscito a salvare il torneo online. Riprova tra poco.',
+        stepPlayers: 'Giocatori',
+        stepConfig: 'Regole',
+        stepTeams: 'Squadre',
+        stepBracket: 'Bracket',
       }
     : {
         title: 'Halo Tournament Generator',
@@ -146,6 +150,10 @@ export default function TournamentApp() {
         flowErrorAction: 'Got it',
         passwordInvalid: 'Wrong password. Try again.',
         passwordSyncError: 'Could not save the tournament online. Please try again shortly.',
+        stepPlayers: 'Players',
+        stepConfig: 'Rules',
+        stepTeams: 'Teams',
+        stepBracket: 'Bracket',
       };
 
   useEffect(() => {
@@ -576,13 +584,13 @@ export default function TournamentApp() {
           </div>
 
         <div className="mb-3 hidden items-center justify-center gap-1.5 sm:mb-4 sm:flex sm:gap-2">
-          <StepIndicator active={step === 'players'} completed={['config', 'teams', 'bracket'].includes(step)} label="1" />
-          <div className={`h-1 w-7 sm:w-12 ${['config', 'teams', 'bracket'].includes(step) ? 'bg-primary' : 'bg-muted'}`} />
-          <StepIndicator active={step === 'config'} completed={['teams', 'bracket'].includes(step)} label="2" />
-          <div className={`h-1 w-7 sm:w-12 ${['teams', 'bracket'].includes(step) ? 'bg-primary' : 'bg-muted'}`} />
-          <StepIndicator active={step === 'teams'} completed={step === 'bracket'} label="3" />
-          <div className={`h-1 w-7 sm:w-12 ${step === 'bracket' ? 'bg-primary' : 'bg-muted'}`} />
-          <StepIndicator active={step === 'bracket'} completed={false} label="4" />
+          <StepIndicator active={step === 'players'} completed={['config', 'teams', 'bracket'].includes(step)} label="1" text={copy.stepPlayers} />
+          <div className={`h-px w-8 ${['config', 'teams', 'bracket'].includes(step) ? 'bg-primary/75' : 'bg-white/16'}`} />
+          <StepIndicator active={step === 'config'} completed={['teams', 'bracket'].includes(step)} label="2" text={copy.stepConfig} />
+          <div className={`h-px w-8 ${['teams', 'bracket'].includes(step) ? 'bg-primary/75' : 'bg-white/16'}`} />
+          <StepIndicator active={step === 'teams'} completed={step === 'bracket'} label="3" text={copy.stepTeams} />
+          <div className={`h-px w-8 ${step === 'bracket' ? 'bg-primary/75' : 'bg-white/16'}`} />
+          <StepIndicator active={step === 'bracket'} completed={false} label="4" text={copy.stepBracket} />
         </div>
 
         <div className="glass-card flex flex-col items-stretch overflow-hidden">
@@ -701,16 +709,19 @@ export default function TournamentApp() {
   );
 }
 
-function StepIndicator({ active, completed, label }: { active: boolean; completed: boolean; label: string }) {
+function StepIndicator({ active, completed, label, text }: { active: boolean; completed: boolean; label: string; text: string }) {
   return (
     <div
-      className={`flex h-8 w-8 items-center justify-center rounded-full text-[13px] font-bold sm:h-10 sm:w-10 sm:text-sm
-        ${completed ? 'bg-primary text-primary-foreground' : ''}
-        ${active && !completed ? 'bg-primary text-primary-foreground ring-4 ring-primary/20' : ''}
-        ${!active && !completed ? 'bg-muted text-muted-foreground' : ''}
+      className={`flex h-9 min-w-[7rem] items-center gap-2 rounded-[10px] border px-2.5 text-[11px] font-bold uppercase tracking-[0.08em]
+        ${completed ? 'border-primary/45 bg-primary/18 text-amber-50' : ''}
+        ${active && !completed ? 'border-primary/65 bg-primary text-primary-foreground shadow-[0_0_18px_rgba(245,180,76,0.18)]' : ''}
+        ${!active && !completed ? 'border-white/12 bg-white/5 text-white/46' : ''}
       `}
     >
-      {completed ? <Check className="h-4 w-4 sm:h-5 sm:w-5" /> : label}
+      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] ${completed ? 'bg-primary text-primary-foreground' : active ? 'bg-black/12' : 'bg-white/8'}`}>
+        {completed ? <Check className="h-3.5 w-3.5" /> : label}
+      </span>
+      <span>{text}</span>
     </div>
   );
 }
