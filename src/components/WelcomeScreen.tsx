@@ -190,17 +190,17 @@ export default function WelcomeScreen({
             <p className="welcome-feature-title">{copy.featuresTitle}</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-2 xl:grid-cols-4">
             {featureItems.map((item) => (
               <div
                 key={item.title}
-                className="flex items-center gap-2 rounded-[12px] border border-cyan-200/24 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.08)_100%)] px-2.5 py-2 text-left shadow-[0_0_14px_rgba(100,180,255,0.1)] sm:gap-2.5 sm:rounded-[14px] sm:px-3 sm:py-2.5"
+                className="flex min-h-[82px] flex-col justify-center gap-1.5 rounded-[12px] border border-cyan-200/24 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.08)_100%)] px-2 py-2 text-center shadow-[0_0_14px_rgba(100,180,255,0.1)] sm:min-h-0 sm:flex-row sm:items-center sm:justify-start sm:gap-2.5 sm:rounded-[14px] sm:px-3 sm:py-2.5 sm:text-left"
               >
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-cyan-300/28 bg-cyan-300/14 sm:h-8 sm:w-8">
+                <div className="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-cyan-300/28 bg-cyan-300/14 sm:mx-0 sm:h-8 sm:w-8">
                   <item.Icon className="h-[15px] w-[15px] text-[#64B4FF] sm:h-5 sm:w-5" />
                 </div>
                 <div className="min-w-0">
-                  <div className="welcome-feature-name">{item.title}</div>
+                  <div className="welcome-feature-name leading-tight">{item.title}</div>
                   <div className="welcome-feature-subtitle">{item.subtitle}</div>
                 </div>
               </div>
