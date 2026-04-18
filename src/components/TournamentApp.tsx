@@ -564,18 +564,18 @@ export default function TournamentApp() {
         />
         <div className="absolute inset-0 z-0 bg-slate-950/18" />
 
-        <div className="relative z-10 container mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-8">
+        <div className="relative z-10 container mx-auto max-w-7xl px-2.5 py-2.5 sm:px-4 sm:py-4">
           <LanguageToggle language={language} onToggle={handleToggleLanguage} />
 
-          <div className="mb-6 hidden text-center sm:mb-8 sm:block">
-            <h1 className="mb-2 flex flex-col items-center justify-center gap-2 text-center text-[clamp(1.65rem,1.25rem+1.9vw,2.35rem)] font-bold font-heading sm:flex-row sm:gap-3">
-              <Gamepad2 className="h-[clamp(1.6rem,1.35rem+1vw,2.2rem)] w-[clamp(1.6rem,1.35rem+1vw,2.2rem)] text-primary" />
+          <div className="mb-3 hidden text-center sm:mb-4 sm:block">
+            <h1 className="mb-1 flex flex-col items-center justify-center gap-2 text-center text-[clamp(1.35rem,1.05rem+1.35vw,1.95rem)] font-bold font-heading sm:flex-row sm:gap-2.5">
+              <Gamepad2 className="h-[clamp(1.3rem,1.1rem+0.75vw,1.8rem)] w-[clamp(1.3rem,1.1rem+0.75vw,1.8rem)] text-primary" />
               <span className="text-balance">{copy.title}</span>
             </h1>
-            <p className="text-[clamp(0.82rem,0.78rem+0.18vw,1rem)] text-muted-foreground">{copy.description}</p>
+            <p className="text-[clamp(0.76rem,0.72rem+0.14vw,0.9rem)] text-muted-foreground">{copy.description}</p>
           </div>
 
-        <div className="mb-6 hidden items-center justify-center gap-1.5 sm:mb-8 sm:flex sm:gap-2">
+        <div className="mb-3 hidden items-center justify-center gap-1.5 sm:mb-4 sm:flex sm:gap-2">
           <StepIndicator active={step === 'players'} completed={['config', 'teams', 'bracket'].includes(step)} label="1" />
           <div className={`h-1 w-7 sm:w-12 ${['config', 'teams', 'bracket'].includes(step) ? 'bg-primary' : 'bg-muted'}`} />
           <StepIndicator active={step === 'config'} completed={['teams', 'bracket'].includes(step)} label="2" />

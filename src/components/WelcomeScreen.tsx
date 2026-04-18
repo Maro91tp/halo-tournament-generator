@@ -93,7 +93,7 @@ export default function WelcomeScreen({
 
   return (
     <div
-      className="relative flex min-h-screen items-center justify-center overflow-hidden px-3 py-5 text-white sm:px-4 sm:py-10 md:px-8"
+      className="relative flex min-h-screen items-start justify-center overflow-hidden px-2.5 py-3 text-white sm:px-4 sm:py-5 md:px-6"
       style={{ background: '#020B1F' }}
     >
       <div
@@ -112,7 +112,7 @@ export default function WelcomeScreen({
           <img
             src="/Halo-infinite-header.svg"
             alt="Halo Infinite"
-            className="mx-auto mb-4 w-full max-w-[340px] px-1 sm:mb-6 sm:max-w-[480px] sm:px-0"
+            className="mx-auto mb-2 w-full max-w-[260px] px-1 sm:mb-3 sm:max-w-[360px] sm:px-0"
             style={{
               height: 'auto',
               filter: 'drop-shadow(0 0 20px rgba(245, 180, 76, 0.24))',
@@ -120,7 +120,7 @@ export default function WelcomeScreen({
           />
 
           <h1
-            className="text-[clamp(1.45rem,1.1rem+1.8vw,2.1rem)] uppercase sm:text-[clamp(1.8rem,1.25rem+1.8vw,2.4rem)]"
+            className="text-[clamp(1.18rem,0.98rem+1.25vw,1.7rem)] uppercase sm:text-[clamp(1.35rem,1.1rem+1.2vw,1.95rem)]"
             style={{
               fontFamily: "'Oxanium', sans-serif",
               fontWeight: 700,
@@ -146,7 +146,7 @@ export default function WelcomeScreen({
           </p>
         </div>
 
-        <div className="mt-7 flex justify-center text-center sm:mt-10">
+        <div className="mt-4 flex justify-center text-center sm:mt-5">
           <Button
             onClick={onNewTournament}
             size="lg"
@@ -161,14 +161,14 @@ export default function WelcomeScreen({
               boxShadow:
                 '0 0 34px rgba(245, 180, 76, 0.28), 0 12px 18px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
               color: 'rgb(36, 19, 0)',
-              fontSize: 'clamp(19px, 6.4vw, 36px)',
+              fontSize: 'clamp(15px, 4.7vw, 24px)',
               fontFamily: "'Oxanium', sans-serif",
               fontWeight: 600,
               letterSpacing: '0.09em',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               backdropFilter: 'blur(12px)',
-              padding: '15px 18px',
+              padding: '11px 14px',
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.boxShadow =
@@ -183,7 +183,7 @@ export default function WelcomeScreen({
           </Button>
         </div>
 
-        <div className="mt-4 text-center">
+        <div className="mt-2.5 text-center">
           <p
             style={{
               fontFamily: "'Oxanium', sans-serif",
@@ -198,8 +198,8 @@ export default function WelcomeScreen({
           </p>
         </div>
 
-        <div className="mt-6 rounded-[18px] border border-white/12 bg-[linear-gradient(180deg,rgba(7,18,52,0.68)_0%,rgba(8,15,42,0.8)_100%)] p-3.5 shadow-[0_0_22px_rgba(8,18,52,0.18)] sm:mt-8 sm:rounded-[24px] sm:p-5">
-          <div className="mb-4 flex flex-col gap-1 sm:mb-5">
+        <div className="mt-4 rounded-[14px] border border-white/12 bg-[linear-gradient(180deg,rgba(7,18,52,0.68)_0%,rgba(8,15,42,0.8)_100%)] p-2.5 shadow-[0_0_22px_rgba(8,18,52,0.18)] sm:mt-5 sm:rounded-[18px] sm:p-4">
+          <div className="mb-2.5 flex flex-col gap-1 sm:mb-3">
             <h2 className="m-0 text-[clamp(0.98rem,0.9rem+0.45vw,1.15rem)] font-bold text-white">{copy.libraryTitle}</h2>
             <p className="text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/65 sm:text-sm">
               {copy.completedHelper}
@@ -207,17 +207,17 @@ export default function WelcomeScreen({
           </div>
 
           {savedTournaments.length === 0 ? (
-            <div className="rounded-[16px] border border-dashed border-white/14 bg-[rgba(255,255,255,0.05)] px-4 py-5 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/60 sm:text-sm">
+            <div className="rounded-[12px] border border-dashed border-white/14 bg-[rgba(255,255,255,0.05)] px-3 py-3 text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/60 sm:text-sm">
               {copy.noSavedTournaments}
             </div>
           ) : (
-            <div className="space-y-5">
+            <div className="space-y-3">
               {activeTournaments.length > 0 && (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] font-semibold uppercase tracking-[0.12em] text-white/70">
                     {copy.activeTournaments}
                   </div>
-                  <div className="grid gap-3">
+                  <div className="grid gap-2">
                     {activeTournaments.map((tournament) => (
                       <SavedTournamentRow
                         key={tournament.id}
@@ -233,11 +233,11 @@ export default function WelcomeScreen({
               )}
 
               {completedTournaments.length > 0 && (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)] font-semibold uppercase tracking-[0.12em] text-white/70">
                     {copy.completedTournaments}
                   </div>
-                  <div className="grid gap-3">
+                  <div className="grid gap-2">
                     {completedTournaments.map((tournament) => (
                       <SavedTournamentRow
                         key={tournament.id}
@@ -256,7 +256,7 @@ export default function WelcomeScreen({
         </div>
 
         <div
-          className="mt-6 rounded-[18px] border border-amber-200/20 px-3 py-3 sm:mt-8 sm:rounded-[24px] sm:px-5 sm:py-5"
+          className="mt-4 rounded-[14px] border border-amber-200/20 px-2.5 py-2.5 sm:mt-5 sm:rounded-[18px] sm:px-4 sm:py-3.5"
           style={{
             background: 'linear-gradient(180deg, rgba(28, 78, 150, 0.56) 0%, rgba(15, 48, 104, 0.76) 100%)',
             backdropFilter: 'blur(12px)',
@@ -264,7 +264,7 @@ export default function WelcomeScreen({
             boxShadow: '0 0 22px rgba(100, 180, 255, 0.16), inset 0 0.5px 0 rgba(255, 255, 255, 0.1)',
           }}
         >
-          <div className="mb-3 text-center sm:mb-4">
+          <div className="mb-2 text-center sm:mb-2.5">
             <p
               style={{
                 fontFamily: "'Oxanium', sans-serif",
@@ -280,13 +280,13 @@ export default function WelcomeScreen({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 xl:grid-cols-4">
             {featureItems.map((item) => (
               <div
                 key={item.title}
-                className="flex items-center gap-2.5 rounded-[16px] border border-cyan-200/24 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.08)_100%)] px-3 py-2.5 text-left shadow-[0_0_14px_rgba(100,180,255,0.1)] sm:gap-3 sm:rounded-[18px] sm:px-4 sm:py-3"
+                className="flex items-center gap-2 rounded-[12px] border border-cyan-200/24 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.08)_100%)] px-2.5 py-2 text-left shadow-[0_0_14px_rgba(100,180,255,0.1)] sm:gap-2.5 sm:rounded-[14px] sm:px-3 sm:py-2.5"
               >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-300/28 bg-cyan-300/14 sm:h-9 sm:w-9">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-cyan-300/28 bg-cyan-300/14 sm:h-8 sm:w-8">
                   <item.Icon className="h-[15px] w-[15px] text-[#64B4FF] sm:h-5 sm:w-5" />
                 </div>
                 <div className="min-w-0">
@@ -318,12 +318,12 @@ export default function WelcomeScreen({
             ))}
           </div>
 
-          <div className="mt-4 text-center text-[clamp(9px,2.3vw,11px)] text-white/58 sm:mt-5">
+          <div className="mt-3 text-center text-[clamp(9px,2.3vw,11px)] text-white/58 sm:mt-4">
             {copy.footer}
           </div>
         </div>
 
-        <div className="mt-5 text-center sm:mt-6">
+        <div className="mt-3 text-center sm:mt-4">
           <span
             style={{
               fontSize: 11,
@@ -338,7 +338,7 @@ export default function WelcomeScreen({
           <div className="mt-1 text-[10px] font-medium tracking-[0.08em] text-white/44 sm:text-[11px]">
             {copy.version} {APP_VERSION_LABEL}
           </div>
-          <div className="mt-3">
+          <div className="mt-2">
             <a
               href="/about"
               className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/54 transition hover:text-primary"
@@ -371,8 +371,8 @@ function SavedTournamentRow({
     : 'Ranked';
 
   return (
-    <div className="rounded-[16px] border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.04)_100%)] p-3 shadow-[0_0_14px_rgba(6,16,42,0.12)] sm:rounded-[20px] sm:p-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="rounded-[12px] border border-white/12 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.04)_100%)] p-2.5 shadow-[0_0_14px_rgba(6,16,42,0.12)] sm:rounded-[16px] sm:p-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <div className="truncate text-[clamp(0.9rem,0.84rem+0.24vw,1.02rem)] font-semibold text-white">
@@ -386,7 +386,7 @@ function SavedTournamentRow({
               {statusLabel as string}
             </span>
           </div>
-          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[clamp(0.7rem,0.68rem+0.15vw,0.84rem)] text-white/62 sm:text-sm">
+          <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[clamp(0.68rem,0.66rem+0.12vw,0.78rem)] text-white/62 sm:text-xs">
             <span>{copy.tournamentType as string}: {typeLabel} - {tournament.config?.teamMode ?? '-'}</span>
             <span>{copy.savedOn as string}: {formatDate(tournament.savedAt)}</span>
             {tournament.status === 'completed' && tournament.expiresAt && (
