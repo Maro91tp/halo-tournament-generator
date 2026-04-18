@@ -248,6 +248,101 @@
     font-size: var(--app-text-xs);
     letter-spacing: 0.14em;
   }
+
+  .welcome-shell {
+    background: #020b1f;
+  }
+
+  .welcome-bg {
+    background: url('/background.jpg') center / cover fixed;
+  }
+
+  .welcome-logo {
+    filter: drop-shadow(0 0 20px rgba(245, 180, 76, 0.24));
+  }
+
+  .welcome-title {
+    margin-bottom: 8px;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+  }
+
+  .welcome-copy {
+    color: rgba(200, 220, 255, 0.85);
+    font-size: clamp(11px, 3vw, 14px);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    opacity: 0.85;
+  }
+
+  .welcome-helper {
+    margin: 0;
+    color: rgba(200, 220, 255, 0.76);
+    font-size: clamp(11px, 2.9vw, 14px);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+  }
+
+  .welcome-primary-cta {
+    height: auto;
+    border: 1px solid rgba(255, 214, 140, 0.78);
+    border-radius: 18px;
+    background:
+      linear-gradient(180deg, rgba(255, 252, 244, 0.34) 0%, rgba(255, 247, 224, 0.28) 100%),
+      linear-gradient(180deg, rgba(245, 180, 76, 0.78) 0%, rgba(180, 110, 22, 0.95) 100%);
+    box-shadow: 0 0 34px rgba(245, 180, 76, 0.28), 0 12px 18px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    color: rgb(36, 19, 0);
+    cursor: pointer;
+    font-size: clamp(15px, 4.7vw, 24px);
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    padding: 11px 14px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(12px);
+  }
+
+  .welcome-primary-cta:hover {
+    box-shadow: 0 0 42px rgba(245, 180, 76, 0.34), 0 12px 18px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  .welcome-feature-panel {
+    background: linear-gradient(180deg, rgba(28, 78, 150, 0.56) 0%, rgba(15, 48, 104, 0.76) 100%);
+    box-shadow: 0 0 22px rgba(100, 180, 255, 0.16), inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .welcome-feature-title {
+    margin: 0;
+    color: rgba(200, 220, 255, 0.68);
+    font-size: clamp(10px, 2.6vw, 11px);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .welcome-feature-name {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(11px, 2.8vw, 12px);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .welcome-feature-subtitle {
+    margin-top: 2px;
+    color: rgba(216, 232, 255, 0.84);
+    font-size: clamp(10px, 2.5vw, 11px);
+    font-weight: 400;
+  }
+
+  .welcome-credit {
+    color: rgba(200, 220, 255, 0.78);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
 }
 
 @layer base {

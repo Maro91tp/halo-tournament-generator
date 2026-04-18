@@ -93,18 +93,9 @@ export default function WelcomeScreen({
 
   return (
     <div
-      className="relative flex min-h-screen items-start justify-center overflow-hidden px-2.5 py-3 text-white sm:px-4 sm:py-5 md:px-6"
-      style={{ background: '#020B1F' }}
+      className="welcome-shell relative flex min-h-screen items-start justify-center overflow-hidden px-2.5 py-3 text-white sm:px-4 sm:py-5 md:px-6"
     >
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: 'url(/background.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-        }}
-      />
+      <div className="welcome-bg absolute inset-0 z-0" />
       <div className="absolute inset-0 z-0 bg-slate-950/28" />
 
       <div className="glass-card relative z-10 w-full max-w-5xl">
@@ -112,38 +103,14 @@ export default function WelcomeScreen({
           <img
             src="/Halo-infinite-header.svg"
             alt="Halo Infinite"
-            className="mx-auto mb-2 w-full max-w-[260px] px-1 sm:mb-3 sm:max-w-[360px] sm:px-0"
-            style={{
-              height: 'auto',
-              filter: 'drop-shadow(0 0 20px rgba(245, 180, 76, 0.24))',
-            }}
+            className="welcome-logo mx-auto mb-2 w-full max-w-[260px] px-1 sm:mb-3 sm:max-w-[360px] sm:px-0"
           />
 
-          <h1
-            className="text-[clamp(1.18rem,0.98rem+1.25vw,1.7rem)] uppercase sm:text-[clamp(1.35rem,1.1rem+1.2vw,1.95rem)]"
-            style={{
-              fontFamily: "'Oxanium', sans-serif",
-              fontWeight: 700,
-              letterSpacing: '0.16em',
-              color: '#FFFFFF',
-              marginBottom: '8px',
-            }}
-          >
+          <h1 className="welcome-title text-[clamp(1.18rem,0.98rem+1.25vw,1.7rem)] uppercase sm:text-[clamp(1.35rem,1.1rem+1.2vw,1.95rem)]">
             Tournament Generator
           </h1>
 
-          <p
-            style={{
-              fontFamily: "'Oxanium', sans-serif",
-              fontSize: 'clamp(11px, 3vw, 14px)',
-              fontWeight: 400,
-              letterSpacing: '0.06em',
-              color: 'rgba(200, 220, 255, 0.85)',
-              opacity: 0.85,
-            }}
-          >
-            {copy.subtitle}
-          </p>
+          <p className="welcome-copy">{copy.subtitle}</p>
         </div>
 
         <div className="mt-4 flex justify-center text-center sm:mt-5">
@@ -151,51 +118,14 @@ export default function WelcomeScreen({
             onClick={onNewTournament}
             size="lg"
             variant="ghost"
-            className="w-full"
-            style={{
-              height: 'auto',
-              borderRadius: '18px',
-              background:
-                'linear-gradient(180deg, rgba(255, 252, 244, 0.34) 0%, rgba(255, 247, 224, 0.28) 100%), linear-gradient(180deg, rgba(245, 180, 76, 0.78) 0%, rgba(180, 110, 22, 0.95) 100%)',
-              border: '1px solid rgba(255, 214, 140, 0.78)',
-              boxShadow:
-                '0 0 34px rgba(245, 180, 76, 0.28), 0 12px 18px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
-              color: 'rgb(36, 19, 0)',
-              fontSize: 'clamp(15px, 4.7vw, 24px)',
-              fontFamily: "'Oxanium', sans-serif",
-              fontWeight: 600,
-              letterSpacing: '0.09em',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              backdropFilter: 'blur(12px)',
-              padding: '11px 14px',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                '0 0 42px rgba(245, 180, 76, 0.34), 0 12px 18px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.15)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                '0 0 34px rgba(245, 180, 76, 0.28), 0 12px 18px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.12)';
-            }}
+            className="welcome-primary-cta w-full"
           >
             {copy.create}
           </Button>
         </div>
 
         <div className="mt-2.5 text-center">
-          <p
-            style={{
-              fontFamily: "'Oxanium', sans-serif",
-              fontSize: 'clamp(11px, 2.9vw, 14px)',
-              fontWeight: 400,
-              letterSpacing: '0.05em',
-              color: 'rgba(200, 220, 255, 0.76)',
-              margin: 0,
-            }}
-          >
-            {copy.helper}
-          </p>
+          <p className="welcome-helper">{copy.helper}</p>
         </div>
 
         <div className="mt-4 rounded-[14px] border border-white/12 bg-[linear-gradient(180deg,rgba(7,18,52,0.68)_0%,rgba(8,15,42,0.8)_100%)] p-2.5 shadow-[0_0_22px_rgba(8,18,52,0.18)] sm:mt-5 sm:rounded-[18px] sm:p-4">
@@ -255,29 +185,9 @@ export default function WelcomeScreen({
           )}
         </div>
 
-        <div
-          className="mt-4 rounded-[14px] border border-amber-200/20 px-2.5 py-2.5 sm:mt-5 sm:rounded-[18px] sm:px-4 sm:py-3.5"
-          style={{
-            background: 'linear-gradient(180deg, rgba(28, 78, 150, 0.56) 0%, rgba(15, 48, 104, 0.76) 100%)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            boxShadow: '0 0 22px rgba(100, 180, 255, 0.16), inset 0 0.5px 0 rgba(255, 255, 255, 0.1)',
-          }}
-        >
+        <div className="welcome-feature-panel mt-4 rounded-[14px] border border-amber-200/20 px-2.5 py-2.5 sm:mt-5 sm:rounded-[18px] sm:px-4 sm:py-3.5">
           <div className="mb-2 text-center sm:mb-2.5">
-            <p
-              style={{
-                fontFamily: "'Oxanium', sans-serif",
-                letterSpacing: '0.12em',
-                fontSize: 'clamp(10px, 2.6vw, 11px)',
-                fontWeight: 600,
-                color: 'rgba(200, 220, 255, 0.68)',
-                textTransform: 'uppercase',
-                margin: 0,
-              }}
-            >
-              {copy.featuresTitle}
-            </p>
+            <p className="welcome-feature-title">{copy.featuresTitle}</p>
           </div>
 
           <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 xl:grid-cols-4">
@@ -290,29 +200,8 @@ export default function WelcomeScreen({
                   <item.Icon className="h-[15px] w-[15px] text-[#64B4FF] sm:h-5 sm:w-5" />
                 </div>
                 <div className="min-w-0">
-                  <div
-                    style={{
-                      fontFamily: "'Oxanium', sans-serif",
-                      fontWeight: 700,
-                      fontSize: 'clamp(11px, 2.8vw, 12px)',
-                      color: '#FFFFFF',
-                      letterSpacing: '0.05em',
-                      margin: 0,
-                    }}
-                  >
-                    {item.title}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "'Oxanium', sans-serif",
-                      fontSize: 'clamp(10px, 2.5vw, 11px)',
-                      fontWeight: 400,
-                      color: 'rgba(216, 232, 255, 0.84)',
-                      marginTop: '2px',
-                    }}
-                  >
-                    {item.subtitle}
-                  </div>
+                  <div className="welcome-feature-name">{item.title}</div>
+                  <div className="welcome-feature-subtitle">{item.subtitle}</div>
                 </div>
               </div>
             ))}
@@ -324,17 +213,7 @@ export default function WelcomeScreen({
         </div>
 
         <div className="mt-3 text-center sm:mt-4">
-          <span
-            style={{
-              fontSize: 11,
-              fontFamily: "'Oxanium', sans-serif",
-              fontWeight: 600,
-              letterSpacing: '0.1em',
-              color: 'rgba(200, 220, 255, 0.78)',
-            }}
-          >
-            Made by MrMarozzo
-          </span>
+          <span className="welcome-credit">Made by MrMarozzo</span>
           <div className="mt-1 text-[10px] font-medium tracking-[0.08em] text-white/44 sm:text-[11px]">
             {copy.version} {APP_VERSION_LABEL}
           </div>
