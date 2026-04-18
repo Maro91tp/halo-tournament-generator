@@ -17,6 +17,7 @@ import {
   saveTournamentState,
   loadTournamentState,
   clearTournamentState,
+  clearSavedTournamentRecords,
   hasSavedTournament,
   deleteSavedTournamentRecord,
   listSavedTournamentRecords,
@@ -172,6 +173,8 @@ export default function TournamentApp() {
         return;
       }
 
+      clearSavedTournamentRecords();
+
       try {
         const remoteRecords = await listTournamentRecordsFromSupabase();
         if (!cancelled) {
@@ -218,6 +221,7 @@ export default function TournamentApp() {
       tournament,
       touchSavedAt: false,
       password: storedPassword,
+      persistLocal: !isSupabaseConfigured,
     });
 
     void syncPromise.then((result) => {
@@ -430,6 +434,7 @@ export default function TournamentApp() {
       teams,
       tournament,
       password,
+      persistLocal: !isSupabaseConfigured,
     });
 
     setCurrentSavedTournamentId(record.id);

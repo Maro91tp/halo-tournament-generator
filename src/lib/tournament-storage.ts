@@ -32,6 +32,7 @@ interface SaveNamedTournamentInput {
   tournament: Tournament | null;
   touchSavedAt?: boolean;
   password?: string | null;
+  persistLocal?: boolean;
 }
 
 export interface SaveNamedTournamentResult {
@@ -225,9 +226,20 @@ export function loadSavedTournamentRecord(id: string): SavedTournamentRecord | n
   return listSavedTournamentRecords().find((record) => record.id === id) ?? null;
 }
 
+export function clearSavedTournamentRecords(): void {
+  if (!isBrowser()) return;
+
+  try {
+    localStorage.removeItem(SAVED_TOURNAMENTS_KEY);
+  } catch (error) {
+    console.error('Error clearing saved tournament records:', error);
+  }
+}
+
 export function saveNamedTournament(input: SaveNamedTournamentInput): SaveNamedTournamentResult {
+  const persistLocal = input.persistLocal ?? true;
   const isCompleted = Boolean(input.tournament?.winner);
-  const currentRecords = listSavedTournamentRecords();
+  const currentRecords = persistLocal ? listSavedTournamentRecords() : [];
   const existingRecord = input.id ? currentRecords.find((record) => record.id === input.id) : undefined;
   const touchSavedAt = input.touchSavedAt ?? true;
   const savedAt = touchSavedAt
@@ -250,7 +262,9 @@ export function saveNamedTournament(input: SaveNamedTournamentInput): SaveNamedT
     ? currentRecords.map((record) => (record.id === existingRecord.id ? nextRecord : record))
     : [nextRecord, ...currentRecords];
 
-  persistSavedTournamentRecords(nextRecords);
+  if (persistLocal) {
+    persistSavedTournamentRecords(nextRecords);
+  }
 
   const syncPromise = input.password
     ? saveTournamentRecordToSupabase(nextRecord, input.password)
