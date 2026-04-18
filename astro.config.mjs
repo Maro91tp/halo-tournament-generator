@@ -93,6 +93,19 @@ export default defineConfig({
       __APP_VERSION__: JSON.stringify(appVersion),
     },
     plugins: [tailwindcss(), patchViteErrorOverlay()],
+    build: {
+      rollupOptions: {
+        output: {
+          assetFileNames: (assetInfo) => {
+            if (assetInfo.names.some((name) => name.endsWith('.css'))) {
+              return '_astro/[name][extname]';
+            }
+
+            return '_astro/[name].[hash][extname]';
+          },
+        },
+      },
+    },
     server: {
       watch: {
         usePolling: true,
