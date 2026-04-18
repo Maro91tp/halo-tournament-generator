@@ -177,20 +177,21 @@
 
     background: linear-gradient(
       135deg,
-      rgba(9, 200, 228, 0.66) 0%,
-      rgba(11, 22, 92, 0.82) 48%,
-      rgba(3, 10, 34, 0.92) 100%
+      rgba(11, 176, 210, 0.8) 0%,
+      rgba(9, 22, 86, 0.92) 46%,
+      rgba(3, 10, 34, 0.98) 100%
     );
 
     backdrop-filter: blur(28px) saturate(130%);
     -webkit-backdrop-filter: blur(28px) saturate(130%);
 
-    border: 1px solid rgba(130, 220, 255, 0.28);
+    border: 1px solid rgba(145, 232, 255, 0.36);
 
     box-shadow:
       0 14px 40px rgba(0, 0, 0, 0.22),
-      0 0 22px rgba(100, 180, 255, 0.12),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      0 0 24px rgba(100, 180, 255, 0.14),
+      inset 0 0 28px rgba(10, 18, 54, 0.24),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
