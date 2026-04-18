@@ -95,7 +95,7 @@ export default function TournamentBracket({
         ready: 'Playable',
         locked: 'Waiting',
         winner: 'Winner',
-        bye: 'Bye',
+        bye: 'Auto-advance',
         emptySlot: 'Pending team',
         editTeams: 'Edit teams',
         newTournament: 'New tournament',
@@ -152,7 +152,7 @@ export default function TournamentBracket({
         ready: 'Giocabile',
         locked: 'In attesa',
         winner: 'Vincitore',
-        bye: 'Bye',
+        bye: 'Passa il turno',
         emptySlot: 'Squadra in arrivo',
         editTeams: 'Modifica squadre',
         newTournament: 'Nuovo torneo',
@@ -783,8 +783,8 @@ function BracketMatchNode({
       </div>
 
       <div className="space-y-1.5">
-        <BracketTeamLine teamName={match.team1?.name} fallback={match.team2 ? copy.emptySlot : copy.bye} winner={team1Winner} muted={!match.team1} />
-        <BracketTeamLine teamName={match.team2?.name} fallback={match.team1 && !match.team2 ? copy.bye : copy.emptySlot} winner={team2Winner} muted={!match.team2} />
+        <BracketTeamLine teamName={match.team1?.name} fallback={match.team2 ? copy.emptySlot : copy.bye} winner={team1Winner} muted={!match.team1} isPlaceholder={!match.team1} />
+        <BracketTeamLine teamName={match.team2?.name} fallback={match.team1 && !match.team2 ? copy.bye : copy.emptySlot} winner={team2Winner} muted={!match.team2} isPlaceholder={!match.team2} />
       </div>
 
       {isCompleted && match.winner && (
@@ -837,11 +837,13 @@ function BracketTeamLine({
   fallback,
   winner,
   muted,
+  isPlaceholder,
 }: {
   teamName?: string;
   fallback: string;
   winner: boolean;
   muted: boolean;
+  isPlaceholder: boolean;
 }) {
   return (
     <div
@@ -857,7 +859,7 @@ function BracketTeamLine({
       <span className="truncate text-[clamp(0.76rem,0.72rem+0.16vw,0.9rem)] font-semibold">
         {teamName ?? fallback}
       </span>
-      {winner && <Trophy className="h-3.5 w-3.5 shrink-0 text-primary" />}
+      {winner && !isPlaceholder && <Trophy className="h-3.5 w-3.5 shrink-0 text-primary" />}
     </div>
   );
 }

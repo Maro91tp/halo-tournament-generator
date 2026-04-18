@@ -75,7 +75,7 @@ export default function TournamentVictoryScreen({
         winner: 'Winner',
         finalResult: 'Final result',
         opponent: 'Opponent',
-        bye: 'Bye',
+        bye: 'Auto-advance',
         teamFallback: 'Team',
         gameDetails: 'Game details',
         playerResults: 'Player results',
@@ -116,7 +116,7 @@ export default function TournamentVictoryScreen({
         winner: 'Vincitore',
         finalResult: 'Risultato finale',
         opponent: 'Avversario',
-        bye: 'Bye',
+        bye: 'Passa il turno',
         teamFallback: 'Team',
         gameDetails: 'Dettaglio game',
         playerResults: 'Risultati giocatori',
@@ -1133,14 +1133,14 @@ function MiniMatchCard({ match, championId }: { match: Match; championId?: strin
         winner: 'Winner',
         finalResult: 'Final result',
         opponent: 'Opponent',
-        bye: 'Bye',
+        bye: 'Auto-advance',
         kills: 'kills',
       }
     : {
         winner: 'Vincitore',
         finalResult: 'Risultato finale',
         opponent: 'Avversario',
-        bye: 'Bye',
+        bye: 'Passa il turno',
         kills: 'kill',
       };
   const { team1Score, team2Score } = getDisplaySeriesScore(match);
