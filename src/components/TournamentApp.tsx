@@ -8,6 +8,7 @@ import TeamSetup from './TeamSetup';
 import TournamentBracket from './TournamentBracket';
 import WelcomeScreen from './WelcomeScreen';
 import LanguageToggle from './LanguageToggle';
+import TournamentPasswordDialog, { type TournamentPasswordDialogMode } from './TournamentPasswordDialog';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
 import { LanguageProvider } from './LanguageContext';
@@ -23,9 +24,18 @@ import {
   saveNamedTournament,
   type SavedTournamentRecord,
 } from '../lib/tournament-storage';
+import {
+  getTournamentPassword,
+  setTournamentPassword,
+  clearTournamentPassword,
+} from '../lib/tournament-password';
 import { LANGUAGE_STORAGE_KEY, type Language } from '../lib/language';
 import { isSupabaseConfigured } from '../lib/supabase';
-import { listTournamentRecordsFromSupabase, loadTournamentRecordFromSupabase } from '../lib/supabase-storage';
+import {
+  listTournamentRecordsFromSupabase,
+  loadTournamentRecordFromSupabase,
+  type TournamentSyncResult,
+} from '../lib/supabase-storage';
 
 type Step = 'welcome' | 'players' | 'config' | 'teams' | 'bracket';
 
@@ -77,6 +87,23 @@ export default function TournamentApp() {
   const [currentSavedTournamentId, setCurrentSavedTournamentId] = useState<string | null>(null);
   const [manualSaveFeedbackToken, setManualSaveFeedbackToken] = useState<string | null>(null);
   const [flowErrorMessage, setFlowErrorMessage] = useState<string | null>(null);
+  const [passwordDialog, setPasswordDialog] = useState<{
+    open: boolean;
+    mode: TournamentPasswordDialogMode;
+    tournamentId: string | null;
+    tournamentName: string | null;
+    pendingName: string | null;
+    errorMessage: string | null;
+    submitting: boolean;
+  }>({
+    open: false,
+    mode: 'create',
+    tournamentId: null,
+    tournamentName: null,
+    pendingName: null,
+    errorMessage: null,
+    submitting: false,
+  });
   const copy = language === 'it'
     ? {
         title: 'Halo Tournament Generator',
@@ -90,6 +117,8 @@ export default function TournamentApp() {
         missingResumeTournament: 'Nessun torneo da riprendere. Potrebbe essere stato cancellato o svuotato.',
         flowErrorTitle: 'Torneo non disponibile',
         flowErrorAction: 'Ho capito',
+        passwordInvalid: 'Password errata. Riprova.',
+        passwordSyncError: 'Non sono riuscito a salvare il torneo online. Riprova tra poco.',
       }
     : {
         title: 'Halo Tournament Generator',
@@ -103,6 +132,8 @@ export default function TournamentApp() {
         missingResumeTournament: 'No tournament to resume. It may have been deleted or cleared.',
         flowErrorTitle: 'Tournament unavailable',
         flowErrorAction: 'Got it',
+        passwordInvalid: 'Wrong password. Try again.',
+        passwordSyncError: 'Could not save the tournament online. Please try again shortly.',
       };
 
   useEffect(() => {
@@ -164,7 +195,8 @@ export default function TournamentApp() {
       return;
     }
 
-    const updatedRecord = saveNamedTournament({
+    const storedPassword = getTournamentPassword(existingRecord.id);
+    const { record: updatedRecord, syncPromise } = saveNamedTournament({
       id: existingRecord.id,
       name: existingRecord.name,
       step,
@@ -173,6 +205,13 @@ export default function TournamentApp() {
       teams,
       tournament,
       touchSavedAt: false,
+      password: storedPassword,
+    });
+
+    void syncPromise.then((result) => {
+      if (!result.ok && result.reason === 'invalid_password' && storedPassword) {
+        clearTournamentPassword(existingRecord.id);
+      }
     });
 
     setSavedTournaments(listSavedTournamentRecords());
@@ -344,22 +383,117 @@ export default function TournamentApp() {
     setLanguage((current) => (current === 'it' ? 'en' : 'it'));
   };
 
-  const handleSaveNamedTournament = (name: string) => {
-    if (step === 'welcome') return;
+  const closePasswordDialog = () => {
+    setPasswordDialog({
+      open: false,
+      mode: 'create',
+      tournamentId: null,
+      tournamentName: null,
+      pendingName: null,
+      errorMessage: null,
+      submitting: false,
+    });
+  };
 
-    const savedRecord = saveNamedTournament({
-      id: currentSavedTournamentId,
+  const runTournamentSave = async (
+    name: string,
+    password: string | null,
+    existingId: string | null
+  ): Promise<TournamentSyncResult> => {
+    if (step === 'welcome') {
+      return { ok: false, reason: 'other', message: 'Cannot save from welcome step' };
+    }
+    const { record, syncPromise } = saveNamedTournament({
+      id: existingId,
       name,
       step,
       players,
       config,
       teams,
       tournament,
+      password,
     });
 
-    setCurrentSavedTournamentId(savedRecord.id);
+    setCurrentSavedTournamentId(record.id);
     setSavedTournaments(listSavedTournamentRecords());
-    setManualSaveFeedbackToken(`${savedRecord.id}:${savedRecord.savedAt}`);
+    setManualSaveFeedbackToken(`${record.id}:${record.savedAt}`);
+
+    if (password) {
+      setTournamentPassword(record.id, password);
+    }
+
+    const result = await syncPromise;
+    if (!result.ok && result.reason === 'invalid_password') {
+      clearTournamentPassword(record.id);
+    }
+    return result;
+  };
+
+  const handleSaveNamedTournament = (name: string) => {
+    if (step === 'welcome') return;
+
+    if (!isSupabaseConfigured) {
+      void runTournamentSave(name, null, currentSavedTournamentId);
+      return;
+    }
+
+    const existingId = currentSavedTournamentId;
+    const storedPassword = existingId ? getTournamentPassword(existingId) : null;
+
+    if (storedPassword) {
+      void runTournamentSave(name, storedPassword, existingId).then((result) => {
+        if (!result.ok && result.reason === 'invalid_password') {
+          setPasswordDialog({
+            open: true,
+            mode: 'unlock',
+            tournamentId: existingId,
+            tournamentName: name,
+            pendingName: name,
+            errorMessage: copy.passwordInvalid,
+            submitting: false,
+          });
+        }
+      });
+      return;
+    }
+
+    setPasswordDialog({
+      open: true,
+      mode: existingId ? 'unlock' : 'create',
+      tournamentId: existingId,
+      tournamentName: name,
+      pendingName: name,
+      errorMessage: null,
+      submitting: false,
+    });
+  };
+
+  const handlePasswordDialogSubmit = async (password: string) => {
+    const pendingName = passwordDialog.pendingName;
+    if (!pendingName) {
+      closePasswordDialog();
+      return;
+    }
+
+    setPasswordDialog((prev) => ({ ...prev, submitting: true, errorMessage: null }));
+
+    const result = await runTournamentSave(pendingName, password, passwordDialog.tournamentId);
+
+    if (result.ok) {
+      closePasswordDialog();
+    } else if (result.reason === 'invalid_password') {
+      setPasswordDialog((prev) => ({
+        ...prev,
+        submitting: false,
+        errorMessage: copy.passwordInvalid,
+      }));
+    } else {
+      setPasswordDialog((prev) => ({
+        ...prev,
+        submitting: false,
+        errorMessage: copy.passwordSyncError,
+      }));
+    }
   };
 
   const currentSavedTournament = currentSavedTournamentId
@@ -505,6 +639,17 @@ export default function TournamentApp() {
             </button>
           </div>
         )}
+
+        <TournamentPasswordDialog
+          open={passwordDialog.open}
+          mode={passwordDialog.mode}
+          tournamentName={passwordDialog.tournamentName}
+          language={language}
+          errorMessage={passwordDialog.errorMessage}
+          submitting={passwordDialog.submitting}
+          onSubmit={handlePasswordDialogSubmit}
+          onCancel={closePasswordDialog}
+        />
 
         <Dialog open={Boolean(flowErrorMessage)} onOpenChange={(open) => !open && setFlowErrorMessage(null)}>
           <DialogContent className="max-w-[calc(100%-1.5rem)] border-amber-200/28 bg-[linear-gradient(180deg,rgba(8,18,46,0.96)_0%,rgba(6,14,34,0.98)_100%)] text-white shadow-[0_0_44px_rgba(46,131,255,0.14)] sm:max-w-md">
