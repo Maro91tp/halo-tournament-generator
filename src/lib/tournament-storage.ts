@@ -221,25 +221,6 @@ export function listSavedTournamentRecords(): SavedTournamentRecord[] {
   });
 }
 
-export function mergeSavedTournamentRecords(records: SavedTournamentRecord[]): SavedTournamentRecord[] {
-  if (records.length === 0) {
-    return listSavedTournamentRecords();
-  }
-
-  const mergedRecords = new Map<string, SavedTournamentRecord>();
-
-  for (const record of readSavedTournamentRecords()) {
-    mergedRecords.set(record.id, record);
-  }
-
-  for (const record of records) {
-    mergedRecords.set(record.id, normalizeSavedTournamentRecord(record));
-  }
-
-  persistSavedTournamentRecords([...mergedRecords.values()]);
-  return listSavedTournamentRecords();
-}
-
 export function loadSavedTournamentRecord(id: string): SavedTournamentRecord | null {
   return listSavedTournamentRecords().find((record) => record.id === id) ?? null;
 }
@@ -253,9 +234,10 @@ export function saveNamedTournament(input: SaveNamedTournamentInput): SaveNamedT
     ? new Date().toISOString()
     : existingRecord?.savedAt ?? new Date().toISOString();
   const completedAt = isCompleted ? existingRecord?.completedAt ?? savedAt : null;
+  const recordId = existingRecord?.id ?? input.id ?? `saved-${Date.now()}`;
 
   const nextRecord: SavedTournamentRecord = {
-    id: existingRecord?.id ?? `saved-${Date.now()}`,
+    id: recordId,
     name: input.name.trim(),
     status: isCompleted ? 'completed' : 'active',
     createdAt: existingRecord?.createdAt ?? savedAt,

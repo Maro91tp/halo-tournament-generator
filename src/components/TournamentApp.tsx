@@ -21,7 +21,6 @@ import {
   deleteSavedTournamentRecord,
   listSavedTournamentRecords,
   loadSavedTournamentRecord,
-  mergeSavedTournamentRecords,
   saveNamedTournament,
   type SavedTournamentRecord,
 } from '../lib/tournament-storage';
@@ -75,6 +74,17 @@ const DEV_TEAMS: Team[] = [
 ];
 
 const DEV_PREVIEW_ENABLED = false;
+
+function upsertSavedTournamentRecord(
+  records: SavedTournamentRecord[],
+  nextRecord: SavedTournamentRecord
+): SavedTournamentRecord[] {
+  const withoutCurrent = records.filter((record) => record.id !== nextRecord.id);
+  return [nextRecord, ...withoutCurrent].sort((a, b) => {
+    if (a.status !== b.status) return a.status === 'active' ? -1 : 1;
+    return new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime();
+  });
+}
 
 export default function TournamentApp() {
   const [language, setLanguage] = useState<Language>('it');
@@ -165,11 +175,11 @@ export default function TournamentApp() {
       try {
         const remoteRecords = await listTournamentRecordsFromSupabase();
         if (!cancelled) {
-          setSavedTournaments(mergeSavedTournamentRecords(remoteRecords));
+          setSavedTournaments(remoteRecords);
         }
       } catch {
         if (!cancelled) {
-          setSavedTournaments(listSavedTournamentRecords());
+          setSavedTournaments([]);
         }
       }
     };
@@ -190,7 +200,8 @@ export default function TournamentApp() {
   useEffect(() => {
     if (!currentSavedTournamentId || step === 'welcome') return;
 
-    const existingRecord = loadSavedTournamentRecord(currentSavedTournamentId);
+    const existingRecord = savedTournaments.find((record) => record.id === currentSavedTournamentId)
+      ?? (!isSupabaseConfigured ? loadSavedTournamentRecord(currentSavedTournamentId) : null);
     if (!existingRecord) {
       setCurrentSavedTournamentId(null);
       return;
@@ -215,7 +226,11 @@ export default function TournamentApp() {
       }
     });
 
-    setSavedTournaments(listSavedTournamentRecords());
+    setSavedTournaments((currentRecords) => (
+      isSupabaseConfigured
+        ? upsertSavedTournamentRecord(currentRecords, updatedRecord)
+        : listSavedTournamentRecords()
+    ));
     if (updatedRecord.status === 'completed') {
       setCurrentSavedTournamentId(updatedRecord.id);
     }
@@ -262,7 +277,7 @@ export default function TournamentApp() {
 
     if (!saved && isSupabaseConfigured) {
       deleteSavedTournamentRecord(id);
-      setSavedTournaments(await listTournamentRecordsFromSupabase().catch(() => listSavedTournamentRecords()));
+      setSavedTournaments(await listTournamentRecordsFromSupabase().catch(() => []));
       if (currentSavedTournamentId === id) {
         setCurrentSavedTournamentId(null);
       }
@@ -279,7 +294,6 @@ export default function TournamentApp() {
       return;
     }
 
-    mergeSavedTournamentRecords([saved]);
     setManualSaveFeedbackToken(null);
     setPlayers(saved.players);
     setConfig(saved.config);
@@ -324,7 +338,9 @@ export default function TournamentApp() {
     setSavedTournament(null);
     setCurrentSavedTournamentId(null);
     setManualSaveFeedbackToken(null);
-    setSavedTournaments(listSavedTournamentRecords());
+    if (!isSupabaseConfigured) {
+      setSavedTournaments(listSavedTournamentRecords());
+    }
     setStep('welcome');
     setPlayers([]);
     setConfig(null);
@@ -417,7 +433,11 @@ export default function TournamentApp() {
     });
 
     setCurrentSavedTournamentId(record.id);
-    setSavedTournaments(listSavedTournamentRecords());
+    setSavedTournaments((currentRecords) => (
+      isSupabaseConfigured
+        ? upsertSavedTournamentRecord(currentRecords, record)
+        : listSavedTournamentRecords()
+    ));
     setManualSaveFeedbackToken(`${record.id}:${record.savedAt}`);
 
     if (password) {
