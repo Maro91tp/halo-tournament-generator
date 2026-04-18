@@ -21,6 +21,7 @@ import {
   deleteSavedTournamentRecord,
   listSavedTournamentRecords,
   loadSavedTournamentRecord,
+  mergeSavedTournamentRecords,
   saveNamedTournament,
   type SavedTournamentRecord,
 } from '../lib/tournament-storage';
@@ -164,7 +165,7 @@ export default function TournamentApp() {
       try {
         const remoteRecords = await listTournamentRecordsFromSupabase();
         if (!cancelled) {
-          setSavedTournaments(remoteRecords);
+          setSavedTournaments(mergeSavedTournamentRecords(remoteRecords));
         }
       } catch {
         if (!cancelled) {
@@ -278,6 +279,7 @@ export default function TournamentApp() {
       return;
     }
 
+    mergeSavedTournamentRecords([saved]);
     setManualSaveFeedbackToken(null);
     setPlayers(saved.players);
     setConfig(saved.config);

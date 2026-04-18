@@ -221,6 +221,25 @@ export function listSavedTournamentRecords(): SavedTournamentRecord[] {
   });
 }
 
+export function mergeSavedTournamentRecords(records: SavedTournamentRecord[]): SavedTournamentRecord[] {
+  if (records.length === 0) {
+    return listSavedTournamentRecords();
+  }
+
+  const mergedRecords = new Map<string, SavedTournamentRecord>();
+
+  for (const record of readSavedTournamentRecords()) {
+    mergedRecords.set(record.id, record);
+  }
+
+  for (const record of records) {
+    mergedRecords.set(record.id, normalizeSavedTournamentRecord(record));
+  }
+
+  persistSavedTournamentRecords([...mergedRecords.values()]);
+  return listSavedTournamentRecords();
+}
+
 export function loadSavedTournamentRecord(id: string): SavedTournamentRecord | null {
   return listSavedTournamentRecords().find((record) => record.id === id) ?? null;
 }

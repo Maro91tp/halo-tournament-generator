@@ -48,6 +48,60 @@ begin
 end;
 $$;
 
+create or replace function public.save_tournament(tournament_record jsonb)
+returns public.tournaments
+language plpgsql
+set search_path = public
+as $$
+declare
+  saved_tournament public.tournaments;
+begin
+  insert into public.tournaments (
+    id,
+    name,
+    status,
+    step,
+    config,
+    players,
+    teams,
+    tournament,
+    created_at,
+    saved_at,
+    completed_at,
+    expires_at
+  )
+  values (
+    tournament_record->>'id',
+    coalesce(nullif(trim(tournament_record->>'name'), ''), 'Tournament'),
+    coalesce(tournament_record->>'status', 'active'),
+    coalesce(tournament_record->>'step', 'players'),
+    tournament_record->'config',
+    coalesce(tournament_record->'players', '[]'::jsonb),
+    coalesce(tournament_record->'teams', '[]'::jsonb),
+    tournament_record->'tournament',
+    coalesce((tournament_record->>'created_at')::timestamptz, timezone('utc', now())),
+    coalesce((tournament_record->>'saved_at')::timestamptz, timezone('utc', now())),
+    nullif(tournament_record->>'completed_at', '')::timestamptz,
+    nullif(tournament_record->>'expires_at', '')::timestamptz
+  )
+  on conflict (id) do update
+  set
+    name = excluded.name,
+    status = excluded.status,
+    step = excluded.step,
+    config = excluded.config,
+    players = excluded.players,
+    teams = excluded.teams,
+    tournament = excluded.tournament,
+    saved_at = excluded.saved_at,
+    completed_at = excluded.completed_at,
+    expires_at = excluded.expires_at
+  returning * into saved_tournament;
+
+  return saved_tournament;
+end;
+$$;
+
 drop trigger if exists players_set_updated_at on public.players;
 create trigger players_set_updated_at
 before update on public.players
