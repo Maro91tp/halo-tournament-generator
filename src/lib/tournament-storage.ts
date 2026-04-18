@@ -1,5 +1,5 @@
 import type { Player, Team, Tournament, TournamentConfig } from '../types/tournament';
-import { saveTournamentRecordToSupabase } from './supabase-storage';
+import { saveTournamentRecordToSupabase, type TournamentSyncResult } from './supabase-storage';
 
 export type SavedStep = 'players' | 'config' | 'teams' | 'bracket';
 export type SavedTournamentStatus = 'active' | 'completed';
@@ -31,6 +31,12 @@ interface SaveNamedTournamentInput {
   teams: Team[];
   tournament: Tournament | null;
   touchSavedAt?: boolean;
+  password?: string | null;
+}
+
+export interface SaveNamedTournamentResult {
+  record: SavedTournamentRecord;
+  syncPromise: Promise<TournamentSyncResult>;
 }
 
 const STORAGE_KEY = 'halo_tournament_state';
@@ -219,7 +225,7 @@ export function loadSavedTournamentRecord(id: string): SavedTournamentRecord | n
   return listSavedTournamentRecords().find((record) => record.id === id) ?? null;
 }
 
-export function saveNamedTournament(input: SaveNamedTournamentInput): SavedTournamentRecord {
+export function saveNamedTournament(input: SaveNamedTournamentInput): SaveNamedTournamentResult {
   const isCompleted = Boolean(input.tournament?.winner);
   const currentRecords = listSavedTournamentRecords();
   const existingRecord = input.id ? currentRecords.find((record) => record.id === input.id) : undefined;
@@ -244,8 +250,12 @@ export function saveNamedTournament(input: SaveNamedTournamentInput): SavedTourn
     : [nextRecord, ...currentRecords];
 
   persistSavedTournamentRecords(nextRecords);
-  void saveTournamentRecordToSupabase(nextRecord);
-  return nextRecord;
+
+  const syncPromise = input.password
+    ? saveTournamentRecordToSupabase(nextRecord, input.password)
+    : Promise.resolve<TournamentSyncResult>({ ok: false, reason: 'invalid_password', message: 'Password required' });
+
+  return { record: nextRecord, syncPromise };
 }
 
 export function deleteSavedTournamentRecord(id: string): void {

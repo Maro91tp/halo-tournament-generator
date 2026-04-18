@@ -4,6 +4,10 @@ import { resolveSavedStep } from './tournament-storage';
 import { isSupabaseConfigured, supabase } from './supabase';
 import type { StoredPlayer } from './player-storage';
 
+export type TournamentSyncResult =
+  | { ok: true }
+  | { ok: false; reason: 'invalid_password' | 'not_configured' | 'network' | 'other'; message?: string };
+
 function toPlayerPayload(player: Player | StoredPlayer) {
   return {
     app_player_id: 'id' in player ? player.id : null,
@@ -54,8 +58,12 @@ export async function syncPlayersToSupabase(players: Array<Player | StoredPlayer
   }
 }
 
-export async function saveTournamentRecordToSupabase(record: SavedTournamentRecord): Promise<void> {
-  if (!isSupabaseConfigured || !supabase) return;
+export async function saveTournamentRecordToSupabase(
+  record: SavedTournamentRecord,
+  password: string
+): Promise<TournamentSyncResult> {
+  if (!isSupabaseConfigured || !supabase) return { ok: false, reason: 'not_configured' };
+  if (!password) return { ok: false, reason: 'invalid_password', message: 'Password required' };
 
   const payload = {
     id: record.id,
@@ -72,13 +80,38 @@ export async function saveTournamentRecordToSupabase(record: SavedTournamentReco
     expires_at: record.expiresAt,
   };
 
-  const { error } = await supabase.from('tournaments').upsert(payload, {
-    onConflict: 'id',
+  const { error } = await supabase.rpc('save_tournament', {
+    payload,
+    tournament_password: password,
   });
 
   if (error) {
     console.error('Error syncing tournament to Supabase:', error);
+    if (error.code === '28000' || /invalid.*password/i.test(error.message ?? '')) {
+      return { ok: false, reason: 'invalid_password', message: error.message };
+    }
+    return { ok: false, reason: 'other', message: error.message };
   }
+  return { ok: true };
+}
+
+export async function verifyTournamentPassword(
+  tournamentId: string,
+  password: string
+): Promise<boolean> {
+  if (!isSupabaseConfigured || !supabase) return true;
+  if (!password) return false;
+
+  const { data, error } = await supabase.rpc('verify_tournament_password', {
+    tournament_id: tournamentId,
+    tournament_password: password,
+  });
+
+  if (error) {
+    console.error('Error verifying tournament password:', error);
+    return false;
+  }
+  return Boolean(data);
 }
 
 export async function listPlayersFromSupabase(): Promise<StoredPlayer[]> {
