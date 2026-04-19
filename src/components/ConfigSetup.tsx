@@ -16,9 +16,10 @@ interface ConfigSetupProps {
   onComplete: (config: TournamentConfig) => void;
   onBack: () => void;
   initialConfig?: TournamentConfig;
+  mobileStepProgress?: ReactNode;
 }
 
-export default function ConfigSetup({ playerCount, onComplete, onBack, initialConfig }: ConfigSetupProps) {
+export default function ConfigSetup({ playerCount, onComplete, onBack, initialConfig, mobileStepProgress }: ConfigSetupProps) {
   const language = useLanguage();
   const defaultConfig: TournamentConfig = {
     type: 'slayer',
@@ -269,6 +270,7 @@ export default function ConfigSetup({ playerCount, onComplete, onBack, initialCo
         <p className="app-subtitle mb-4 text-muted-foreground sm:mb-6">
           {copy.subtitle}
         </p>
+        {mobileStepProgress}
       </div>
 
       <div className="grid gap-2.5 sm:gap-3">

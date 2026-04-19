@@ -534,6 +534,17 @@ export default function TournamentApp() {
   const currentSavedTournament = currentSavedTournamentId
     ? savedTournaments.find((record) => record.id === currentSavedTournamentId) ?? null
     : null;
+  const mobileStepProgress = (
+    <MobileStepProgress
+      currentStep={step}
+      copy={{
+        stepPlayers: copy.stepPlayers,
+        stepConfig: copy.stepConfig,
+        stepTeams: copy.stepTeams,
+        stepBracket: copy.stepBracket,
+      }}
+    />
+  );
 
   if (step === 'welcome') {
     return (
@@ -572,9 +583,7 @@ export default function TournamentApp() {
         />
         <div className="absolute inset-0 z-0 bg-slate-950/18" />
 
-        <div className="relative z-10 container mx-auto max-w-7xl px-2.5 py-2.5 sm:px-4 sm:py-4">
-          <LanguageToggle language={language} onToggle={handleToggleLanguage} />
-
+        <div className="relative z-10 container mx-auto max-w-7xl px-2 py-2 sm:px-4 sm:py-4">
           <div className="mb-3 hidden text-center sm:mb-4 sm:block">
             <h1 className="mb-1 flex flex-col items-center justify-center gap-2 text-center text-[clamp(1.35rem,1.05rem+1.35vw,1.95rem)] font-bold font-heading sm:flex-row sm:gap-2.5">
               <Gamepad2 className="h-[clamp(1.3rem,1.1rem+0.75vw,1.8rem)] w-[clamp(1.3rem,1.1rem+0.75vw,1.8rem)] text-primary" />
@@ -593,19 +602,9 @@ export default function TournamentApp() {
           <StepIndicator active={step === 'bracket'} completed={false} label="4" text={copy.stepBracket} />
         </div>
 
-        <div className="glass-card flex flex-col items-stretch overflow-hidden">
-          <div className="mb-3 flex items-center justify-center gap-1.5 sm:hidden">
-            <MobileStepIndicator active={step === 'players'} completed={['config', 'teams', 'bracket'].includes(step)} />
-            <div className={`h-px w-4 rounded-full ${['config', 'teams', 'bracket'].includes(step) ? 'bg-primary/80' : 'bg-white/16'}`} />
-            <MobileStepIndicator active={step === 'config'} completed={['teams', 'bracket'].includes(step)} />
-            <div className={`h-px w-4 rounded-full ${['teams', 'bracket'].includes(step) ? 'bg-primary/80' : 'bg-white/16'}`} />
-            <MobileStepIndicator active={step === 'teams'} completed={step === 'bracket'} />
-            <div className={`h-px w-4 rounded-full ${step === 'bracket' ? 'bg-primary/80' : 'bg-white/16'}`} />
-            <MobileStepIndicator active={step === 'bracket'} completed={false} />
-          </div>
-
+        <div className="glass-card flex min-h-[calc(100dvh-1rem)] flex-col items-stretch overflow-hidden sm:min-h-0">
           {step === 'players' && (
-            <PlayerSetup onComplete={handlePlayersComplete} onBack={handleBack} initialPlayers={players} />
+            <PlayerSetup onComplete={handlePlayersComplete} onBack={handleBack} initialPlayers={players} mobileStepProgress={mobileStepProgress} />
           )}
 
           {step === 'config' && (
@@ -614,6 +613,7 @@ export default function TournamentApp() {
               onComplete={handleConfigComplete}
               onBack={handleBack}
               initialConfig={config || undefined}
+              mobileStepProgress={mobileStepProgress}
             />
           )}
 
@@ -624,6 +624,7 @@ export default function TournamentApp() {
               onComplete={handleTeamsComplete}
               onBack={handleBack}
               initialTeams={teams}
+              mobileStepProgress={mobileStepProgress}
             />
           )}
 
@@ -641,6 +642,7 @@ export default function TournamentApp() {
               currentSavedTournamentTeamMode={currentSavedTournament?.config?.teamMode ?? null}
               currentSavedTournamentType={currentSavedTournament?.config?.type ?? null}
               saveFeedbackToken={manualSaveFeedbackToken}
+              mobileStepProgress={mobileStepProgress}
             />
           )}
         </div>
@@ -736,5 +738,38 @@ function MobileStepIndicator({ active, completed }: { active: boolean; completed
       `}
       aria-hidden="true"
     />
+  );
+}
+
+function MobileStepProgress({
+  currentStep,
+  copy,
+}: {
+  currentStep: Step;
+  copy: {
+    stepPlayers: string;
+    stepConfig: string;
+    stepTeams: string;
+    stepBracket: string;
+  };
+}) {
+  return (
+    <div className="mb-4 flex items-center justify-between gap-3 rounded-[10px] border border-white/10 bg-black/10 px-3 py-2 sm:hidden">
+      <div className="flex items-center justify-center gap-1.5">
+        <MobileStepIndicator active={currentStep === 'players'} completed={['config', 'teams', 'bracket'].includes(currentStep)} />
+        <div className={`h-px w-4 rounded-full ${['config', 'teams', 'bracket'].includes(currentStep) ? 'bg-primary/80' : 'bg-white/16'}`} />
+        <MobileStepIndicator active={currentStep === 'config'} completed={['teams', 'bracket'].includes(currentStep)} />
+        <div className={`h-px w-4 rounded-full ${['teams', 'bracket'].includes(currentStep) ? 'bg-primary/80' : 'bg-white/16'}`} />
+        <MobileStepIndicator active={currentStep === 'teams'} completed={currentStep === 'bracket'} />
+        <div className={`h-px w-4 rounded-full ${currentStep === 'bracket' ? 'bg-primary/80' : 'bg-white/16'}`} />
+        <MobileStepIndicator active={currentStep === 'bracket'} completed={false} />
+      </div>
+      <div className="truncate text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-white/56">
+        {currentStep === 'players' && copy.stepPlayers}
+        {currentStep === 'config' && copy.stepConfig}
+        {currentStep === 'teams' && copy.stepTeams}
+        {currentStep === 'bracket' && copy.stepBracket}
+      </div>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
 import type { Player, RankTier } from '../types/tournament';
 import { ArrowLeft, ArrowRight, Check, ChevronDown, ChevronsUpDown, Circle, CircleCheckBig, Dice3, ExternalLink, Save, Users, User } from 'lucide-react';
 import { Button } from './ui/button';
@@ -20,12 +20,13 @@ interface PlayerSetupProps {
   onComplete: (players: Player[]) => void;
   onBack: () => void;
   initialPlayers: Player[];
+  mobileStepProgress?: ReactNode;
 }
 
 const MIN_PLAYER_COUNT = 2;
 const MAX_PLAYER_COUNT = 32;
 
-export default function PlayerSetup({ onComplete, onBack, initialPlayers }: PlayerSetupProps) {
+export default function PlayerSetup({ onComplete, onBack, initialPlayers, mobileStepProgress }: PlayerSetupProps) {
   type PlayerSaveState = 'idle' | 'saving' | 'saved' | 'error';
   const language = useLanguage();
   const [playerCount, setPlayerCount] = useState<number>(initialPlayers.length || 4);
@@ -489,6 +490,7 @@ export default function PlayerSetup({ onComplete, onBack, initialPlayers }: Play
         <p className="app-subtitle mb-4 text-muted-foreground sm:mb-6">
           {copy.subtitle}
         </p>
+        {mobileStepProgress}
       </div>
 
       <div className="mb-5 sm:mb-6">

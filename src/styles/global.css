@@ -173,7 +173,7 @@
 
 @layer components {
   .glass-card {
-    @apply rounded-[18px] p-3 sm:p-4 lg:rounded-[22px] lg:p-6;
+    @apply rounded-[14px] p-2.5 sm:rounded-[18px] sm:p-4 lg:rounded-[22px] lg:p-6;
 
     background: linear-gradient(
       135deg,
@@ -259,7 +259,7 @@
   }
 
   .welcome-logo {
-    filter: drop-shadow(0 0 20px rgba(245, 180, 76, 0.24));
+    filter: drop-shadow(0 0 22px rgba(255, 178, 46, 0.28));
   }
 
   .welcome-title {
@@ -286,25 +286,44 @@
   }
 
   .welcome-primary-cta {
-    height: auto;
-    border: 1px solid rgba(255, 214, 140, 0.78);
-    border-radius: 18px;
+    align-items: center;
+    justify-content: center;
+    display: inline-flex;
+    min-height: 68px;
+    border: 1px solid rgba(255, 222, 150, 0.92);
+    border-radius: 12px;
     background:
-      linear-gradient(180deg, rgba(255, 252, 244, 0.34) 0%, rgba(255, 247, 224, 0.28) 100%),
-      linear-gradient(180deg, rgba(245, 180, 76, 0.78) 0%, rgba(180, 110, 22, 0.95) 100%);
-    box-shadow: 0 0 34px rgba(245, 180, 76, 0.28), 0 12px 18px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    color: rgb(36, 19, 0);
+      linear-gradient(180deg, rgba(255, 246, 218, 0.4) 0%, rgba(255, 226, 154, 0.14) 100%),
+      linear-gradient(180deg, rgba(255, 185, 48, 0.98) 0%, rgba(205, 125, 16, 1) 100%);
+    box-shadow:
+      0 0 44px rgba(255, 178, 46, 0.42),
+      0 16px 24px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    color: rgb(91, 48, 4) !important;
     cursor: pointer;
-    font-size: clamp(15px, 4.7vw, 24px);
-    font-weight: 600;
-    letter-spacing: 0.035em;
-    padding: 11px 14px;
+    font-size: clamp(1.16rem, 5.5vw, 1.68rem) !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.035em !important;
+    line-height: 1 !important;
+    padding: 18px 22px 16px;
     transition: all 0.3s ease;
-    backdrop-filter: blur(12px);
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 rgba(255, 246, 219, 0.45), 0 2px 8px rgba(91, 48, 4, 0.14);
+    backdrop-filter: blur(14px);
+  }
+
+  @media (min-width: 640px) {
+    .welcome-primary-cta {
+      min-height: 72px;
+      padding: 20px 26px;
+    }
   }
 
   .welcome-primary-cta:hover {
-    box-shadow: 0 0 42px rgba(245, 180, 76, 0.34), 0 12px 18px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    box-shadow:
+      0 0 54px rgba(255, 178, 46, 0.52),
+      0 16px 24px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.24);
   }
 
   .welcome-feature-panel {

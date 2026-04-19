@@ -93,13 +93,13 @@ export default function WelcomeScreen({
 
   return (
     <div
-      className="welcome-shell relative flex min-h-screen items-start justify-center overflow-hidden px-2.5 py-3 text-white sm:px-4 sm:py-5 md:px-6"
+      className="welcome-shell relative flex min-h-screen items-start justify-center overflow-hidden px-2 py-2 text-white sm:px-4 sm:py-5 md:px-6"
     >
       <div className="welcome-bg absolute inset-0 z-0" />
       <div className="absolute inset-0 z-0 bg-slate-950/28" />
 
-      <div className="glass-card relative z-10 w-full max-w-5xl">
-        <div className="text-center">
+      <div className="glass-card relative z-10 flex min-h-[calc(100dvh-1rem)] w-full max-w-5xl flex-col sm:min-h-0">
+        <div className="pt-1 text-center sm:pt-0">
           <img
             src="/Halo-infinite-header.svg"
             alt="Halo Infinite"
@@ -113,22 +113,23 @@ export default function WelcomeScreen({
           <p className="welcome-copy">{copy.subtitle}</p>
         </div>
 
-        <div className="mt-4 flex justify-center text-center sm:mt-5">
+        <div className="mt-12 flex justify-center text-center sm:mt-10">
           <Button
             onClick={onNewTournament}
             size="lg"
             variant="ghost"
-            className="welcome-primary-cta w-full"
+            className="welcome-primary-cta mx-auto w-full max-w-[25rem]"
           >
             {copy.create}
           </Button>
         </div>
 
-        <div className="mt-2.5 text-center">
+        <div className="mt-5 text-center">
           <p className="welcome-helper">{copy.helper}</p>
         </div>
 
-        <div className="mt-4 rounded-[14px] border border-white/12 bg-[linear-gradient(180deg,rgba(7,18,52,0.68)_0%,rgba(8,15,42,0.8)_100%)] p-2.5 shadow-[0_0_22px_rgba(8,18,52,0.18)] sm:mt-5 sm:rounded-[18px] sm:p-4">
+        <div className="flex flex-1 flex-col justify-end pt-9 sm:block sm:pt-0">
+        <div className="rounded-[12px] border border-white/12 bg-[linear-gradient(180deg,rgba(7,18,52,0.68)_0%,rgba(8,15,42,0.8)_100%)] p-2.5 text-center shadow-[0_0_22px_rgba(8,18,52,0.18)] sm:mt-5 sm:rounded-[18px] sm:p-4 sm:text-left">
           <div className="mb-2.5 flex flex-col gap-1 sm:mb-3">
             <h2 className="m-0 text-[clamp(0.98rem,0.9rem+0.45vw,1.15rem)] font-bold text-white">{copy.libraryTitle}</h2>
             <p className="text-[clamp(0.72rem,0.7rem+0.16vw,0.86rem)] text-white/65 sm:text-sm">
@@ -185,7 +186,7 @@ export default function WelcomeScreen({
           )}
         </div>
 
-        <div className="welcome-feature-panel mt-4 rounded-[14px] border border-amber-200/20 px-2.5 py-2.5 sm:mt-5 sm:rounded-[18px] sm:px-4 sm:py-3.5">
+        <div className="welcome-feature-panel mt-3 rounded-[12px] border border-amber-200/20 px-2.5 py-2.5 sm:mt-5 sm:rounded-[18px] sm:px-4 sm:py-3.5">
           <div className="mb-2 text-center sm:mb-2.5">
             <p className="welcome-feature-title">{copy.featuresTitle}</p>
           </div>
@@ -194,7 +195,7 @@ export default function WelcomeScreen({
             {featureItems.map((item) => (
               <div
                 key={item.title}
-                className="flex min-h-[82px] flex-col justify-center gap-1.5 rounded-[12px] border border-cyan-200/24 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.08)_100%)] px-2 py-2 text-center shadow-[0_0_14px_rgba(100,180,255,0.1)] sm:min-h-0 sm:flex-row sm:items-center sm:justify-start sm:gap-2.5 sm:rounded-[14px] sm:px-3 sm:py-2.5 sm:text-left"
+                className="flex min-h-[72px] flex-col justify-center gap-1.5 rounded-[10px] border border-cyan-200/24 bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.08)_100%)] px-2 py-2 text-center shadow-[0_0_14px_rgba(100,180,255,0.1)] sm:min-h-0 sm:flex-row sm:items-center sm:justify-start sm:gap-2.5 sm:rounded-[14px] sm:px-3 sm:py-2.5 sm:text-left"
               >
                 <div className="mx-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-cyan-300/28 bg-cyan-300/14 sm:mx-0 sm:h-8 sm:w-8">
                   <item.Icon className="h-[15px] w-[15px] text-[#64B4FF] sm:h-5 sm:w-5" />
@@ -225,6 +226,7 @@ export default function WelcomeScreen({
               {copy.about}
             </a>
           </div>
+        </div>
         </div>
       </div>
     </div>

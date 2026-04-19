@@ -371,7 +371,7 @@ export default function GameResultsDialog({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className={`!top-1.5 !w-[calc(100vw-0.5rem)] !max-w-[calc(100vw-0.5rem)] !translate-y-0 overflow-y-auto overscroll-contain rounded-[28px] p-2 transition-[background,border-color,box-shadow] duration-300 sm:!top-4 sm:!w-full sm:!max-w-[calc(100vw-1.5rem)] sm:rounded-[32px] sm:p-6 ${dialogToneClass}`}
+        className={`!top-1 !w-[calc(100vw-0.75rem)] !max-w-[calc(100vw-0.75rem)] !translate-y-0 overflow-y-auto overscroll-contain rounded-[16px] p-1.5 transition-[background,border-color,box-shadow] duration-300 sm:!top-4 sm:!w-full sm:!max-w-[calc(100vw-1.5rem)] sm:rounded-[28px] sm:p-6 ${dialogToneClass}`}
         style={{
           maxHeight: 'calc(100dvh - 0.75rem)',
         }}
@@ -393,7 +393,7 @@ export default function GameResultsDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className={`rounded-[22px] border p-2.5 backdrop-blur-sm transition-[background,border-color,box-shadow] duration-300 sm:rounded-[30px] sm:p-6 md:p-8 ${modalPanelToneClass}`}>
+        <div className={`rounded-[14px] border p-2.5 backdrop-blur-sm transition-[background,border-color,box-shadow] duration-300 sm:rounded-[28px] sm:p-6 md:p-8 ${modalPanelToneClass}`}>
           <div className="mb-3 sm:mb-8">
             <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-2 sm:gap-4">
               <TeamSideSummary team={match.team1} wins={team1Wins} align="left" gamesWonLabel={copy.gamesWon} />

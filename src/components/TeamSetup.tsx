@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, Dice3, Eye, Pencil, RefreshCcw, Shield, Users2, X } from 'lucide-react';
 import type { Player, Team, TournamentConfig } from '../types/tournament';
 import { Button } from './ui/button';
@@ -16,9 +16,10 @@ interface TeamSetupProps {
   onComplete: (teams: Team[]) => void;
   onBack: () => void;
   initialTeams: Team[];
+  mobileStepProgress?: ReactNode;
 }
 
-export default function TeamSetup({ players, config, onComplete, onBack, initialTeams }: TeamSetupProps) {
+export default function TeamSetup({ players, config, onComplete, onBack, initialTeams, mobileStepProgress }: TeamSetupProps) {
   const language = useLanguage();
   const teamSize = parseInt(config.teamMode.charAt(0));
   const [teams, setTeams] = useState<Team[]>([]);
@@ -233,7 +234,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
   const isAutoMode = config.teamCreationMode === 'automatic' || config.teamCreationMode === 'random';
 
   return (
-    <div className="app-section flex w-full flex-col">
+    <div className="app-section flex min-h-0 w-full flex-1 flex-col">
       <div>
         <h2 className="app-title mb-3 font-bold font-heading">
           {config.teamCreationMode === 'automatic' && (
@@ -260,6 +261,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
           {config.teamCreationMode === 'random' && copy.randomDescription}
           {config.teamCreationMode === 'manual' && copy.manualDescription}
         </p>
+        {mobileStepProgress}
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
@@ -475,7 +477,7 @@ export default function TeamSetup({ players, config, onComplete, onBack, initial
         ))}
       </div>
 
-      <div className="glass-card space-y-3 rounded-[18px] border-white/10 bg-white/[0.04] p-3.5 sm:space-y-4 sm:rounded-[24px] sm:p-5 md:p-6">
+      <div className="glass-card mt-auto space-y-3 rounded-[18px] border-white/10 bg-white/[0.04] p-3.5 sm:space-y-4 sm:rounded-[24px] sm:p-5 md:p-6">
         <div className="space-y-1">
           <div className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] font-semibold uppercase tracking-[0.14em] text-white sm:text-sm sm:tracking-normal">{copy.confirmTeams}</div>
           <p className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] text-white/70 sm:text-sm">

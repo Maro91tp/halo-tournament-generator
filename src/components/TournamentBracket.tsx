@@ -39,6 +39,7 @@ interface TournamentBracketProps {
   currentSavedTournamentTeamMode: string | null;
   currentSavedTournamentType: 'slayer' | 'ranked' | null;
   saveFeedbackToken: string | null;
+  mobileStepProgress?: ReactNode;
 }
 
 export default function TournamentBracket({
@@ -54,11 +55,13 @@ export default function TournamentBracket({
   currentSavedTournamentTeamMode,
   currentSavedTournamentType,
   saveFeedbackToken,
+  mobileStepProgress,
 }: TournamentBracketProps) {
   const language = useLanguage();
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [highlightedMatchId, setHighlightedMatchId] = useState<string | null>(null);
   const [mobileBracketVisible, setMobileBracketVisible] = useState(false);
+  const [mobileInfoVisible, setMobileInfoVisible] = useState(false);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [tournamentName, setTournamentName] = useState(currentSavedTournamentName ?? '');
   const [saveFeedbackVisible, setSaveFeedbackVisible] = useState(false);
@@ -120,6 +123,9 @@ export default function TournamentBracket({
         saveInfo: 'Name, date, format and tournament type',
         noNamedSave: 'Not saved',
         noNamedSaveHelp: 'Save this bracket with a clear name so you can load it again from the home screen.',
+        tournamentInfo: 'Tournament info',
+        showInfo: 'Show info',
+        hideInfo: 'Hide info',
       }
     : {
         title: 'Bracket torneo',
@@ -177,6 +183,9 @@ export default function TournamentBracket({
         saveInfo: 'Nome, data, formato e tipo torneo',
         noNamedSave: 'Non salvato',
         noNamedSaveHelp: 'Salva questo bracket con un nome chiaro cosi lo puoi ricaricare facilmente dalla home.',
+        tournamentInfo: 'Info torneo',
+        showInfo: 'Mostra info',
+        hideInfo: 'Nascondi info',
       };
 
   const saveStatusLabel = currentSavedTournamentStatus === 'completed' ? copy.completedSave : copy.activeSave;
@@ -304,12 +313,33 @@ export default function TournamentBracket({
           <p className="app-subtitle text-muted-foreground">
             {copy.subtitle}
           </p>
+          {mobileStepProgress}
       </div>
 
       <Card className="border-white/12 p-3.5 sm:p-5 md:p-6">
-        <div className="space-y-4">
+        <button
+          type="button"
+          onClick={() => setMobileInfoVisible((visible) => !visible)}
+          className="flex min-h-11 w-full items-center justify-between gap-3 rounded-[10px] border border-white/10 bg-black/12 px-3 py-2 text-left text-white transition hover:border-amber-200/35 hover:bg-white/8 sm:hidden"
+          aria-expanded={mobileInfoVisible}
+        >
+          <div className="min-w-0">
+            <div className="text-[0.86rem] font-bold leading-tight">{copy.tournamentInfo}</div>
+            <div className="mt-0.5 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-white/50">
+              {completionPercent}% {copy.completed}
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-2 text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-amber-50/82">
+            <span>{mobileInfoVisible ? copy.hideInfo : copy.showInfo}</span>
+            <ChevronRight className={`h-4 w-4 text-primary transition-transform ${mobileInfoVisible ? 'rotate-90' : ''}`} />
+          </div>
+        </button>
+
+        <div className={cn('grid transition-[grid-template-rows,opacity] duration-300 sm:block sm:opacity-100', mobileInfoVisible ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0')}>
+          <div className="min-h-0 overflow-hidden">
+        <div className="space-y-4 pt-3 sm:pt-0">
           <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
-            <div className="grid grid-cols-1 gap-3 text-[clamp(0.78rem,0.75rem+0.16vw,0.9rem)] max-sm:grid-cols-2 max-sm:gap-2.5 max-sm:text-[clamp(0.72rem,0.68rem+0.18vw,0.9rem)] sm:grid-cols-2 xl:grid-cols-4">
+            <div className="hidden sm:grid grid-cols-2 gap-3 text-[clamp(0.78rem,0.75rem+0.16vw,0.9rem)] max-sm:gap-2.5 max-sm:text-[clamp(0.72rem,0.68rem+0.18vw,0.9rem)] xl:grid-cols-4">
               <InfoStat
                 label={copy.type}
                 value={tournament.config.type === 'slayer' ? copy.slayer : copy.ranked}
@@ -365,6 +395,13 @@ export default function TournamentBracket({
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-2 sm:hidden">
+            <CompactStat label={copy.type} value={tournament.config.type === 'slayer' ? copy.slayer : copy.ranked} />
+            <CompactStat label={copy.mode} value={tournament.config.teamMode} />
+            <CompactStat label={copy.format} value={formatLabel} />
+            <CompactStat label={copy.teams} value={String(tournament.teams.length)} />
+          </div>
+
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-3 text-[clamp(0.78rem,0.74rem+0.18vw,0.92rem)]">
               <span className="text-[clamp(0.72rem,0.69rem+0.15vw,0.88rem)] font-semibold text-white sm:text-sm">{copy.progress}</span>
@@ -407,6 +444,8 @@ export default function TournamentBracket({
               </div>
             </div>
           )}
+        </div>
+          </div>
         </div>
       </Card>
 
@@ -888,6 +927,19 @@ function InfoStat({
   );
 }
 
+function CompactStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-[10px] border border-white/10 bg-black/10 px-2.5 py-2">
+      <div className="truncate text-[9px] font-semibold uppercase tracking-[0.08em] text-white/46">
+        {label}
+      </div>
+      <div className="mt-0.5 truncate text-[0.84rem] font-bold leading-tight text-white">
+        {value}
+      </div>
+    </div>
+  );
+}
+
 function Pill({
   icon,
   text,
@@ -1067,4 +1119,3 @@ function SeriesPreview({
     </div>
   );
 }
-
