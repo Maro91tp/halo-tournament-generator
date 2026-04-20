@@ -208,10 +208,6 @@ export default function WelcomeScreen({
           </Button>
         </div>
 
-        <div className="welcome-helper-wrap text-center">
-          <p className="welcome-helper">{copy.helper}</p>
-        </div>
-
         <div className="welcome-lower-content flex flex-1 flex-col">
         <div className="welcome-library-panel rounded-[8px] border border-white/12 bg-[linear-gradient(180deg,rgba(7,18,52,0.68)_0%,rgba(8,15,42,0.8)_100%)] p-3 text-center shadow-[0_0_22px_rgba(8,18,52,0.18)] sm:mt-5 sm:p-4 sm:text-left">
           <div className="mb-2 flex flex-col gap-1 sm:mb-2.5">
