@@ -1,7 +1,7 @@
 import { Languages } from 'lucide-react';
 import { Button } from './ui/button';
 import type { Language } from '../lib/language';
-import { getLanguageToggleLabel } from '../lib/language';
+import { getNextLanguage } from '../lib/language';
 
 interface LanguageToggleProps {
   language: Language;
@@ -9,6 +9,9 @@ interface LanguageToggleProps {
 }
 
 export default function LanguageToggle({ language, onToggle }: LanguageToggleProps) {
+  const nextLanguage = getNextLanguage(language);
+  const label = nextLanguage === 'en' ? 'English' : 'Italiano';
+  const prefix = language === 'it' ? 'Switch language' : 'Cambia lingua';
   const switchLabel = language === 'it' ? 'Passa all inglese' : 'Switch to Italian';
 
   return (
@@ -17,12 +20,14 @@ export default function LanguageToggle({ language, onToggle }: LanguageTogglePro
       variant="ghost"
       size="sm"
       onClick={onToggle}
-      className="fixed right-3 top-3 z-50 h-10 rounded-full border border-cyan-200/25 bg-slate-950/55 px-3 text-[0.72rem] font-semibold tracking-[0.2em] text-white shadow-[0_0_20px_rgba(0,0,0,0.22)] backdrop-blur-md transition hover:bg-slate-900/72 hover:text-primary sm:right-5 sm:top-5"
+      className="welcome-language-toggle mx-auto inline-flex h-auto rounded-none border-0 bg-transparent px-2 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-white/62 shadow-none transition hover:bg-transparent hover:text-white"
       aria-label={switchLabel}
       title={switchLabel}
     >
-      <Languages className="mr-1.5 h-3.5 w-3.5" />
-      {getLanguageToggleLabel(language)}
+      <Languages className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.8} aria-hidden="true" />
+      <span>{prefix}</span>
+      <span className="mx-1 text-white/38" aria-hidden="true">/</span>
+      <span>{label}</span>
     </Button>
   );
 }

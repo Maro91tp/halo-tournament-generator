@@ -7,7 +7,6 @@ import ConfigSetup from './ConfigSetup';
 import TeamSetup from './TeamSetup';
 import TournamentBracket from './TournamentBracket';
 import WelcomeScreen from './WelcomeScreen';
-import LanguageToggle from './LanguageToggle';
 import TournamentPasswordDialog, { type TournamentPasswordDialogMode } from './TournamentPasswordDialog';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from './ui/dialog';
@@ -550,7 +549,6 @@ export default function TournamentApp() {
     return (
       <LanguageProvider language={language}>
         <>
-          <LanguageToggle language={language} onToggle={handleToggleLanguage} />
           <WelcomeScreen
             language={language}
             savedTournament={savedTournament}
@@ -558,6 +556,7 @@ export default function TournamentApp() {
             onNewTournament={handleNewTournament}
             onResumeTournament={handleResumeTournament}
             onLoadSavedTournament={handleLoadSavedTournament}
+            onToggleLanguage={handleToggleLanguage}
           />
         </>
       </LanguageProvider>
